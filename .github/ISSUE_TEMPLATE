@@ -1,0 +1,16 @@
+
+name: Feature request
+about: Suggest a feature for the Hedera Agent Kit
+title: "[Feature] "
+labels: enhancement
+assignees: ''
+---
+
+**Description**
+A clear and concise description of what the feature is and why it would be useful.
+
+**Proposed Implementation**
+Short summary of how you'd go about implementing this.
+
+**Additional Context**
+Add any other context or screenshots about the feature request here.
