@@ -8,11 +8,10 @@ Welcome to the **Hedera Agent Kit**! This project aims to provide a LangChain-co
 - **Lightweight**: Designed to get you started quickly with a minimal set of features.
 - **Community-Driven**: We encourage developers of all skill levels to contribute.
 
-## Features
+## Current Features
 
-1. **Native Hedera Token Service**: Create and manage fungible tokens with minimal parameters.
-2. **Native Hedera Consensus Service**: Post messages to topics, read them in real time.
-3. **Upcoming (Roadmap)**: Simple swapping on DEXs, advanced token features, and more.
+1. **Native Hedera Token Service**: Create fungible tokens with minimal parameters.
+2. **Upcoming (Roadmap)**: Create NFTs, transfer tokens, create topics and post messages, simple swapping on DEXs, and more.
 
 ## Getting Started
 
