@@ -1,5 +1,7 @@
-import { Client, TokenId } from "@hashgraph/sdk"
-import { create_token } from "../tools"
+import { Client, TokenId, AccountId } from "@hashgraph/sdk"
+import { create_token, transfer_token, airdrop_token } from "../tools"
+import { get_hbar_balance } from "../tools/hts/queries"
+import { AirdropRecipient } from "../tools/hts/transactions/airdrop"
 
 
 export default class HederaAgentKit {
@@ -29,6 +31,34 @@ export default class HederaAgentKit {
       symbol,
       decimals,
       initialSupply,
+      this.client
+    )
+  }
+
+  async transferToken(
+    tokenId: TokenId,
+    toAccountId: string | AccountId,
+    amount: number
+  ): Promise<void> {
+    return transfer_token(
+      tokenId,
+      toAccountId,
+      amount,
+      this.client
+    )
+  }
+
+  async getHbarBalance(): Promise<number> {
+    return get_hbar_balance(this.client)
+  }
+
+  async airdropToken(
+    tokenId: TokenId,
+    recipients: AirdropRecipient[]
+  ): Promise<void> {
+    return airdrop_token(
+      tokenId,
+      recipients,
       this.client
     )
   }
