@@ -43,7 +43,6 @@ async function initializeAgent() {
     const hederaKit = new HederaAgentKit(
       process.env.HEDERA_ACCOUNT_ID!,
       process.env.HEDERA_PRIVATE_KEY!,
-      process.env.OPENAI_API_KEY!,
       // Pass your network of choice. Default is "mainnet".
       // You can specify 'testnet', 'previewnet', or 'mainnet'.
       process.env.HEDERA_NETWORK as "mainnet" | "testnet" | "previewnet" || "testnet"

@@ -7,17 +7,14 @@ import { AirdropRecipient } from "../tools/hts/transactions/airdrop"
 export default class HederaAgentKit {
 
   public client: Client
-  public openai_api_key: string
 
   constructor(
     accountId: string,
     privateKey: string,
-    openai_api_key: string,
     network: 'mainnet' | 'testnet' | 'previewnet' = 'mainnet'
   ) {
     // @ts-ignore
     this.client = Client.forNetwork(network).setOperator(accountId, privateKey)
-    this.openai_api_key = openai_api_key
   }
 
   async createFT(
