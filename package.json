@@ -1,7 +1,8 @@
 {
   "name": "hedera-agent-kit",
   "version": "1.0.0",
-  "main": "index.js",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "scripts": {
     "test": "ts-node tests/index.ts"
   },
