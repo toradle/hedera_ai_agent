@@ -15,11 +15,13 @@ Welcome to the **Hedera Agent Kit**! This project aims to provide a LangChain-co
 
 ## Getting Started
 
-1. **Clone** the repo:
-
 ```bash
 npm i hedera-agent-kit
 ```
+
+or
+
+1. **Clone** the repo:
 
 ```bash
 git clone https://github.com/jaycoolh/hedera-agent-kit.git
