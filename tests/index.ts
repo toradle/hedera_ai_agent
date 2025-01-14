@@ -33,7 +33,6 @@ validateEnvironment();
 
 async function initializeAgent() {
   try {
-    // Create your LLM
     const llm = new ChatOpenAI({
       modelName: "gpt-4",
       temperature: 0.7,
