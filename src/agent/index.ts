@@ -1,13 +1,14 @@
-import { Client, TokenId, AccountId, Hbar, TransactionId } from "@hashgraph/sdk"
+import { Client, TokenId, AccountId, TransactionId } from "@hashgraph/sdk"
 import { create_token, transfer_token, airdrop_token } from "../tools"
 import { get_hbar_balance } from "../tools/hts/queries"
 import { AirdropRecipient } from "../tools/hts/transactions/airdrop"
-import { HederaNetworkType, HtsTokenDetails, TokenBalance } from "../types";
+import { AssociateTokenResult, HederaNetworkType, HtsTokenDetails, TokenBalance } from "../types";
 import { get_hts_balance } from "../tools/hts/queries";
 import { get_hts_token_details } from "../tools/hts/queries";
 import { transfer_hbar } from "../tools/hbar/transactions";
 import { get_all_tokens_balances } from "../tools/hts/queries/balance";
 import { get_token_holders } from "../tools/hts/queries/holders";
+import { associate_token } from "../tools/hts/transactions/associate_token";
 
 
 export default class HederaAgentKit {
@@ -86,6 +87,13 @@ export default class HederaAgentKit {
       threshold?: number,
   ): Promise<Array<TokenBalance>> {
     return get_token_holders(tokenId, networkType, threshold);
+  }
+
+  async associateToken(
+      tokenId: string,
+      networkType: HederaNetworkType,
+  ): Promise<AssociateTokenResult> {
+    return associate_token(tokenId, networkType, this.client);
   }
 
   async airdropToken(

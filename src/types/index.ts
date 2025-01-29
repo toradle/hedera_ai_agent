@@ -88,3 +88,8 @@ export type AllTokensBalancesApiResponse = {
         next: string | null; // link to next page
     };
 }
+
+export type AssociateTokenResult = {
+    status: string,
+    txHash: string,
+}
