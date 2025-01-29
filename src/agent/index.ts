@@ -1,7 +1,13 @@
-import { Client, TokenId, AccountId } from "@hashgraph/sdk"
+import { Client, TokenId, AccountId, Hbar, TransactionId } from "@hashgraph/sdk"
 import { create_token, transfer_token, airdrop_token } from "../tools"
 import { get_hbar_balance } from "../tools/hts/queries"
 import { AirdropRecipient } from "../tools/hts/transactions/airdrop"
+import { HederaNetworkType, HtsTokenDetails, TokenBalance } from "../types";
+import { get_hts_balance } from "../tools/hts/queries";
+import { get_hts_token_details } from "../tools/hts/queries";
+import { transfer_hbar } from "../tools/hbar/transactions";
+import { get_all_tokens_balances } from "../tools/hts/queries/balance";
+import { get_token_holders } from "../tools/hts/queries/holders";
 
 
 export default class HederaAgentKit {
@@ -45,8 +51,41 @@ export default class HederaAgentKit {
     )
   }
 
-  async getHbarBalance(): Promise<number> {
-    return get_hbar_balance(this.client)
+  async getHbarBalance(accountId?: string): Promise<number> {
+    const targetAccountId = accountId || this.client.operatorAccountId;
+    return get_hbar_balance(this.client, targetAccountId);
+  }
+
+  async getHtsBalance(
+      tokenId: string,
+      networkType: HederaNetworkType,
+      accountId?: string
+  ): Promise<number> {
+    const targetAccountId = accountId || this.client.operatorAccountId;
+    return get_hts_balance(tokenId, networkType, targetAccountId as string);
+  }
+
+  async getAllTokensBalances(
+      networkType: HederaNetworkType,
+      accountId?: string
+  ) {
+    const targetAccountId = accountId || this.client.operatorAccountId;
+    return get_all_tokens_balances(networkType, targetAccountId as string);
+  }
+
+  async getHtsTokenDetails(
+      tokenId: string,
+      networkType: HederaNetworkType
+  ): Promise<HtsTokenDetails> {
+    return get_hts_token_details(tokenId, networkType);
+  }
+
+  async getTokenHolders(
+      tokenId: string,
+      networkType: HederaNetworkType,
+      threshold?: number,
+  ): Promise<Array<TokenBalance>> {
+    return get_token_holders(tokenId, networkType, threshold);
   }
 
   async airdropToken(
@@ -57,6 +96,17 @@ export default class HederaAgentKit {
       tokenId,
       recipients,
       this.client
+    )
+  }
+
+  async transferHbar(
+      toAccountId: string | AccountId,
+      amount: string
+  ): Promise<TransactionId> {
+    return transfer_hbar(
+        this.client,
+        toAccountId,
+        amount,
     )
   }
 }
