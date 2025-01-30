@@ -98,3 +98,17 @@ export type AssociateTokenResult = {
     status: string,
     txHash: string,
 }
+
+export type Airdrop = {
+    amount: number;
+    receiver_id: string;
+    sender_id: string;
+    token_id: string;
+}
+
+export type PendingAirdropsApiResponse = {
+    airdrops: Airdrop[];
+    links: {
+        next: string | null;
+    };
+}

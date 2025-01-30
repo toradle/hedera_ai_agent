@@ -2,7 +2,14 @@ import {Client, TokenId, AccountId, TransactionId, PendingAirdropId} from "@hash
 import { create_token, transfer_token, airdrop_token } from "../tools"
 import { get_hbar_balance } from "../tools/hts/queries"
 import { AirdropRecipient } from "../tools/hts/transactions/airdrop"
-import { AssociateTokenResult, HederaNetworkType, HtsTokenDetails, RejectTokenResult, TokenBalance } from "../types";
+import {
+  Airdrop,
+  AssociateTokenResult,
+  HederaNetworkType,
+  HtsTokenDetails,
+  RejectTokenResult,
+  TokenBalance
+} from "../types";
 import { get_hts_balance } from "../tools/hts/queries";
 import { get_hts_token_details } from "../tools/hts/queries";
 import { transfer_hbar } from "../tools/hbar/transactions";
@@ -11,6 +18,7 @@ import { get_token_holders } from "../tools/hts/queries/holders";
 import { associate_token } from "../tools/hts/transactions/associate_token";
 import { reject_token } from "../tools/hts/transactions/reject_token";
 import {claim_airdrop} from "../tools/hts/transactions/claim_airdrop";
+import {get_pending_airdrops} from "../tools/hts/queries/pending_airdrops";
 
 
 export default class HederaAgentKit {
@@ -132,5 +140,12 @@ export default class HederaAgentKit {
       airdropId: PendingAirdropId
   ): Promise<void> {
     return claim_airdrop(this.client, airdropId)
+  }
+
+  async getPendingAirdrops(
+      accountId: string,
+      networkType: HederaNetworkType
+  ): Promise<Airdrop[]> {
+    return get_pending_airdrops(networkType, accountId)
   }
 }
