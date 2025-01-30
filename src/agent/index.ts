@@ -1,4 +1,4 @@
-import { Client, TokenId, AccountId, Hbar, TransactionId } from "@hashgraph/sdk"
+import { Client, TokenId, AccountId, TransactionId } from "@hashgraph/sdk"
 import { create_token, transfer_token, airdrop_token } from "../tools"
 import { get_hbar_balance } from "../tools/hts/queries"
 import { AirdropRecipient } from "../tools/hts/transactions/airdrop"
@@ -81,11 +81,11 @@ export default class HederaAgentKit {
   }
 
   async getTokenHolders(
-      tokenId: string,
+      tokenId: string | TokenId,
       networkType: HederaNetworkType,
       threshold?: number,
   ): Promise<Array<TokenBalance>> {
-    return get_token_holders(tokenId, networkType, threshold);
+    return get_token_holders(tokenId.toString(), networkType, threshold);
   }
 
   async airdropToken(

@@ -14,10 +14,9 @@ export const get_token_holders = async (
     let baseUrl = createBaseMirrorNodeApiUrl(networkType)
 
     // 100 results at once, endpoint data updated each 15min
-    let url: string | null = threshold
+    let url: string | null = threshold !== undefined
         ? `${baseUrl}/api/v1/tokens/${tokenId}/balances?limit=100&account.balance=gte%3A${threshold}`
-        : `${baseUrl}/api/v1/tokens/${tokenId}/balances?limit=100`;
-
+        : `${baseUrl}/api/v1/tokens/${tokenId}/balances?limit=100&account.balance=gt%3A0`;           // if no threshold set filter out wallets with 0 balances
 
     const array = new Array<TokenBalance>();
 
