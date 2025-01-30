@@ -1,11 +1,10 @@
-import { AssociateTokenResult, HederaNetworkType } from "../../../types";
-import { Client, TokenAssociateTransaction } from "@hashgraph/sdk";
+import { AssociateTokenResult } from "../../../types";
+import {Client, TokenAssociateTransaction, TokenId} from "@hashgraph/sdk";
 import { mapUint8ArrayToHexString } from "../../../utils/tx-utils";
 
 
 export const associate_token = async (
-    tokenId: string,
-    networkType: HederaNetworkType,
+    tokenId: TokenId,
     client: Client
 ): Promise<AssociateTokenResult> => {
 

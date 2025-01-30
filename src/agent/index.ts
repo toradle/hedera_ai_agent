@@ -90,10 +90,9 @@ export default class HederaAgentKit {
   }
 
   async associateToken(
-      tokenId: string,
-      networkType: HederaNetworkType,
+      tokenId: TokenId
   ): Promise<AssociateTokenResult> {
-    return associate_token(tokenId, networkType, this.client);
+    return associate_token(tokenId, this.client);
   }
 
   async airdropToken(
