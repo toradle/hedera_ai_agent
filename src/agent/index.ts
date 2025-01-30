@@ -83,11 +83,11 @@ export default class HederaAgentKit {
   }
 
   async getTokenHolders(
-      tokenId: string,
+      tokenId: string | TokenId,
       networkType: HederaNetworkType,
       threshold?: number,
   ): Promise<Array<TokenBalance>> {
-    return get_token_holders(tokenId, networkType, threshold);
+    return get_token_holders(tokenId.toString(), networkType, threshold);
   }
 
   async associateToken(
