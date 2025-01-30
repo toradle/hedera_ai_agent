@@ -93,3 +93,8 @@ export type RejectTokenResult = {
     status: string,
     txHash: string,
 }
+
+export type AssociateTokenResult = {
+    status: string,
+    txHash: string,
+}
