@@ -1,4 +1,4 @@
-import { Client, TokenId, AccountId, TransactionId } from "@hashgraph/sdk"
+import {Client, TokenId, AccountId, TransactionId, PendingAirdropId} from "@hashgraph/sdk"
 import { create_token, transfer_token, airdrop_token } from "../tools"
 import { get_hbar_balance } from "../tools/hts/queries"
 import { AirdropRecipient } from "../tools/hts/transactions/airdrop"
@@ -10,6 +10,7 @@ import { get_all_tokens_balances } from "../tools/hts/queries/balance";
 import { get_token_holders } from "../tools/hts/queries/holders";
 import { associate_token } from "../tools/hts/transactions/associate_token";
 import { reject_token } from "../tools/hts/transactions/reject_token";
+import {claim_airdrop} from "../tools/hts/transactions/claim_airdrop";
 
 
 export default class HederaAgentKit {
@@ -125,5 +126,11 @@ export default class HederaAgentKit {
         toAccountId,
         amount,
     )
+  }
+
+  async claimAirdrop(
+      airdropId: PendingAirdropId
+  ): Promise<void> {
+    return claim_airdrop(this.client, airdropId)
   }
 }
