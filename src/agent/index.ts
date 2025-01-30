@@ -2,13 +2,14 @@ import { Client, TokenId, AccountId, TransactionId } from "@hashgraph/sdk"
 import { create_token, transfer_token, airdrop_token } from "../tools"
 import { get_hbar_balance } from "../tools/hts/queries"
 import { AirdropRecipient } from "../tools/hts/transactions/airdrop"
-import { AssociateTokenResult, HederaNetworkType, HtsTokenDetails, TokenBalance } from "../types";
+import { AssociateTokenResult, HederaNetworkType, HtsTokenDetails, RejectTokenResult, TokenBalance } from "../types";
 import { get_hts_balance } from "../tools/hts/queries";
 import { get_hts_token_details } from "../tools/hts/queries";
 import { transfer_hbar } from "../tools/hbar/transactions";
 import { get_all_tokens_balances } from "../tools/hts/queries/balance";
 import { get_token_holders } from "../tools/hts/queries/holders";
 import { associate_token } from "../tools/hts/transactions/associate_token";
+import { reject_token } from "../tools/hts/transactions/reject_token";
 
 
 export default class HederaAgentKit {
@@ -104,6 +105,15 @@ export default class HederaAgentKit {
       recipients,
       this.client
     )
+  }
+
+  async rejectToken(
+      tokenId: TokenId,
+  ): Promise<RejectTokenResult> {
+    return reject_token(
+        tokenId,
+        this.client
+    );
   }
 
   async transferHbar(
