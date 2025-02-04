@@ -3,12 +3,18 @@ import { create_token, transfer_token, airdrop_token } from "../tools"
 import { get_hbar_balance } from "../tools/hts/queries"
 import { AirdropRecipient } from "../tools/hts/transactions/airdrop"
 import {
-  Airdrop, AirdropResult,
-  AssociateTokenResult, ClaimAirdropResult, CreateTokenResult,
+  Airdrop,
+  AirdropResult,
+  AssociateTokenResult,
+  ClaimAirdropResult,
+  CreateTokenResult,
   HederaNetworkType,
   HtsTokenDetails,
   RejectTokenResult,
-  TokenBalance, TransferHBARResult, TransferTokenResult
+  TokenBalance,
+  TransferHBARResult,
+  TransferTokenResult,
+  TopicInfoApiResponse
 } from "../types";
 import { get_hts_balance } from "../tools/hts/queries";
 import { get_hts_token_details } from "../tools/hts/queries";
@@ -20,6 +26,7 @@ import { reject_token } from "../tools";
 import { claim_airdrop } from "../tools";
 import { get_pending_airdrops } from "../tools/hts/queries";
 import { create_topic, delete_topic } from "../tools/hcs";
+import { get_topic_info } from "../tools/hcs/queries";
 
 
 export default class HederaAgentKit {
@@ -160,5 +167,12 @@ export default class HederaAgentKit {
       topicId: TopicId
   ): Promise<void> {
     return delete_topic(topicId, this.client)
+  }
+
+  async getTopicInfo(
+      topicId: TopicId,
+      networkType: HederaNetworkType,
+  ): Promise<TopicInfoApiResponse> {
+    return get_topic_info(topicId, networkType)
   }
 }
