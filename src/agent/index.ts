@@ -15,6 +15,7 @@ import {
   TransferHBARResult,
   TransferTokenResult,
   TopicInfoApiResponse,
+  SubmitMessageResult,
   DissociateTokenResult,
   CreateTopicResult
 } from "../types";
@@ -23,13 +24,17 @@ import { get_hts_token_details } from "../tools/hts/queries";
 import { transfer_hbar } from "../tools/hbar/transactions";
 import { get_all_tokens_balances } from "../tools/hts/queries/balance";
 import { get_token_holders } from "../tools/hts/queries";
-import { associate_token } from "../tools";
-import { reject_token } from "../tools";
-import { claim_airdrop } from "../tools";
 import { get_pending_airdrops } from "../tools/hts/queries";
-import { create_topic, delete_topic } from "../tools/hcs";
+import {
+  associate_token,
+  reject_token,
+  create_topic,
+  delete_topic,
+  submit_topic_message,
+  claim_airdrop,
+  dissociate_token
+} from "../tools";
 import { get_topic_info } from "../tools/hcs/queries";
-import { dissociate_token } from "../tools";
 
 
 export default class HederaAgentKit {
@@ -170,7 +175,7 @@ export default class HederaAgentKit {
       topicMemo: string,
       isSubmitKey: boolean,
   ): Promise<CreateTopicResult> {
-    return create_topic(topicMemo, this.client, isSubmitKey)
+    return create_topic(topicMemo, this.client, isSubmitKey);
   }
 
   async deleteTopic(
@@ -184,5 +189,12 @@ export default class HederaAgentKit {
       networkType: HederaNetworkType,
   ): Promise<TopicInfoApiResponse> {
     return get_topic_info(topicId, networkType)
+  }
+
+  async submitTopicMessage(
+      topicId: TopicId,
+      message: string,
+  ): Promise<SubmitMessageResult> {
+    return submit_topic_message(topicId, message, this.client)
   }
 }

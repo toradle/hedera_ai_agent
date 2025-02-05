@@ -140,6 +140,11 @@ export type TransferHBARResult = {
     txHash: string,
 }
 
+export type SubmitMessageResult = {
+    status: string,
+    txHash: string,
+}
+
 export type CreateTopicResult = {
     status: string,
     txHash: string,
