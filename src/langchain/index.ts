@@ -21,12 +21,13 @@ initialSupply: number, the initial supply of the token e.g. 100000
     try {
       const parsedInput = JSON.parse(input);
 
-      const tokenId = await this.hederaKit.createFT(
-        parsedInput.name,
-        parsedInput.symbol,
-        parsedInput.decimals,
-        parsedInput.initialSupply
-      );
+      const tokenId = (await this.hederaKit.createFT(
+          parsedInput.name,
+          parsedInput.symbol,
+          parsedInput.decimals,
+          parsedInput.initialSupply,
+          parsedInput.isSupplyKey
+      )).tokenId;
 
       return JSON.stringify({
         status: "success",
