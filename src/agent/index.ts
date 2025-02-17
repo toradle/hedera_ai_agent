@@ -20,7 +20,8 @@ import {
   approve_asset_allowance,
   transfer_hbar,
   get_topic_info,
-  get_topic_messages
+  get_topic_messages,
+  mint_nft
 } from "../tools";
 import {
   Airdrop,
@@ -43,9 +44,10 @@ import {
   DeleteTopicResult,
   AssetAllowanceResult,
   CreateNFTOptions,
-  CreateFTOptions
+  CreateFTOptions,
+  MintNFTResult
 } from "../types";
-import {AirdropRecipient} from "../tools/hts/transactions/airdrop";
+import { AirdropRecipient } from "../tools/hts/transactions/airdrop";
 
 
 export default class HederaAgentKit {
@@ -171,6 +173,17 @@ export default class HederaAgentKit {
         amount,
         this.client
     );
+  }
+
+  async mintNFTToken(
+      tokenId: TokenId,
+      tokenMetadata: Uint8Array<ArrayBufferLike>
+  ): Promise<MintNFTResult> {
+    return mint_nft(
+        tokenId,
+        tokenMetadata,
+        this.client
+    )
   }
 
   async transferHbar(
