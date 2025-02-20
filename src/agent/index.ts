@@ -1,7 +1,28 @@
-import { Client, TokenId, AccountId, PendingAirdropId, TopicId } from "@hashgraph/sdk"
-import { create_token, transfer_token, airdrop_token } from "../tools"
-import { get_hbar_balance } from "../tools/hts/queries"
-import { AirdropRecipient } from "../tools/hts/transactions/airdrop"
+import { Client, TokenId, AccountId, PendingAirdropId, TopicId, TokenType } from "@hashgraph/sdk";
+import {
+  create_token,
+  transfer_token,
+  airdrop_token,
+  get_hbar_balance,
+  get_hts_balance,
+  get_hts_token_details,
+  get_all_tokens_balances,
+  get_token_holders,
+  get_pending_airdrops,
+  associate_token,
+  reject_token,
+  create_topic,
+  delete_topic,
+  submit_topic_message,
+  claim_airdrop,
+  dissociate_token,
+  mint_token,
+  approve_asset_allowance,
+  transfer_hbar,
+  get_topic_info,
+  get_topic_messages,
+  mint_nft
+} from "../tools";
 import {
   Airdrop,
   AirdropResult,
@@ -18,25 +39,15 @@ import {
   SubmitMessageResult,
   DissociateTokenResult,
   CreateTopicResult,
-  MintTokenResult
+  MintTokenResult,
+  HCSMessage,
+  DeleteTopicResult,
+  AssetAllowanceResult,
+  CreateNFTOptions,
+  CreateFTOptions,
+  MintNFTResult
 } from "../types";
-import { get_hts_balance } from "../tools/hts/queries";
-import { get_hts_token_details } from "../tools/hts/queries";
-import { transfer_hbar } from "../tools/hbar/transactions";
-import { get_all_tokens_balances } from "../tools/hts/queries/balance";
-import { get_token_holders } from "../tools/hts/queries";
-import { get_pending_airdrops } from "../tools/hts/queries";
-import {
-  associate_token,
-  reject_token,
-  create_topic,
-  delete_topic,
-  submit_topic_message,
-  claim_airdrop,
-  dissociate_token
-} from "../tools";
-import { get_topic_info } from "../tools/hcs/queries";
-import { mint_token } from "../tools";
+import { AirdropRecipient } from "../tools/hts/transactions/airdrop";
 
 
 export default class HederaAgentKit {
@@ -52,21 +63,23 @@ export default class HederaAgentKit {
     this.client = Client.forNetwork(network).setOperator(accountId, privateKey)
   }
 
-  async createFT(
-    name: string,
-    symbol: string,
-    decimals: number,
-    initialSupply: number,
-    isSupplyKey?: boolean,
-  ): Promise<CreateTokenResult> {
-    return create_token(
-      name,
-      symbol,
-      decimals,
-      initialSupply,
-      isSupplyKey || false,
-      this.client
-    )
+  async createFT(options: CreateFTOptions): Promise<CreateTokenResult> {
+    return create_token({
+      ...options,
+      tokenType: TokenType.FungibleCommon,
+      client: this.client,
+    });
+  }
+
+  async createNFT(options: CreateNFTOptions): Promise<CreateTokenResult> {
+    return create_token({
+      ...options,
+      decimals: 0,
+      initialSupply: 0,
+      isSupplyKey: true,
+      tokenType: TokenType.NonFungibleUnique,
+      client: this.client,
+    });
   }
 
   async transferToken(
@@ -162,6 +175,17 @@ export default class HederaAgentKit {
     );
   }
 
+  async mintNFTToken(
+      tokenId: TokenId,
+      tokenMetadata: Uint8Array<ArrayBufferLike>
+  ): Promise<MintNFTResult> {
+    return mint_nft(
+        tokenId,
+        tokenMetadata,
+        this.client
+    )
+  }
+
   async transferHbar(
       toAccountId: string | AccountId,
       amount: string
@@ -195,7 +219,7 @@ export default class HederaAgentKit {
 
   async deleteTopic(
       topicId: TopicId
-  ): Promise<void> {
+  ): Promise<DeleteTopicResult> {
     return delete_topic(topicId, this.client)
   }
 
@@ -211,5 +235,22 @@ export default class HederaAgentKit {
       message: string,
   ): Promise<SubmitMessageResult> {
     return submit_topic_message(topicId, message, this.client)
+  }
+
+  async getTopicMessages(
+      topicId: TopicId,
+      networkType: HederaNetworkType,
+      lowerTimestamp?: number,
+      upperTimestamp?: number,
+  ): Promise<Array<HCSMessage>> {
+    return get_topic_messages(topicId, networkType, lowerTimestamp, upperTimestamp);
+  }
+
+  async approveAssetAllowance(
+      spenderAccount: AccountId,
+      amount: number,
+      tokenId?: TokenId,
+  ): Promise<AssetAllowanceResult> {
+    return approve_asset_allowance(spenderAccount, tokenId, amount, this.client);
   }
 }
