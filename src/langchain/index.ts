@@ -1,11 +1,12 @@
 import { Tool } from "@langchain/core/tools";
 import HederaAgentKit from "../agent";
 import * as dotenv from "dotenv";
-import { HederaNetworkType } from "../types";
-import { AccountId, PendingAirdropId, TokenId } from "@hashgraph/sdk";
+import {HederaNetworkType} from "../types";
+import { AccountId, PendingAirdropId, TokenId, TopicId } from "@hashgraph/sdk";
+import { OpenAIChat } from "@langchain/openai";
+
 
 dotenv.config();
-
 export class HederaCreateFungibleTokenTool extends Tool {
   name = 'hedera_create_fungible_token'
 
@@ -169,7 +170,8 @@ If no input is given (empty JSON '{}'), it returns the balance of the connected 
 `
 
 
-  constructor(private hederaKit: HederaAgentKit) {
+constructor(private hederaKit: HederaAgentKit) {
+
     super()
   }
 
@@ -224,19 +226,20 @@ If no account ID is given, it returns the balance for the connected account.
       if (!parsedInput.tokenId) {
         throw new Error("tokenId is required");
       }
+
       if (!process.env.HEDERA_NETWORK) {
         throw new Error("HEDERA_NETWORK environment variable is required");
       }
 
       const balance = await this.hederaKit.getHtsBalance(
-        parsedInput.tokenId,
-        process.env.HEDERA_NETWORK as HederaNetworkType,
-        parsedInput?.accountId
+          parsedInput.tokenId,
+          process.env.HEDERA_NETWORK as HederaNetworkType,
+          parsedInput?.accountId
       )
 
       const details = await this.hederaKit.getHtsTokenDetails(
-        parsedInput?.tokenId,
-        process.env.HEDERA_NETWORK as HederaNetworkType
+          parsedInput?.tokenId,
+          process.env.HEDERA_NETWORK as HederaNetworkType
       )
 
       return JSON.stringify({
@@ -304,7 +307,7 @@ Example usage:
   }
 }
 
-export class HederaAssociateTokenTool extends Tool {
+export class HederaAssociateTokenTool extends Tool { 
   name = 'hedera_associate_token'
 
   description = `Associate a token to an account on Hedera
@@ -625,7 +628,7 @@ Example usage:
       const airdrop = await this.hederaKit.getPendingAirdrops(
         parsedInput.accountId,
         process.env.HEDERA_NETWORK as HederaNetworkType
-      );
+      ); 
 
       return JSON.stringify({
         status: "success",
@@ -730,6 +733,221 @@ Example usage:
   }
 }
 
+export class HederaCreateTopicTool extends Tool {
+  name = 'hedera_create_topic'
+
+  description = `Create a topic on Hedera
+Inputs ( input is a JSON string ):
+name: string, the name of the topic e.g. My Topic,
+isSubmitKey: boolean, decides whether submit key should be set, false if not passed
+Example usage:
+1. Create a topic with name "My Topic" and submit key:
+  '{
+    "name": "My Topic",
+    "isSubmitKey": true
+  }'
+`
+
+  constructor(private hederaKit: HederaAgentKit) {
+    super()
+  }
+
+  protected async _call(input: string): Promise<string> {
+    try {
+      const parsedInput = JSON.parse(input);
+      const topic = await this.hederaKit.createTopic(
+        parsedInput.name,
+        parsedInput.isSubmitKey
+      );
+      return JSON.stringify({
+        status: "success",
+        message: "Topic created",
+        topic: topic
+      });
+    } catch (error: any) {
+      return JSON.stringify({
+        status: "error",
+        message: error.message,
+        code: error.code || "UNKNOWN_ERROR",
+      });
+    }
+  }
+}
+export class HederaDeleteTopicTool extends Tool {
+  name = 'hedera_delete_topic'
+
+  description = `Delete a topic on Hedera
+Inputs ( input is a JSON string ):
+topicId: string, the ID of the topic to delete e.g. 0.0.123456,
+Example usage:
+1. Delete topic 0.0.123456:
+  '{
+    "topicId": "0.0.123456"
+  }'
+`
+
+  constructor(private hederaKit: HederaAgentKit) {
+    super()
+  }
+
+  protected async _call(input: string): Promise<string> {
+    try {
+      const parsedInput = JSON.parse(input);
+      await this.hederaKit.deleteTopic(
+        TopicId.fromString(parsedInput.topicId)
+      );
+      return JSON.stringify({
+        status: "success",
+        message: "Topic deleted",
+        topicId: parsedInput.topicId
+      });
+    } catch (error: any) {
+      return JSON.stringify({
+        status: "error",
+        message: error.message,
+        code: error.code || "UNKNOWN_ERROR",
+      });
+    }
+  }
+}
+export class HederaSubmitTopicMessageTool extends Tool {
+  name = 'hedera_submit_topic_message'
+
+  description = `Submit a message to a topic on Hedera
+Inputs ( input is a JSON string ):
+topicId: string, the ID of the topic to submit the message to e.g. 0.0.123456,
+message: string, the message to submit to the topic e.g. "Hello, Hedera!"
+Example usage:
+1. Submit a message to topic 0.0.123456:
+  '{
+    "topicId": "0.0.123456",
+    "message": "Hello, Hedera!"
+  }'
+`
+
+  constructor(private hederaKit: HederaAgentKit) {
+    super()
+  }
+
+  protected async _call(input: string): Promise<string> {
+    try {
+      const parsedInput = JSON.parse(input);
+      await this.hederaKit.submitTopicMessage(
+        TopicId.fromString(parsedInput.topicId),
+        parsedInput.message
+      );
+      return JSON.stringify({
+        status: "success",
+        message: "Message submitted",
+        topicId: parsedInput.topicId,
+        topicMessage: parsedInput.message
+      });
+    } catch (error: any) {
+      return JSON.stringify({
+        status: "error",
+        message: error.message,
+        code: error.code || "UNKNOWN_ERROR",
+      });
+    }
+  }
+}
+
+export class HederaGetTopicInfoTool extends Tool {
+  name = 'hedera_get_topic_info'
+
+  description = `Get information about a topic on Hedera
+Inputs ( input is a JSON string ):
+topicId: string, the ID of the topic to get the information for e.g. 0.0.123456,
+Example usage:
+1. Get information about topic 0.0.123456:
+  '{
+    "topicId": "0.0.123456"
+  }'
+`
+
+  constructor(private hederaKit: HederaAgentKit) {
+    super()
+  }
+
+  protected async _call(input: string): Promise<string> {
+    try {
+      const parsedInput = JSON.parse(input);
+      const topicInfo = await this.hederaKit.getTopicInfo(
+        TopicId.fromString(parsedInput.topicId),
+        this.hederaKit.client.network.type as HederaNetworkType
+      );
+      return JSON.stringify({
+        status: "success",
+        message: "Topic information retrieved",
+        topicInfo: topicInfo
+      });
+    } catch (error: any) {
+      return JSON.stringify({
+        status: "error",
+        message: error.message,
+        code: error.code || "UNKNOWN_ERROR",
+      });
+    }
+  }
+}
+export class HederaGetTopicMessagesTool extends Tool {
+  name = 'hedera_get_topic_messages'
+
+  description = `Get messages from a topic on Hedera within an optional time range.
+
+Inputs (input is a JSON string):
+- topicId: string, the ID of the topic to get the messages from e.g. "0.0.123456"
+- lowerThreshold: string (optional), ISO date string for the start of the time range e.g. "2025-01-02T00:00:00.000Z"
+- upperThreshold: string (optional), ISO date string for the end of the time range e.g. "2025-01-20T12:50:30.123Z"
+
+Example usage:
+1. Get all messages from topic 0.0.123456:
+  '{
+    "topicId": "0.0.123456"
+  }'
+
+2. Get messages from topic after January 2, 2025:
+  '{
+    "topicId": "0.0.123456",
+    "lowerThreshold": "2025-01-02T00:00:00.000Z"
+  }'
+
+3. Get messages between two dates: 2024-03-05T13:40:00.000Z and 2025-01-20T12:50:30.123Z
+  '{
+    "topicId": "0.0.123456", 
+    "lowerThreshold": "2024-03-05T13:40:00.000Z",
+    "upperThreshold": "2025-01-20T12:50:30.123Z"
+  }'
+`
+
+  constructor(private hederaKit: HederaAgentKit) {
+    super()
+  }
+
+  protected async _call(input: string): Promise<string> {
+    try {
+      const parsedInput = JSON.parse(input);
+      const messages = await this.hederaKit.getTopicMessages(
+        TopicId.fromString(parsedInput.topicId),
+        parsedInput.lowerThreshold,
+        parsedInput.upperThreshold
+      );
+      return JSON.stringify({
+        status: "success",
+        message: "Topic messages retrieved",
+        messages: messages
+      });
+    } catch (error: any) {
+      return JSON.stringify({
+        status: "error",
+        message: error.message,
+        code: error.code || "UNKNOWN_ERROR",
+      });
+    }
+  }
+}
+
+
 export function createHederaTools(hederaKit: HederaAgentKit): Tool[] {
   return [
     new HederaCreateFungibleTokenTool(hederaKit),
@@ -748,5 +966,10 @@ export function createHederaTools(hederaKit: HederaAgentKit): Tool[] {
     new HederaGetPendingAirdropTool(hederaKit),
     new HederaGetAllTokenBalancesTool(hederaKit),
     new HederaGetTokenHoldersTool(hederaKit),
+    new HederaCreateTopicTool(hederaKit),
+    new HederaDeleteTopicTool(hederaKit),
+    new HederaSubmitTopicMessageTool(hederaKit),
+    new HederaGetTopicInfoTool(hederaKit),
+    new HederaGetTopicMessagesTool(hederaKit)
   ]
 }
