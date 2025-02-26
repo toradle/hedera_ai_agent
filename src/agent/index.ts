@@ -61,6 +61,7 @@ import { AirdropRecipient } from "../tools/hts/transactions/airdrop";
 export default class HederaAgentKit {
 
   public client: Client
+  readonly network: 'mainnet' | 'testnet' | 'previewnet' | 'localnode'
 
   constructor(
     existingClient: Client,
@@ -73,16 +74,18 @@ export default class HederaAgentKit {
   constructor(
     clientOrAccountId: Client | AccountId | string,
     privateKey?: PrivateKey | string,
-    network?: 'mainnet' | 'testnet' | 'previewnet' | 'localnode'
+    network: 'mainnet' | 'testnet' | 'previewnet' | 'localnode' = "mainnet"
   ) {
     if (this.isClient(clientOrAccountId)) {
       this.client = clientOrAccountId;
     } else {
-      network = network || 'mainnet';
       // @ts-ignore
       this.client = Client.forNetwork(network).setOperator(clientOrAccountId, privateKey);
     }
+
+    this.network = network;
   }
+
 
   private isClient(x: any): x is Client {
     return typeof x.setOperator === 'function';

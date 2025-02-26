@@ -1,12 +1,15 @@
 import { Tool } from "@langchain/core/tools";
 import HederaAgentKit from "../agent";
 import * as dotenv from "dotenv";
-import {HederaNetworkType} from "../types";
+import { HederaNetworkType } from "../types";
 import { AccountId, PendingAirdropId, TokenId, TopicId } from "@hashgraph/sdk";
-import { OpenAIChat } from "@langchain/openai";
-
+import { fromBaseToDisplayUnit } from "../utils/format-units";
+import { toBaseUnit } from "../utils/hts-format-utils";
+import {getHTSDecimals} from "../utils/hts-format-utils";
+import { convertStringToTimestamp } from "../utils/date-format-utils";
 
 dotenv.config();
+// Tool for creating fungible tokens
 export class HederaCreateFungibleTokenTool extends Tool {
   name = 'hedera_create_fungible_token'
 
@@ -15,7 +18,7 @@ Inputs ( input is a JSON string ):
 name: string, the name of the token e.g. My Token,
 symbol: string, the symbol of the token e.g. MT,
 decimals: number, the amount of decimals of the token,
-initialSupply: number, the initial supply of the token e.g. 100000,
+initialSupply: number, the initial supply of the token e.g. (10.55, 10,55, 10.0, 10), given in display units
 isSupplyKey: boolean, decides whether supply key should be set, false if not passed
 isMetadataKey: boolean, decides whether metadata key should be set, false if not passed
 isAdminKey: boolean, decides whether admin key should be set, false if not passed
@@ -28,27 +31,32 @@ tokenMetadata: string, containing metadata associated with this token, empty str
   }
 
   protected async _call(input: string): Promise<string> {
+    console.log('hedera_create_fungible_token tool has been called')
     try {
       const parsedInput = JSON.parse(input);
 
-      const tokenId = (await this.hederaKit.createFT({
+      const initialSupplyInBaseUnit = parsedInput.initialSupply * 10 ** parsedInput.decimals;
+
+      const result = (await this.hederaKit.createFT({
         name: parsedInput.name,
         symbol: parsedInput.symbol,
         decimals: parsedInput.decimals,
-        initialSupply: parsedInput.initialSupply,
+        initialSupply: initialSupplyInBaseUnit,
         isSupplyKey: parsedInput.isSupplyKey,
         isAdminKey: parsedInput.isAdminKey,
         isMetadataKey: parsedInput.isMetadataKey,
         memo: parsedInput.memo,
-        tokenMetadata: new TextEncoder().encode(parsedInput.tokenMetadata),
-      })).tokenId;
+        tokenMetadata: new TextEncoder().encode(parsedInput.tokenMetadata), // encoding to Uint8Array
+      }));
 
       return JSON.stringify({
         status: "success",
         message: "Token creation successful",
-        initialSupply: parsedInput.initialSupply,
-        tokenId: tokenId.toString(),
-        solidityAddress: tokenId.toSolidityAddress(),
+        initialSupply: parsedInput.initialSupply, // should be in display units
+        tokenId: result.tokenId.toString(),
+        decimals: parsedInput.decimals,
+        solidityAddress: result.tokenId.toSolidityAddress(),
+        txHash: result.txHash
       });
     } catch (error: any) {
       return JSON.stringify({
@@ -60,19 +68,23 @@ tokenMetadata: string, containing metadata associated with this token, empty str
   }
 }
 
-// FIXME: works well in isolation but normally usually createFT is called instead of createNFT
+// Tool for creating non-fungible tokens (nft)
 export class HederaCreateNonFungibleTokenTool extends Tool {
-  name = 'hedera_create_fungible_token'
+  name = 'hedera_create_non_fungible_token'
 
   description = `Create a non fungible (NFT) token on Hedera
 Inputs ( input is a JSON string ):
 name: string, the name of the token e.g. My Token,
 symbol: string, the symbol of the token e.g. MT,
-maxSupply: number, the max supply of the token e.g. 100000,
+maxSupply: number, the max supply of the token e.g. 100000, if not given set to null
 isMetadataKey: boolean, decides whether metadata key should be set, false if not passed
 isAdminKey: boolean, decides whether admin key should be set, false if not passed
 memo: string, containing memo associated with this token, empty string if not passed
 tokenMetadata: string, containing metadata associated with this token, empty string if not passed
+
+**note**
+Passing tokenMetadata string does not mean setting isMetadataKey to true.
+Keys must be set explicitly
 `
 
   constructor(private hederaKit: HederaAgentKit) {
@@ -81,24 +93,27 @@ tokenMetadata: string, containing metadata associated with this token, empty str
 
   protected async _call(input: string): Promise<string> {
     try {
+      console.log('hedera_create_non_fungible_token tool has been called')
+
       const parsedInput = JSON.parse(input);
 
-      const tokenId = (await this.hederaKit.createNFT({
+      const result = (await this.hederaKit.createNFT({
         name: parsedInput.name,
         symbol: parsedInput.symbol,
-        maxSupply: parsedInput.maxSupply,
+        maxSupply: parsedInput.maxSupply, // given in base unit, NFTs have decimals equal zero so display and base units are the same
         isAdminKey: parsedInput.isAdminKey,
         isMetadataKey: parsedInput.isMetadataKey,
         memo: parsedInput.memo,
-        tokenMetadata: new TextEncoder().encode(parsedInput.tokenMetadata),
-      })).tokenId;
+        tokenMetadata: new TextEncoder().encode(parsedInput.tokenMetadata), // encoding to Uint8Array
+      }));
 
       return JSON.stringify({
         status: "success",
         message: "NFT Token creation successful",
         initialSupply: parsedInput.initialSupply,
-        tokenId: tokenId.toString(),
-        solidityAddress: tokenId.toSolidityAddress(),
+        tokenId: result.tokenId.toString(),
+        solidityAddress: result.tokenId.toSolidityAddress(),
+        txHash: result.txHash
       });
     } catch (error: any) {
       return JSON.stringify({
@@ -110,6 +125,7 @@ tokenMetadata: string, containing metadata associated with this token, empty str
   }
 }
 
+// Tool for transferring HTS tokens
 export class HederaTransferTokenTool extends Tool {
   name = 'hedera_transfer_token'
 
@@ -117,7 +133,7 @@ export class HederaTransferTokenTool extends Tool {
 Inputs ( input is a JSON string ):
 tokenId: string, the ID of the token to transfer e.g. 0.0.123456,
 toAccountId: string, the account ID to transfer to e.g. 0.0.789012,
-amount: number, the amount of tokens to transfer e.g. 100
+amount: number, the amount of tokens to transfer e.g. 100 in base unit
 `
 
   constructor(private hederaKit: HederaAgentKit) {
@@ -126,20 +142,31 @@ amount: number, the amount of tokens to transfer e.g. 100
 
   protected async _call(input: string): Promise<string> {
     try {
-      const parsedInput = JSON.parse(input);
+      console.log('hedera_transfer_token tool has been called')
 
-      await this.hederaKit.transferToken(
+      const parsedInput = JSON.parse(input);
+      const amount = await toBaseUnit(
+        parsedInput.tokenId,
+        parsedInput.amount,
+        this.hederaKit.network
+      );
+
+      const successResponse = await this.hederaKit.transferToken(
         parsedInput.tokenId,
         parsedInput.toAccountId,
-        parsedInput.amount
+        Number(amount.toString()) // given in base unit
       );
+
+      const decimals = getHTSDecimals(parsedInput.tokenId, process.env.HEDERA_NETWORK as HederaNetworkType);
 
       return JSON.stringify({
         status: "success",
         message: "Token transfer successful",
         tokenId: parsedInput.tokenId,
         toAccountId: parsedInput.toAccountId,
-        amount: parsedInput.amount
+        amount: parsedInput.amount,
+        txHash: successResponse.txHash,
+        decimals: decimals,
       });
     } catch (error: any) {
       return JSON.stringify({
@@ -151,6 +178,7 @@ amount: number, the amount of tokens to transfer e.g. 100
   }
 }
 
+// Tool for querying HBAR balance
 export class HederaGetBalanceTool extends Tool {
   name = 'hedera_get_hbar_balance'
 
@@ -171,12 +199,13 @@ If no input is given (empty JSON '{}'), it returns the balance of the connected 
 
 
 constructor(private hederaKit: HederaAgentKit) {
-
     super()
   }
 
   protected async _call(input: string): Promise<string> {
     try {
+      console.log('hedera_get_hbar_balance tool has been called')
+
       const parsedInput = JSON.parse(input);
 
       const balance = await this.hederaKit.getHbarBalance(parsedInput?.accountId);
@@ -196,10 +225,11 @@ constructor(private hederaKit: HederaAgentKit) {
   }
 }
 
+// Tool for querying HBAR balance
 export class HederaGetHtsBalanceTool extends Tool {
   name = 'hedera_get_hts_balance'
 
-  description = `Retrieves the balance of a specified Hedera Token Service (HTS) token for a given account.  
+  description = `Retrieves the balance of a specified Hedera Token Service (HTS) token for a given account in base unit.  
 If an account ID is provided, it returns the balance of that account.  
 If no account ID is given, it returns the balance for the connected account.
 
@@ -222,30 +252,31 @@ If no account ID is given, it returns the balance for the connected account.
 
   protected async _call(input: string): Promise<string> {
     try {
+      console.log('hedera_get_hts_balance tool has been called')
+
       const parsedInput = JSON.parse(input);
       if (!parsedInput.tokenId) {
         throw new Error("tokenId is required");
       }
 
-      if (!process.env.HEDERA_NETWORK) {
-        throw new Error("HEDERA_NETWORK environment variable is required");
-      }
-
       const balance = await this.hederaKit.getHtsBalance(
           parsedInput.tokenId,
-          process.env.HEDERA_NETWORK as HederaNetworkType,
+          this.hederaKit.network,
           parsedInput?.accountId
       )
-
+      
       const details = await this.hederaKit.getHtsTokenDetails(
-          parsedInput?.tokenId,
-          process.env.HEDERA_NETWORK as HederaNetworkType
+        parsedInput?.tokenId,
+        this.hederaKit.network
       )
+      
+      const balanceInDisplayUnits = fromBaseToDisplayUnit(balance, Number(details.decimals));
 
       return JSON.stringify({
         status: "success",
-        balance: balance,
-        unit: details.symbol
+        balance: balanceInDisplayUnits, 
+        unit: details.symbol,
+        decimals: details.decimals
       });
     } catch (error: any) {
       return JSON.stringify({
@@ -257,6 +288,7 @@ If no account ID is given, it returns the balance for the connected account.
   }
 }
 
+// Tool for creating airdrops of HTS tokens
 export class HederaAirdropTokenTool extends Tool {
   name = 'hedera_airdrop_token'
 
@@ -265,7 +297,7 @@ Inputs ( input is a JSON string ):
 tokenId: string, the ID of the token to airdrop e.g. 0.0.123456,
 recipients: array of objects containing:
   - accountId: string, the account ID to send tokens to e.g. 0.0.789012
-  - amount: number, the amount of tokens to send e.g. 100
+  - amount: number, the amount of tokens to send e.g. 100, given in display units
 Example usage:
 1. Airdrop 100 tokens to account 0.0.789012 and 200 tokens to account 0.0.789013:
   '{
@@ -283,11 +315,23 @@ Example usage:
 
   protected async _call(input: string): Promise<string> {
     try {
-      const parsedInput = JSON.parse(input);
+      console.log('hedera_airdrop_token token tool has been called')
 
-      await this.hederaKit.airdropToken(
+      const parsedInput = JSON.parse(input);
+      const inputRecipients = parsedInput.recipients as { accountId: string, amount: number }[];
+
+      const recipientsWithAmountInBaseUnits = await Promise.all(inputRecipients.map(async (r: any) => ({
+        accountId: r.accountId,
+        amount: Number((await toBaseUnit(
+          parsedInput.tokenId,
+          r.amount,
+          this.hederaKit.network
+        )).toString()),
+      })));
+      
+      const result = await this.hederaKit.airdropToken(
         parsedInput.tokenId,
-        parsedInput.recipients
+        recipientsWithAmountInBaseUnits // token amounts given in base units
       );
 
       return JSON.stringify({
@@ -295,7 +339,8 @@ Example usage:
         message: "Token airdrop successful",
         tokenId: parsedInput.tokenId,
         recipientCount: parsedInput.recipients.length,
-        totalAmount: parsedInput.recipients.reduce((sum: number, r: any) => sum + r.amount, 0)
+        totalAmount: parsedInput.recipients.reduce((sum: number, r: any) => sum + r.amount, 0), // in display units
+        txHash: result.txHash
       });
     } catch (error: any) {
       return JSON.stringify({
@@ -307,7 +352,8 @@ Example usage:
   }
 }
 
-export class HederaAssociateTokenTool extends Tool { 
+// Tool for association account with HTS token
+export class HederaAssociateTokenTool extends Tool {
   name = 'hedera_associate_token'
 
   description = `Associate a token to an account on Hedera
@@ -326,16 +372,19 @@ Example usage:
 
   protected async _call(input: string): Promise<string> {
     try {
+      console.log('hedera_associate_token token tool has been called')
+
       const parsedInput = JSON.parse(input);
 
-      await this.hederaKit.associateToken(
+      const result = await this.hederaKit.associateToken(
         parsedInput.tokenId
       );
 
       return JSON.stringify({
         status: "success",
         message: "Token association successful",
-        tokenId: parsedInput.tokenId
+        tokenId: parsedInput.tokenId,
+        txHash: result.txHash
       });
     } catch (error: any) {
       return JSON.stringify({
@@ -347,6 +396,7 @@ Example usage:
   }
 }
 
+// Tool for dissociation account with HTS token
 export class HederaDissociateTokenTool extends Tool {
   name = 'hedera_dissociate_token'
 
@@ -366,16 +416,19 @@ Example usage:
 
   protected async _call(input: string): Promise<string> {
     try {
+      console.log('hedera_dissociate_token token tool has been called')
+
       const parsedInput = JSON.parse(input);
 
-      await this.hederaKit.dissociateToken(
+      const result = await this.hederaKit.dissociateToken(
         parsedInput.tokenId
       );
 
       return JSON.stringify({
         status: "success",
         message: "Token dissociation successful",
-        tokenId: parsedInput.tokenId
+        tokenId: parsedInput.tokenId,
+        txHash: result.txHash
       });
     } catch (error: any) {
       return JSON.stringify({
@@ -387,6 +440,7 @@ Example usage:
   }
 }
 
+// Tool for rejecting HTS token
 export class HederaRejectTokenTool extends Tool {
   name = 'hedera_reject_token'
 
@@ -406,16 +460,19 @@ Example usage:
 
   protected async _call(input: string): Promise<string> {
     try {
+      console.log('hedera_reject_token tool has been called')
+
       const parsedInput = JSON.parse(input);
 
-      await this.hederaKit.rejectToken(
+      const result = await this.hederaKit.rejectToken(
         TokenId.fromString(parsedInput.tokenId)
       );
 
       return JSON.stringify({
         status: "success",
         message: "Token rejection successful",
-        tokenId: parsedInput.tokenId
+        tokenId: parsedInput.tokenId,
+        txHash: result.txHash
       });
     } catch (error: any) {
       return JSON.stringify({
@@ -427,6 +484,7 @@ Example usage:
   }
 }
 
+// Tool for minting fungible tokens
 export class HederaMintFungibleTokenTool extends Tool {
   name = 'hedera_mint_fungible_token'
 
@@ -448,18 +506,27 @@ Example usage:
 
   protected async _call(input: string): Promise<string> {
     try {
+      console.log('hedera_mint_fungible_token tool has been called')
+
       const parsedInput = JSON.parse(input);
 
-      await this.hederaKit.mintToken(
+      const amountInBaseUnit = Number((await toBaseUnit(
         parsedInput.tokenId,
-        parsedInput.amount
+        parsedInput.amount,
+        this.hederaKit.network
+      )).toString());
+
+      const result = await this.hederaKit.mintToken(
+        parsedInput.tokenId,
+        amountInBaseUnit // given in base units
       );
 
       return JSON.stringify({
         status: "success",
         message: "Token minting successful",
         tokenId: parsedInput.tokenId,
-        amount: parsedInput.amount
+        amount: parsedInput.amount, // in display units
+        txHash: result.txHash
       });
     } catch (error: any) {
       return JSON.stringify({
@@ -470,8 +537,10 @@ Example usage:
     }
   }
 }
+
+// Tool for sending HBAR
 export class HederaTransferHbarTool extends Tool {
-  name = 'hedera_transfer_hbar'
+  name = 'hedera_transfer_native_hbar_token'
 
   description = `Transfer HBAR to an account on Hedera
 Inputs ( input is a JSON string ):
@@ -491,10 +560,11 @@ Example usage:
 
   protected async _call(input: string): Promise<string> {
     try {
+      console.log('hedera_transfer_native_hbar_token tool has been called');
       console.log(input);
       const parsedInput = JSON.parse(input);
 
-      await this.hederaKit.transferHbar(
+      const result = await this.hederaKit.transferHbar(
         parsedInput.toAccountId,
         parsedInput.amount
       );
@@ -502,7 +572,8 @@ Example usage:
         status: "success",
         message: "HBAR transfer successful",
         toAccountId: parsedInput.toAccountId,
-        amount: parsedInput.amount
+        amount: parsedInput.amount,
+        txHash: result.txHash
       });
     } catch (error: any) {
       return JSON.stringify({
@@ -513,6 +584,8 @@ Example usage:
     }
   }
 }
+
+// Tool for minting NFT tokens
 export class HederaMintNFTTool extends Tool {
   name = 'hedera_mint_nft'
 
@@ -535,9 +608,11 @@ Example usage:
 
   protected async _call(input: string): Promise<string> {
     try {
+      console.log('hedera_mint_nft tool has been called');
+
       const parsedInput = JSON.parse(input);
 
-      await this.hederaKit.mintNFTToken(
+      const result = await this.hederaKit.mintNFTToken(
         parsedInput.tokenId,
         parsedInput.tokenMetadata
       );
@@ -546,7 +621,8 @@ Example usage:
         status: "success",
         message: "NFT minting successful",
         tokenId: parsedInput.tokenId,
-        tokenMetadata: parsedInput.tokenMetadata
+        tokenMetadata: new TextEncoder().encode(parsedInput.tokenMetadata), // encoding to Uint8Array
+        txHash: result.txHash
       });
     } catch (error: any) {
       return JSON.stringify({
@@ -557,6 +633,8 @@ Example usage:
     }
   }
 }
+
+// Tool for claiming airdrops
 export class HederaClaimAirdropTool extends Tool {
   name = 'hedera_claim_airdrop'
 
@@ -578,13 +656,15 @@ Example usage:
 
   protected async _call(input: string): Promise<string> {
     try {
+      console.log('hedera_claim_airdrop tool has been called');
+
       const parsedInput = JSON.parse(input);
       const airdropId = new PendingAirdropId({
         tokenId: TokenId.fromString(parsedInput.tokenId),
         senderId: AccountId.fromString(parsedInput.senderAccountId),
         receiverId: this.hederaKit.client.operatorAccountId!
       });
-      await this.hederaKit.claimAirdrop(
+      const result = await this.hederaKit.claimAirdrop(
         airdropId
       );
 
@@ -593,7 +673,8 @@ Example usage:
         message: "Airdrop claim successful",
         tokenId: parsedInput.tokenId,
         senderAccountId: parsedInput.senderAccountId,
-        receiverAccountId: AccountId.fromString(process.env.HEDERA_ACCOUNT_ID!)
+        receiverAccountId: AccountId.fromString(process.env.HEDERA_ACCOUNT_ID!),
+        txHash: result.txHash
       });
     } catch (error: any) {
       return JSON.stringify({
@@ -604,14 +685,16 @@ Example usage:
     }
   }
 }
+
+// Tool for querying list of pending airdrops
 export class HederaGetPendingAirdropTool extends Tool {
   name = 'hedera_get_pending_airdrop'
 
-  description = `Get the pending airdrop for a token on Hedera
+  description = `Get the pending airdrops for the given account on Hedera
 Inputs ( input is a JSON string ):
 - accountId: string, the account ID to get the pending airdrop for e.g. 0.0.789012,
 Example usage:
-1. Get the pending airdrop for account 0.0.789012:
+1. Get the pending airdrops for account 0.0.789012:
   '{
     "accountId": "0.0.789012"
   }'
@@ -623,12 +706,14 @@ Example usage:
 
   protected async _call(input: string): Promise<string> {
     try {
+      console.log('hedera_get_pending_airdrop tool has been called');
+
       const parsedInput = JSON.parse(input);
 
       const airdrop = await this.hederaKit.getPendingAirdrops(
         parsedInput.accountId,
         process.env.HEDERA_NETWORK as HederaNetworkType
-      ); 
+      );
 
       return JSON.stringify({
         status: "success",
@@ -644,22 +729,30 @@ Example usage:
     }
   }
 }
+
+// Tool for querying balances of all tokens associated with a account
 export class HederaGetAllTokenBalancesTool extends Tool {
   name = 'hedera_get_all_token_balances'
 
-  description = `Get all token balances for an account on Hedera
-Inputs ( input is a JSON string ):
-accountId : string, the account ID to get the token balances for e.g. 0.0.789012,
-- **accountId** (*string*, optional): The Hedera account ID to check the balance for (e.g., "0.0.789012").  
-  - If omitted, the tool will return the balance of the connected account.  
+  description = `Fetch all token balances for an account on the Hedera network.
 
-Example usage:
-1. Get all token balances for account 0.0.789012:
-  '{
-    "accountId": "0.0.789012"
-  }'
-2. Get all token balances for the connected account:
-   '{}'
+### Inputs:
+- **accountId** (*string*, optional): The Hedera account ID to check the balance for (e.g., "0.0.789012").  
+  - If **provided**, returns token balances for the specified account.  
+  - If **omitted**, returns token balances for the currently connected account.
+
+### Example Usage:
+#### 1. Get all token balances for a specific account (0.0.789012):
+\`\`\`json
+{
+  "accountId": "0.0.789012"
+}
+\`\`\`
+
+#### 2. Get all token balances for the connected account:
+\`\`\`json
+{}
+\`\`\`
 `
 
   constructor(private hederaKit: HederaAgentKit) {
@@ -668,8 +761,9 @@ Example usage:
 
   protected async _call(input: string): Promise<string> {
     try {
-      const parsedInput = JSON.parse(input);
+      const parsedInput = input ? JSON.parse(input) : {};
 
+      // returns both display and base unit balances
       const balances = await this.hederaKit.getAllTokensBalances(
         process.env.HEDERA_NETWORK as HederaNetworkType,
         parsedInput.accountId
@@ -689,6 +783,8 @@ Example usage:
     }
   }
 }
+
+// Tool for querying all holders of a token
 export class HederaGetTokenHoldersTool extends Tool {
   name = 'hedera_get_token_holders'
 
@@ -711,17 +807,33 @@ Example usage:
 
   protected async _call(input: string): Promise<string> {
     try {
-      const parsedInput = JSON.parse(input);
+      console.log('hedera_get_token_holders tool has been called');
 
+      const parsedInput = JSON.parse(input);
+      const threshold = parsedInput.threshold ?
+        Number((await toBaseUnit(
+          parsedInput.tokenId as string,
+          parsedInput.threshold,
+          this.hederaKit.network
+        )).toString()) : undefined;
+
+      // returns balances in base unit
       const holders = await this.hederaKit.getTokenHolders(
         parsedInput.tokenId,
-        parsedInput.threshold
+        this.hederaKit.network,
+        threshold // given in base unit, optionals
       );
+
+      const formattedHolders = holders.map((holder) => ({
+        account: holder.account,
+        balance: fromBaseToDisplayUnit(holder.balance, holder.decimals).toString(),
+        decimals: holder.decimals
+      }));
 
       return JSON.stringify({
         status: "success",
         message: "Token holders retrieved",
-        holders: holders
+        holders: formattedHolders
       });
     } catch (error: any) {
       return JSON.stringify({
@@ -733,6 +845,7 @@ Example usage:
   }
 }
 
+// Tool for topic creation
 export class HederaCreateTopicTool extends Tool {
   name = 'hedera_create_topic'
 
@@ -741,10 +854,20 @@ Inputs ( input is a JSON string ):
 name: string, the name of the topic e.g. My Topic,
 isSubmitKey: boolean, decides whether submit key should be set, false if not passed
 Example usage:
-1. Create a topic with name "My Topic" and submit key:
+1. Create a topic with memo "My Topic":
+  '{
+    "name": "My Topic",
+    "isSubmitKey": false
+  }'
+2. Create a topic with memo "My Topic". Restrict posting with a key:
   '{
     "name": "My Topic",
     "isSubmitKey": true
+  }'
+3. Create a topic with memo "My Topic". Do not set a submit key:
+  '{
+    "name": "My Topic",
+    "isSubmitKey": false
   }'
 `
 
@@ -754,15 +877,18 @@ Example usage:
 
   protected async _call(input: string): Promise<string> {
     try {
+      console.log('hedera_create_topic tool has been called');
+
       const parsedInput = JSON.parse(input);
-      const topic = await this.hederaKit.createTopic(
+      const result = await this.hederaKit.createTopic(
         parsedInput.name,
         parsedInput.isSubmitKey
       );
       return JSON.stringify({
         status: "success",
         message: "Topic created",
-        topic: topic
+        topicId: result.topicId,
+        txHash: result.txHash
       });
     } catch (error: any) {
       return JSON.stringify({
@@ -773,6 +899,8 @@ Example usage:
     }
   }
 }
+
+// Tool for topic deletion
 export class HederaDeleteTopicTool extends Tool {
   name = 'hedera_delete_topic'
 
@@ -792,14 +920,17 @@ Example usage:
 
   protected async _call(input: string): Promise<string> {
     try {
+      console.log('hedera_delete_topic tool has been called');
+
       const parsedInput = JSON.parse(input);
-      await this.hederaKit.deleteTopic(
+      const result = await this.hederaKit.deleteTopic(
         TopicId.fromString(parsedInput.topicId)
       );
       return JSON.stringify({
         status: "success",
         message: "Topic deleted",
-        topicId: parsedInput.topicId
+        topicId: parsedInput.topicId,
+        txHash: result.txHash
       });
     } catch (error: any) {
       return JSON.stringify({
@@ -810,6 +941,8 @@ Example usage:
     }
   }
 }
+
+// Tool for submitting messages to a topic
 export class HederaSubmitTopicMessageTool extends Tool {
   name = 'hedera_submit_topic_message'
 
@@ -831,8 +964,10 @@ Example usage:
 
   protected async _call(input: string): Promise<string> {
     try {
+      console.log('hedera_submit_topic_message tool has been called');
+
       const parsedInput = JSON.parse(input);
-      await this.hederaKit.submitTopicMessage(
+      const result = await this.hederaKit.submitTopicMessage(
         TopicId.fromString(parsedInput.topicId),
         parsedInput.message
       );
@@ -840,7 +975,8 @@ Example usage:
         status: "success",
         message: "Message submitted",
         topicId: parsedInput.topicId,
-        topicMessage: parsedInput.message
+        topicMessage: parsedInput.message,
+        txHash: result.txHash
       });
     } catch (error: any) {
       return JSON.stringify({
@@ -852,6 +988,7 @@ Example usage:
   }
 }
 
+// Tool for querying details about a topic
 export class HederaGetTopicInfoTool extends Tool {
   name = 'hedera_get_topic_info'
 
@@ -871,10 +1008,12 @@ Example usage:
 
   protected async _call(input: string): Promise<string> {
     try {
+      console.log('hedera_get_topic_info tool has been called');
+
       const parsedInput = JSON.parse(input);
       const topicInfo = await this.hederaKit.getTopicInfo(
         TopicId.fromString(parsedInput.topicId),
-        this.hederaKit.client.network.type as HederaNetworkType
+        process.env.HEDERA_NETWORK as "mainnet" | "testnet" | "previewnet" || "testnet"
       );
       return JSON.stringify({
         status: "success",
@@ -890,6 +1029,8 @@ Example usage:
     }
   }
 }
+
+// Tool for getting topic messages
 export class HederaGetTopicMessagesTool extends Tool {
   name = 'hedera_get_topic_messages'
 
@@ -926,11 +1067,15 @@ Example usage:
 
   protected async _call(input: string): Promise<string> {
     try {
+      console.log('hedera_get_topic_messages tool has been called');
+
       const parsedInput = JSON.parse(input);
+      console.log(`parsed input: ${JSON.stringify(parsedInput)}`);
       const messages = await this.hederaKit.getTopicMessages(
         TopicId.fromString(parsedInput.topicId),
-        parsedInput.lowerThreshold,
-        parsedInput.upperThreshold
+        process.env.HEDERA_NETWORK as "mainnet" | "testnet" | "previewnet" || "testnet",
+          parsedInput.lowerThreshold != null ? convertStringToTimestamp(parsedInput.lowerThreshold) : undefined,
+          parsedInput.upperThreshold != null ? convertStringToTimestamp(parsedInput.upperThreshold) : undefined
       );
       return JSON.stringify({
         status: "success",
@@ -946,7 +1091,6 @@ Example usage:
     }
   }
 }
-
 
 export function createHederaTools(hederaKit: HederaAgentKit): Tool[] {
   return [
