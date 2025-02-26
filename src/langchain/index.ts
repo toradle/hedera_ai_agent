@@ -5,6 +5,7 @@ import {HederaNetworkType} from "../types";
 import { AccountId, PendingAirdropId, TokenId, TopicId } from "@hashgraph/sdk";
 import { OpenAIChat } from "@langchain/openai";
 
+
 dotenv.config();
 export class HederaCreateFungibleTokenTool extends Tool {
   name = 'hedera_create_fungible_token'
@@ -126,7 +127,7 @@ amount: number, the amount of tokens to transfer e.g. 100
   protected async _call(input: string): Promise<string> {
     try {
       const parsedInput = JSON.parse(input);
-      
+
       await this.hederaKit.transferToken(
         parsedInput.tokenId,
         parsedInput.toAccountId,
@@ -170,6 +171,7 @@ If no input is given (empty JSON '{}'), it returns the balance of the connected 
 
 
 constructor(private hederaKit: HederaAgentKit) {
+
     super()
   }
 
@@ -224,7 +226,8 @@ If no account ID is given, it returns the balance for the connected account.
       if (!parsedInput.tokenId) {
         throw new Error("tokenId is required");
       }
-      if(!process.env.HEDERA_NETWORK) {
+
+      if (!process.env.HEDERA_NETWORK) {
         throw new Error("HEDERA_NETWORK environment variable is required");
       }
 
@@ -281,7 +284,7 @@ Example usage:
   protected async _call(input: string): Promise<string> {
     try {
       const parsedInput = JSON.parse(input);
-      
+
       await this.hederaKit.airdropToken(
         parsedInput.tokenId,
         parsedInput.recipients
@@ -729,6 +732,7 @@ Example usage:
     }
   }
 }
+
 export class HederaCreateTopicTool extends Tool {
   name = 'hedera_create_topic'
 
@@ -942,6 +946,7 @@ Example usage:
     }
   }
 }
+
 
 export function createHederaTools(hederaKit: HederaAgentKit): Tool[] {
   return [
