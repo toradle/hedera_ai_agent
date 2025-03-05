@@ -1,4 +1,12 @@
-import { Client, TokenId, AccountId, PendingAirdropId, TopicId, TokenType } from "@hashgraph/sdk";
+import {
+  Client,
+  TokenId,
+  AccountId,
+  PendingAirdropId,
+  TopicId,
+  TokenType,
+  PrivateKey,
+} from "@hashgraph/sdk";
 import {
   create_token,
   transfer_token,
@@ -55,12 +63,12 @@ export default class HederaAgentKit {
   public client: Client
 
   constructor(
-    accountId: string,
-    privateKey: string,
-    network: 'mainnet' | 'testnet' | 'previewnet' = 'mainnet'
+    accountId: AccountId | string,
+    privateKey: PrivateKey | string,
+    network: 'mainnet' | 'testnet' | 'previewnet' | 'localnode' = 'mainnet'
   ) {
     // @ts-ignore
-    this.client = Client.forNetwork(network).setOperator(accountId, privateKey)
+    this.client = Client.forNetwork(network).setOperator(accountId, privateKey);
   }
 
   async createFT(options: CreateFTOptions): Promise<CreateTokenResult> {
