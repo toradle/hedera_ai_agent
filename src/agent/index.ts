@@ -63,12 +63,29 @@ export default class HederaAgentKit {
   public client: Client
 
   constructor(
+    existingClient: Client,
+  )
+  constructor(
     accountId: AccountId | string,
     privateKey: PrivateKey | string,
-    network: 'mainnet' | 'testnet' | 'previewnet' | 'localnode' = 'mainnet'
+    network: 'mainnet' | 'testnet' | 'previewnet' | 'localnode',
+  )
+  constructor(
+    clientOrAccountId: Client | AccountId | string,
+    privateKey?: PrivateKey | string,
+    network?: 'mainnet' | 'testnet' | 'previewnet' | 'localnode'
   ) {
-    // @ts-ignore
-    this.client = Client.forNetwork(network).setOperator(accountId, privateKey);
+    if (this.isClient(clientOrAccountId)) {
+      this.client = clientOrAccountId;
+    } else {
+      network = network || 'mainnet';
+      // @ts-ignore
+      this.client = Client.forNetwork(network).setOperator(clientOrAccountId, privateKey);
+    }
+  }
+
+  private isClient(x: any): x is Client {
+    return typeof x.setOperator === 'function';
   }
 
   async createFT(options: CreateFTOptions): Promise<CreateTokenResult> {
