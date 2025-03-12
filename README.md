@@ -56,12 +56,32 @@ For further details check [HederaAgentKit Readme](./src/agent/README.md).
 npm i hedera-agent-kit
 ```
 
-or
+LangChain/ LangGraph quick start:
+
+```js
+import { HederaAgentKit, createHederaTools } from 'hedera-agent-kit';
+import { ToolNode } from '@langchain/langgraph/prebuilt';
+
+const hederaAgentKit = new HederaAgentKit(
+  '0.0.12345', // Replace with your account ID
+  '0x.......', // Replace with your private key
+  'testnet',   // Replace with your selected network
+);
+const hederaAgentKitTools = createHederaTools(hederaAgentKit);
+const toolsNode = new ToolNode(tools);
+
+```
+- `hederaAgentKitTools` is an array of `Tool` instances
+  (from `@langchain/core/tools`).
+- `toolsNode` can be used in any LangGraph workflow,
+  for example `workflow.addNode('toolsNode', toolsNode)`.
+
+## Local development
 
 1. **Clone** the repo:
 
 ```bash
-git clone https://github.com/jaycoolh/hedera-agent-kit.git
+git clone https://github.com/hedera-dev/hedera-agent-kit.git
 ```
 
 2. Install dependencies:
