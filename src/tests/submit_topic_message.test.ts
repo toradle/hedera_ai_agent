@@ -5,6 +5,8 @@ import { HederaMirrorNodeClient } from "./utils/hederaMirrorNodeClient";
 import { LangchainAgent } from "./utils/langchainAgent";
 import { wait } from "./utils/utils";
 
+const IS_CUSTODIAL = true;
+
 const extractTopicId = (messages: any[]): string => {
   const result = messages.reduce((acc, message) => {
     try {
@@ -36,7 +38,7 @@ describe("submit_topic_message", () => {
   let testCases: { textPrompt: string; topicId: string; message: string }[];
   let networkClientWrapper: NetworkClientWrapper;
   const hederaMirrorNodeClient = new HederaMirrorNodeClient(
-    process.env.HEDERA_NETWORK as "testnet" | "mainnet" | "previewnet"
+    process.env.HEDERA_NETWORK_TYPE as "testnet" | "mainnet" | "previewnet"
   );
 
   beforeAll(async () => {
@@ -44,6 +46,7 @@ describe("submit_topic_message", () => {
       networkClientWrapper = new NetworkClientWrapper(
         process.env.HEDERA_ACCOUNT_ID!,
         process.env.HEDERA_PRIVATE_KEY!,
+        process.env.HEDERA_PUBLIC_KEY!,
         process.env.HEDERA_KEY_TYPE!,
         "testnet"
       );
@@ -94,17 +97,19 @@ describe("submit_topic_message", () => {
         };
 
         const langchainAgent = await LangchainAgent.create();
-        const response = await langchainAgent.sendPrompt(prompt);
-        const topicId = extractTopicId(response.messages);
+        const response = await langchainAgent.sendPrompt(prompt, IS_CUSTODIAL);
+        console.log(JSON.stringify(response, null, 2));
+        const extractedTopicId = extractTopicId(response.messages);
         await wait(5000);
 
         const topicMessages =
-          await hederaMirrorNodeClient.getTopicMessages(topicId);
+          await hederaMirrorNodeClient.getTopicMessages(extractedTopicId);
 
-        const receivedMessage = topicMessages.find(
-          ({ message: _message }) => message === _message
-        );
-        expect(topicId).toEqual(expectedTopicId);
+        const receivedMessage = topicMessages.find(({ message: _message }) => {
+          return message === _message;
+        });
+
+        expect(expectedTopicId).toEqual(extractedTopicId);
         expect(receivedMessage).toBeTruthy();
       }
     });

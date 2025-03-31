@@ -7,6 +7,7 @@ import { LangchainAgent } from "./utils/langchainAgent";
 import { wait } from "./utils/utils";
 import { HCSMessage } from "../types";
 
+const IS_CUSTODIAL = true;
 
 function extractTopicMessages(messages: any[]): HCSMessage[] {
     const result = messages.reduce<HCSMessage[] | null>((acc, message) => {
@@ -44,7 +45,7 @@ describe("get_topic_messages", () => {
     }[];
     let networkClientWrapper: NetworkClientWrapper;
     const hederaMirrorNodeClient = new HederaMirrorNodeClient(
-        process.env.HEDERA_NETWORK as NetworkType
+        process.env.HEDERA_NETWORK_TYPE as NetworkType
     );
 
     beforeAll(async () => {
@@ -52,6 +53,7 @@ describe("get_topic_messages", () => {
             networkClientWrapper = new NetworkClientWrapper(
                 process.env.HEDERA_ACCOUNT_ID!,
                 process.env.HEDERA_PRIVATE_KEY!,
+                process.env.HEDERA_PUBLIC_KEY!,
                 process.env.HEDERA_KEY_TYPE!,
                 "testnet",
             );
@@ -67,7 +69,7 @@ describe("get_topic_messages", () => {
             const timestampBefore: string = new Date().toISOString();
 
             await wait(1000);
-            
+
             await Promise.all([
                 networkClientWrapper.submitTopicMessage(topic1, "(1) Test message for topic 1."),
             ]);
@@ -137,7 +139,7 @@ describe("get_topic_messages", () => {
                     text: textPrompt,
                 };
 
-                const response = await langchainAgent.sendPrompt(prompt);
+                const response = await langchainAgent.sendPrompt(prompt, IS_CUSTODIAL);
                 const messages = extractTopicMessages(response.messages);
 
                 await wait(5000);

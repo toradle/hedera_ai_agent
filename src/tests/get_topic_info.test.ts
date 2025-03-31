@@ -7,6 +7,7 @@ import { LangchainAgent } from "./utils/langchainAgent";
 import { TopicInfoApiResponse } from "../types";
 import { wait } from "./utils/utils";
 
+const IS_CUSTODIAL = true;
 
 function extractTopicInfo(messages: any[]): TopicInfoApiResponse {
   const result = messages.reduce((acc, message) => {
@@ -37,7 +38,7 @@ describe("get_topic_info", () => {
   let testCases: { textPrompt: string; topicId: string }[];
   let networkClientWrapper: NetworkClientWrapper;
   const hederaMirrorNodeClient = new HederaMirrorNodeClient(
-    process.env.HEDERA_NETWORK as NetworkType
+    process.env.HEDERA_NETWORK_TYPE as NetworkType
   );
 
   beforeAll(async () => {
@@ -47,6 +48,7 @@ describe("get_topic_info", () => {
       networkClientWrapper = new NetworkClientWrapper(
         process.env.HEDERA_ACCOUNT_ID!,
         process.env.HEDERA_PRIVATE_KEY!,
+        process.env.HEDERA_PUBLIC_KEY!,
         process.env.HEDERA_KEY_TYPE!,
         "testnet"
       );
@@ -89,7 +91,7 @@ describe("get_topic_info", () => {
           text: textPrompt,
         };
 
-        const response = await langchainAgent.sendPrompt(prompt);
+        const response = await langchainAgent.sendPrompt(prompt, IS_CUSTODIAL);
         await wait(5000);
 
         const topicInfo = extractTopicInfo(response.messages);

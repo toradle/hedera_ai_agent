@@ -12,7 +12,7 @@ dotenv.config();
 function validateEnvironment(): void {
   const missingVars: string[] = [];
   // You can tweak these as needed
-  const requiredVars = ["OPENAI_API_KEY", "HEDERA_ACCOUNT_ID", "HEDERA_PRIVATE_KEY"];
+  const requiredVars = ["OPENAI_API_KEY", "HEDERA_ACCOUNT_ID"];
 
   requiredVars.forEach((varName) => {
     if (!process.env[varName]) {
@@ -34,17 +34,18 @@ validateEnvironment();
 async function initializeAgent() {
   try {
     const llm = new ChatOpenAI({
-      modelName: "gpt-4",
-      temperature: 0.7,
+      modelName: "o3-mini",
     });
 
     // Initialize HederaAgentKit
     const hederaKit = new HederaAgentKit(
-      process.env.HEDERA_ACCOUNT_ID!,
-      process.env.HEDERA_PRIVATE_KEY!,
-      // Pass your network of choice. Default is "mainnet".
-      // You can specify 'testnet', 'previewnet', or 'mainnet'.
-      process.env.HEDERA_NETWORK as "mainnet" | "testnet" | "previewnet" || "testnet"
+        process.env.HEDERA_ACCOUNT_ID!,
+        // process.env.CUSTODIAL_MODE === 'true' ? process.env.HEDERA_PRIVATE_KEY! : undefined,
+        process.env.HEDERA_PRIVATE_KEY!,
+        process.env.HEDERA_PUBLIC_KEY!,
+        // Pass your network of choice. Default is "testnet".
+        // You can specify 'testnet', 'previewnet', or 'mainnet'.
+        process.env.HEDERA_NETWORK_TYPE as "mainnet" | "testnet" | "previewnet" || "testnet"
     );
 
     // Create the LangChain-compatible tools
@@ -137,8 +138,9 @@ async function runChatMode(agent: any, config: any) {
         break;
       }
 
-      const stream = await agent.stream({ messages: [new HumanMessage(userInput)] }, config);
-
+      // for now, isCustodial is based on env, but later it can be changed and passed with a prompt text coming from FE
+      const isCustodial = process.env.CUSTODIAL_MODE === "true";
+      const stream = await sendPrompt(agent, config, userInput, isCustodial);
       for await (const chunk of stream) {
         if ("agent" in chunk) {
           console.log(chunk.agent.messages[0].content);
@@ -156,6 +158,13 @@ async function runChatMode(agent: any, config: any) {
   } finally {
     rl.close();
   }
+}
+
+async function sendPrompt(agent: any, config: any, userInput: string, isCustodial: boolean) {
+  return agent.stream(
+      { messages: [new HumanMessage(userInput)] },
+      {...config, configurable: {...config.configurable, isCustodial: isCustodial}}
+  );
 }
 
 async function chooseMode(): Promise<"chat" | "auto"> {

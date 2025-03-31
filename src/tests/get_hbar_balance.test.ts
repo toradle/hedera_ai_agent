@@ -6,6 +6,7 @@ import { AccountData } from "./utils/testnetUtils";
 import { LangchainAgent } from "./utils/langchainAgent";
 import { wait } from "./utils/utils";
 
+const IS_CUSTODIAL = true;
 
 describe("get_hbar_balance", () => {
   let acc1: AccountData;
@@ -21,6 +22,7 @@ describe("get_hbar_balance", () => {
       const wrapper = new NetworkClientWrapper(
         process.env.HEDERA_ACCOUNT_ID!,
         process.env.HEDERA_PRIVATE_KEY!,
+        process.env.HEDERA_PUBLIC_KEY!,
         process.env.HEDERA_KEY_TYPE!,
         "testnet"
       );
@@ -30,7 +32,7 @@ describe("get_hbar_balance", () => {
 
       langchainAgent = await LangchainAgent.create();
       hederaApiClient = new HederaMirrorNodeClient(
-        process.env.HEDERA_NETWORK as "testnet" | "mainnet" | "previewnet"
+        process.env.HEDERA_NETWORK_TYPE as "testnet" | "mainnet" | "previewnet"
       );
       testCases = [
         [acc1.accountId, `What's HBAR balance for ${acc1.accountId}`],
@@ -51,7 +53,7 @@ describe("get_hbar_balance", () => {
           text: promptText,
         };
 
-        const response = await langchainAgent.sendPrompt(prompt);
+        const response = await langchainAgent.sendPrompt(prompt, IS_CUSTODIAL);
         let hederaActionBalance: number;
 
         const match = response.messages[

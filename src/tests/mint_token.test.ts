@@ -8,6 +8,8 @@ import { wait } from "./utils/utils";
 
 dotenv.config();
 
+const IS_CUSTODIAL = true;
+
 interface MintTokenLangchainResponse {
   status: string;
   message: string;
@@ -19,6 +21,8 @@ interface MintTokenLangchainResponse {
 const extractLangchainResponse = (
   messages: any[]
 ): MintTokenLangchainResponse | null => {
+  console.log(messages)
+
   const toolMessages = messages.filter(
     (msg) =>
       (msg.id && msg.id[2] === "ToolMessage") ||
@@ -28,7 +32,7 @@ const extractLangchainResponse = (
   return toolMessages.reduce((acc, message) => {
     try {
       const toolResponse = JSON.parse(message.content);
-      if (toolResponse.status !== "success" || !toolResponse.tokenId) {
+      if (toolResponse.status !== "success" || !toolResponse.txHash) {
         throw new Error(toolResponse.message ?? "Unknown error");
       }
 
@@ -45,15 +49,16 @@ describe("hedera_mint_fungible_token", () => {
   let hederaApiClient: HederaMirrorNodeClient;
   let networkClientWrapper: NetworkClientWrapper;
 
-  beforeAll(async () => {
-    hederaApiClient = new HederaMirrorNodeClient("testnet" as NetworkType);
-    networkClientWrapper = new NetworkClientWrapper(
-      process.env.HEDERA_ACCOUNT_ID!,
-      process.env.HEDERA_PRIVATE_KEY!,
-      process.env.HEDERA_KEY_TYPE!,
-      "testnet"
-    );
-  });
+    beforeAll(async () => {
+            hederaApiClient = new HederaMirrorNodeClient("testnet" as NetworkType);
+            networkClientWrapper = new NetworkClientWrapper(
+                process.env.HEDERA_ACCOUNT_ID!,
+                process.env.HEDERA_PRIVATE_KEY!,
+                process.env.HEDERA_PUBLIC_KEY!,
+                process.env.HEDERA_KEY_TYPE!,
+                "testnet"
+            );
+        });
 
   beforeEach(async () => {
     dotenv.config();
@@ -78,7 +83,7 @@ describe("hedera_mint_fungible_token", () => {
     };
 
     langchainAgent = await LangchainAgent.create();
-    await langchainAgent.sendPrompt(prompt);
+    await langchainAgent.sendPrompt(prompt, IS_CUSTODIAL);
 
     await wait(5000);
 
@@ -106,8 +111,7 @@ describe("hedera_mint_fungible_token", () => {
     };
 
     langchainAgent = await LangchainAgent.create();
-    const resp = await langchainAgent.sendPrompt(prompt);
-    console.log(JSON.stringify(resp, null, 2));
+    const resp = await langchainAgent.sendPrompt(prompt, IS_CUSTODIAL);
 
     await wait(5000);
 
@@ -120,7 +124,7 @@ describe("hedera_mint_fungible_token", () => {
     const STARTING_SUPPLY = 0;
     const TOKENS_TO_MINT_IN_DISPLAY_UNITS = 100;
     const DECIMALS = 2;
-    
+
     const tokenId = await networkClientWrapper.createFT({
       name: "TokenToMint",
       symbol: "TTM",

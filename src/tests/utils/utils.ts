@@ -29,17 +29,17 @@ export function fromDisplayToBaseUnit(
 export async function initializeAgent() {
   try {
     const llm = new ChatOpenAI({
-      modelName: "gpt-4o",
-      temperature: 0.7,
+      modelName: "o3-mini",
     });
 
     // Initialize HederaAgentKit
     const hederaKit = new HederaAgentKit(
-      process.env.HEDERA_ACCOUNT_ID!,
-      process.env.HEDERA_PRIVATE_KEY!,
-      // Pass your network of choice. Default is "mainnet".
-      // You can specify 'testnet', 'previewnet', or 'mainnet'.
-      process.env.HEDERA_NETWORK as "mainnet" | "testnet" | "previewnet" || "testnet"
+        process.env.HEDERA_ACCOUNT_ID!,
+        process.env.HEDERA_PRIVATE_KEY!,
+        process.env.HEDERA_PUBLIC_KEY || undefined,
+        // Pass your network of choice. Default is "mainnet".
+        // You can specify 'testnet', 'previewnet', or 'mainnet'.
+        process.env.HEDERA_NETWORK_TYPE as "mainnet" | "testnet" | "previewnet" || "testnet"
     );
 
     // Create the LangChain-compatible tools
