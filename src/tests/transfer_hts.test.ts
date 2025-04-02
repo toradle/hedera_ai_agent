@@ -6,6 +6,8 @@ import { AccountData } from "./utils/testnetUtils";
 import { LangchainAgent } from "./utils/langchainAgent";
 import { wait } from "./utils/utils";
 
+const IS_CUSTODIAL = true;
+
 interface TransferDetailsFromToolResponse {
   status: string;
   message: string;
@@ -60,6 +62,7 @@ describe("Test Token transfer", async () => {
       networkClientWrapper = new NetworkClientWrapper(
         process.env.HEDERA_ACCOUNT_ID!,
         process.env.HEDERA_PRIVATE_KEY!,
+        process.env.HEDERA_PUBLIC_KEY!,
         process.env.HEDERA_KEY_TYPE!,
         "testnet"
       );
@@ -165,7 +168,7 @@ describe("Test Token transfer", async () => {
         };
 
         const langchainAgent = await LangchainAgent.create();
-        const response = await langchainAgent.sendPrompt(prompt);
+        const response = await langchainAgent.sendPrompt(prompt, IS_CUSTODIAL);
         const transferDetails = extractTransferDetails(response.messages);
         const formattedTxHash = formatTxHash(transferDetails?.txHash ?? "");
 

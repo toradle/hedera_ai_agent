@@ -7,6 +7,7 @@ import { HederaMirrorNodeClient } from "./utils/hederaMirrorNodeClient";
 import { NetworkType } from "./types";
 import { wait } from "./utils/utils";
 
+const IS_CUSTODIAL = true;
 
 describe("claim_pending_airdrops", () => {
     let airdropCreatorAccount: AccountData;
@@ -34,6 +35,7 @@ describe("claim_pending_airdrops", () => {
             networkClientWrapper = new NetworkClientWrapper(
                 process.env.HEDERA_ACCOUNT_ID!,
                 process.env.HEDERA_PRIVATE_KEY!,
+                process.env.HEDERA_PUBLIC_KEY!,
                 process.env.HEDERA_KEY_TYPE!,
                 "testnet" as NetworkType
             );
@@ -67,6 +69,7 @@ describe("claim_pending_airdrops", () => {
                 new NetworkClientWrapper(
                     airdropCreatorAccount.accountId,
                     airdropCreatorAccount.privateKey,
+                    airdropCreatorAccount.publicKey,
                     "ECDSA",
                     "testnet"
                 );
@@ -150,8 +153,8 @@ describe("claim_pending_airdrops", () => {
                     user: "user",
                     text: promptText,
                 };
-
-                const response = await langchainAgent.sendPrompt(prompt);
+                langchainAgent = await LangchainAgent.create();
+                const response = await langchainAgent.sendPrompt(prompt, IS_CUSTODIAL);
 
                 const tokenBalance = await networkClientWrapper.getAccountTokenBalance(
                     tokenId,

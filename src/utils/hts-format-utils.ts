@@ -48,3 +48,7 @@ export const getHTSDecimals = async (
 ): Promise<string> => {
     return (await get_hts_token_details(tokenId, networkType)).decimals;
 };
+
+export const getHtsTokenDetails = async (tokenId: string, networkType: HederaNetworkType) => {
+    return get_hts_token_details(tokenId, networkType);
+}

@@ -4,6 +4,7 @@ import { HederaMirrorNodeClient } from "./utils/hederaMirrorNodeClient";
 import { LangchainAgent } from "./utils/langchainAgent";
 import { wait } from "./utils/utils";
 
+const IS_CUSTODIAL = true;
 
 const extractTopicId = (messages: any[]): string => {
   const result = messages.reduce((acc, message) => {
@@ -28,7 +29,7 @@ const extractTopicId = (messages: any[]): string => {
 dotenv.config();
 describe("create_topic", () => {
   const hederaMirrorNodeClient = new HederaMirrorNodeClient(
-    process.env.HEDERA_NETWORK as "testnet" | "mainnet" | "previewnet"
+    process.env.HEDERA_NETWORK_TYPE as "testnet" | "mainnet" | "previewnet"
   );
 
   describe("create_topic", () => {
@@ -41,7 +42,8 @@ describe("create_topic", () => {
 
       const langchainAgent = await LangchainAgent.create();
 
-      const response = await langchainAgent.sendPrompt(prompt);
+      const response = await langchainAgent.sendPrompt(prompt, IS_CUSTODIAL);
+      console.log(JSON.stringify(response, null, 2));
       const topicId = extractTopicId(response.messages);
       await wait(5000);
 
@@ -58,7 +60,7 @@ describe("create_topic", () => {
       };
 
       const langchainAgent = await LangchainAgent.create();
-      const response = await langchainAgent.sendPrompt(prompt);
+      const response = await langchainAgent.sendPrompt(prompt, IS_CUSTODIAL);
       const topicId = extractTopicId(response.messages);
       await wait(5000);
 
@@ -76,7 +78,7 @@ describe("create_topic", () => {
       };
 
       const langchainAgent = await LangchainAgent.create();
-      const response = await langchainAgent.sendPrompt(prompt);
+      const response = await langchainAgent.sendPrompt(prompt, IS_CUSTODIAL);
       const topicId = extractTopicId(response.messages);
       await wait(5000);
 

@@ -6,6 +6,7 @@ import { NetworkType } from "./types";
 import { LangchainAgent } from "./utils/langchainAgent";
 import { wait } from "./utils/utils";
 
+const IS_CUSTODIAL = true;
 
 dotenv.config();
 describe("delete_topic", () => {
@@ -16,7 +17,7 @@ describe("delete_topic", () => {
   let testCases: { textPrompt: string; topicId: string }[];
   let networkClientWrapper: NetworkClientWrapper;
   const hederaMirrorNodeClient = new HederaMirrorNodeClient(
-    process.env.HEDERA_NETWORK as NetworkType
+    process.env.HEDERA_NETWORK_TYPE as NetworkType
   );
 
   beforeAll(async () => {
@@ -26,6 +27,7 @@ describe("delete_topic", () => {
       networkClientWrapper = new NetworkClientWrapper(
         process.env.HEDERA_ACCOUNT_ID!,
         process.env.HEDERA_PRIVATE_KEY!,
+        process.env.HEDERA_PUBLIC_KEY!,
         process.env.HEDERA_KEY_TYPE!,
         "testnet"
       );
@@ -68,7 +70,7 @@ describe("delete_topic", () => {
           text: textPrompt,
         };
 
-        await langchainAgent.sendPrompt(prompt);
+        await langchainAgent.sendPrompt(prompt, IS_CUSTODIAL);
         await wait(5000);
 
         const topicInfo = await hederaMirrorNodeClient.getTopic(topicId);

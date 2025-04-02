@@ -7,6 +7,7 @@ import {LangchainAgent} from "./utils/langchainAgent";
 import {NetworkType} from "./types";
 import { wait } from "./utils/utils";
 
+const IS_CUSTODIAL = true;
 
 describe("reject_token", async () => {
     let acc1: AccountData;
@@ -32,6 +33,7 @@ describe("reject_token", async () => {
             networkClientWrapper = new NetworkClientWrapper(
                 process.env.HEDERA_ACCOUNT_ID!,
                 process.env.HEDERA_PRIVATE_KEY!,
+                process.env.HEDERA_PUBLIC_KEY!,
                 process.env.HEDERA_KEY_TYPE!,
                 "testnet"
             );
@@ -65,6 +67,7 @@ describe("reject_token", async () => {
             airdropCreatorNetworkClientWrapper = new NetworkClientWrapper(
                 acc1.accountId,
                 acc1.privateKey,
+                acc1.publicKey,
                 "ECDSA",
                 "testnet"
             );
@@ -89,6 +92,7 @@ describe("reject_token", async () => {
             });
 
             // Define test cases using created accounts and tokens
+            //FIXME: failing
             await Promise.all([
                 airdropCreatorNetworkClientWrapper.airdropToken(token1, [
                     {
@@ -103,6 +107,7 @@ describe("reject_token", async () => {
                     },
                 ]),
             ]);
+
             testCases = [
                 {
                     tokenId: token1,
@@ -113,31 +118,30 @@ describe("reject_token", async () => {
                     promptText: `Reject token ${token2} from account ${airdropCreatorNetworkClientWrapper.getAccountId()}`,
                 },
             ];
+
         } catch (error) {
             console.error("Error in setup:", error);
             throw error;
         }
     });
 
-    describe("reject token", () => {
-        it("it should reject token from account", async () => {
-            for (const { promptText, tokenId } of testCases) {
-                const prompt = {
-                    user: "user",
-                    text: promptText,
-                };
+    it("it should reject token from account", async () => {
+        for (const { promptText, tokenId } of testCases) {
+            const prompt = {
+                user: "user",
+                text: promptText,
+            };
 
-                const response = await langchainAgent.sendPrompt(prompt);
+            const response = await langchainAgent.sendPrompt(prompt, IS_CUSTODIAL);
 
-                await wait(5000);
+            await wait(5000);
 
-                const tokenInfo = await hederaMirrorNodeClient.getAccountToken(
-                    networkClientWrapper.getAccountId(),
-                    tokenId
-                );
+            const tokenInfo = await hederaMirrorNodeClient.getAccountToken(
+                networkClientWrapper.getAccountId(),
+                tokenId
+            );
 
-                expect(tokenInfo?.balance ?? 0).toBe(0);
-            }
-        });
+            expect(tokenInfo?.balance ?? 0).toBe(0);
+        }
     });
 });

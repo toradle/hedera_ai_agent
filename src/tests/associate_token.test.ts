@@ -7,6 +7,7 @@ import { LangchainAgent } from "./utils/langchainAgent";
 import { NetworkType } from "./types";
 import { wait } from "./utils/utils";
 
+const IS_CUSTODIAL = true;
 
 dotenv.config();
 describe("associate_token", () => {
@@ -30,6 +31,7 @@ describe("associate_token", () => {
             networkClientWrapper = new NetworkClientWrapper(
                 process.env.HEDERA_ACCOUNT_ID!,
                 process.env.HEDERA_PRIVATE_KEY!,
+                process.env.HEDERA_PUBLIC_KEY!,
                 process.env.HEDERA_KEY_TYPE!,
                 "testnet"
             );
@@ -61,6 +63,7 @@ describe("associate_token", () => {
                 new NetworkClientWrapper(
                     tokenCreatorAccount.accountId,
                     tokenCreatorAccount.privateKey,
+                    tokenCreatorAccount.publicKey,
                     "ECDSA",
                     "testnet"
                 );
@@ -88,11 +91,11 @@ describe("associate_token", () => {
             testCases = [
                 {
                     tokenToAssociateId: token1,
-                    promptText: `Associate token ${token1} to account ${networkClientWrapper.getAccountId()}`,
+                    promptText: `Associate token ${token1} to my account ${networkClientWrapper.getAccountId()}`,
                 },
                 {
                     tokenToAssociateId: token2,
-                    promptText: `Associate token ${token2} to account ${networkClientWrapper.getAccountId()}`,
+                    promptText: `Associate token ${token2} to my account ${networkClientWrapper.getAccountId()}`,
                 },
             ];
         } catch (error) {
@@ -117,9 +120,14 @@ describe("associate_token", () => {
                     text: promptText,
                 };
 
-                const response = await langchainAgent.sendPrompt(prompt);
+                const response = await langchainAgent.sendPrompt(prompt, IS_CUSTODIAL);
 
                 await wait(5000);
+
+                console.log({
+                    client: networkClientWrapper.getAccountId(),
+                    tokenToAssociateId
+                })
 
                 const token = await hederaMirrorNodeClient.getAccountToken(
                     networkClientWrapper.getAccountId(),

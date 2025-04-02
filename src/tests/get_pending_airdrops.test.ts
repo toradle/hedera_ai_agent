@@ -6,6 +6,7 @@ import * as dotenv from "dotenv";
 import { Airdrop } from "../types";
 import { wait } from "./utils/utils";
 
+const IS_CUSTODIAL = true;
 
 function findAirdrops(messages: any[]): Airdrop[] { 
     const result = messages.reduce<Airdrop[] | null>((acc, message) => {
@@ -34,7 +35,7 @@ describe("get_pending_airdrops", () => {
     let token1: string;
     let langchainAgent: LangchainAgent;
     let testCases: [string, string, string, number][];
-    let networkClientWrapper;
+    let networkClientWrapper: NetworkClientWrapper;
 
     beforeAll(async () => {
         dotenv.config()
@@ -43,6 +44,7 @@ describe("get_pending_airdrops", () => {
             networkClientWrapper = new NetworkClientWrapper(
                 process.env.HEDERA_ACCOUNT_ID!,
                 process.env.HEDERA_PRIVATE_KEY!,
+                process.env.HEDERA_PUBLIC_KEY!,
                 process.env.HEDERA_KEY_TYPE!,
                 "testnet"
             );
@@ -127,7 +129,7 @@ describe("get_pending_airdrops", () => {
                     text: promptText,
                 };
 
-                const response = await langchainAgent.sendPrompt(prompt);
+                const response = await langchainAgent.sendPrompt(prompt, IS_CUSTODIAL);
 
                 const airdrops = findAirdrops(response.messages);
                 const relevantAirdrop = airdrops.find((airdrop) => airdrop.receiver_id === accountId && airdrop.token_id === tokenId);

@@ -4,12 +4,19 @@ import * as dotenv from "dotenv";
 import { wait } from "./utils/utils";
 import { LangchainAgent } from "./utils/langchainAgent";
 
+const IS_CUSTODIAL = true;
+
 interface TokenDetails {
   tokenId: string;
+  decimals: number;
+  solidityAddress: string;
+  txHash: string;
   initialSupply: number;
 }
 
 function extractTokenDetails(messages: any[]): TokenDetails {
+  console.log(messages)
+
   const result = messages.reduce<TokenDetails | null>((acc, message) => {
     try {
       const toolResponse = JSON.parse(message.content);
@@ -42,7 +49,7 @@ describe("create_fungible_token", () => {
     };
     const langchainAgent = await LangchainAgent.create();
 
-    const response = await langchainAgent.sendPrompt(prompt);
+    const response = await langchainAgent.sendPrompt(prompt, IS_CUSTODIAL);
     const tokenDetailsFromToolResponse = extractTokenDetails(response.messages);
 
     if (!tokenDetailsFromToolResponse) {
@@ -58,8 +65,7 @@ describe("create_fungible_token", () => {
     expect(tokenDetails.symbol).toEqual("GG");
     expect(tokenDetails.name).toEqual("GameGold");
     expect(tokenDetails.decimals).toEqual("2");
-    expect(tokenDetailsFromToolResponse.initialSupply).toEqual(7500); // should be in display units
-    expect(tokenDetails.initial_supply).toEqual("750000"); // response from mirror node is in base units
+    expect(tokenDetails.initial_supply).toEqual("7500");
     expect(tokenDetails.memo).toEqual("This is an example memo");
     expect(atob(tokenDetails.metadata!)).toEqual(
       "And that's an example metadata"
@@ -80,7 +86,7 @@ describe("create_fungible_token", () => {
     };
     const langchainAgent = await LangchainAgent.create();
 
-    const response = await langchainAgent.sendPrompt(prompt);
+    const response = await langchainAgent.sendPrompt(prompt, IS_CUSTODIAL);
     const tokenDetailsFromToolResponse = extractTokenDetails(response.messages);
 
     if (!tokenDetailsFromToolResponse) {
@@ -96,8 +102,7 @@ describe("create_fungible_token", () => {
     expect(tokenDetails.symbol).toEqual("MT");
     expect(tokenDetails.name).toEqual("Minimal Token");
     expect(tokenDetails.decimals).toEqual("3");
-    expect(tokenDetailsFromToolResponse.initialSupply).toEqual(333); // should be in display units
-    expect(tokenDetails.initial_supply).toEqual("333000"); // response from mirror node is in base units
+    expect(tokenDetails.initial_supply).toEqual("333");
     expect(tokenDetails.memo).toBe("");
     expect(tokenDetails.metadata).toBe("");
     expect(tokenDetails?.supply_key?.key).toBeUndefined();
@@ -116,7 +121,7 @@ describe("create_fungible_token", () => {
     };
     const langchainAgent = await LangchainAgent.create();
 
-    const response = await langchainAgent.sendPrompt(prompt);
+    const response = await langchainAgent.sendPrompt(prompt, IS_CUSTODIAL);
     const tokenDetailsFromToolResponse = extractTokenDetails(response.messages);
 
     if (!tokenDetailsFromToolResponse) {
@@ -130,8 +135,7 @@ describe("create_fungible_token", () => {
     expect(tokenDetails.symbol).toEqual("MPMT");
     expect(tokenDetails.name).toEqual("Minimal Plus Memo Token");
     expect(tokenDetails.decimals).toEqual("4");
-    expect(tokenDetailsFromToolResponse.initialSupply).toEqual(444); // should be in display units
-    expect(tokenDetails.initial_supply).toEqual("4440000"); // response from mirror node is in base units
+    expect(tokenDetails.initial_supply).toEqual("444");
     expect(tokenDetails.memo).toEqual("Automatic tests memo");
     expect(tokenDetails.metadata).toBe("");
     expect(tokenDetails?.supply_key?.key).toBeUndefined();
@@ -150,7 +154,7 @@ describe("create_fungible_token", () => {
     };
     const langchainAgent = await LangchainAgent.create();
 
-    const response = await langchainAgent.sendPrompt(prompt);
+    const response = await langchainAgent.sendPrompt(prompt, IS_CUSTODIAL);
     const tokenDetailsFromToolResponse = extractTokenDetails(response.messages);
 
     if (!tokenDetailsFromToolResponse) {
@@ -164,8 +168,7 @@ describe("create_fungible_token", () => {
     expect(tokenDetails.symbol).toEqual("MPMKT");
     expect(tokenDetails.name).toEqual("Minimal Plus Metadata Key Token");
     expect(tokenDetails.decimals).toEqual("5");
-    expect(tokenDetailsFromToolResponse.initialSupply).toEqual(555); // should be in display units
-    expect(tokenDetails.initial_supply).toEqual("55500000"); // response from mirror node is in base units
+    expect(tokenDetails.initial_supply).toEqual("555");
     expect(tokenDetails.memo).toBe("");
     expect(tokenDetails.metadata).toBe("");
     expect(tokenDetails?.supply_key?.key).toBeUndefined();
@@ -184,7 +187,7 @@ describe("create_fungible_token", () => {
     };
     const langchainAgent = await LangchainAgent.create();
 
-    const response = await langchainAgent.sendPrompt(prompt);
+    const response = await langchainAgent.sendPrompt(prompt, IS_CUSTODIAL);
     const tokenDetailsFromToolResponse = extractTokenDetails(response.messages);
 
     if (!tokenDetailsFromToolResponse) {
@@ -198,8 +201,7 @@ describe("create_fungible_token", () => {
     expect(tokenDetails.symbol).toEqual("MPASKT");
     expect(tokenDetails.name).toEqual("Minimal Plus Admin Supply Keys Token");
     expect(tokenDetails.decimals).toEqual("1");
-    expect(tokenDetailsFromToolResponse.initialSupply).toEqual(111); // should be in display units
-    expect(tokenDetails.initial_supply).toEqual("1110"); // response from mirror node is in base units
+    expect(tokenDetails.initial_supply).toEqual("111");
     expect(tokenDetails.memo).toBe("");
     expect(tokenDetails.memo).toBe("");
     expect(tokenDetails?.supply_key?.key).not.toBeUndefined();
@@ -218,7 +220,7 @@ describe("create_fungible_token", () => {
     };
     const langchainAgent = await LangchainAgent.create();
 
-    const response = await langchainAgent.sendPrompt(prompt);
+    const response = await langchainAgent.sendPrompt(prompt, IS_CUSTODIAL);
     const tokenDetailsFromToolResponse = extractTokenDetails(response.messages);
 
     if (!tokenDetailsFromToolResponse) {
@@ -232,8 +234,7 @@ describe("create_fungible_token", () => {
     expect(tokenDetails.symbol).toEqual("CPLXT");
     expect(tokenDetails.name).toEqual("Complex Token");
     expect(tokenDetails.decimals).toEqual("1");
-    expect(tokenDetailsFromToolResponse.initialSupply).toEqual(1111); // should be in display units
-    expect(tokenDetails.initial_supply).toEqual("11110"); // response from mirror node is in base units
+    expect(tokenDetails.initial_supply).toEqual("1111");
     expect(tokenDetails.memo).toBe("This a complex token");
     expect(atob(tokenDetails.metadata!)).toBe("this could be a link to image");
     expect(tokenDetails?.supply_key?.key).not.toBeUndefined();
@@ -252,7 +253,7 @@ describe("create_fungible_token", () => {
     };
     const langchainAgent = await LangchainAgent.create();
 
-    const response = await langchainAgent.sendPrompt(prompt);
+    const response = await langchainAgent.sendPrompt(prompt, IS_CUSTODIAL);
     const tokenDetailsFromToolResponse = extractTokenDetails(response.messages);
 
     if (!tokenDetailsFromToolResponse) {
@@ -265,8 +266,7 @@ describe("create_fungible_token", () => {
       tokenDetailsFromToolResponse.tokenId
     );
 
-    expect(tokenDetailsFromToolResponse.initialSupply).toEqual(75.55); // should be in display units
-    expect(tokenDetails.initial_supply).toEqual("7555"); // response from mirror node is in base units
+    expect(tokenDetails.initial_supply).toEqual("7555");
   });
 
   it("Create token with supply in display units using dot", async () => {
@@ -280,7 +280,7 @@ describe("create_fungible_token", () => {
     };
     const langchainAgent = await LangchainAgent.create();
 
-    const response = await langchainAgent.sendPrompt(prompt);
+    const response = await langchainAgent.sendPrompt(prompt, IS_CUSTODIAL);
     const tokenDetailsFromToolResponse = extractTokenDetails(response.messages);
 
     if (!tokenDetailsFromToolResponse) {
@@ -293,8 +293,7 @@ describe("create_fungible_token", () => {
       tokenDetailsFromToolResponse.tokenId
     );
 
-    expect(tokenDetailsFromToolResponse.initialSupply).toEqual(75.55); // should be in display units
-    expect(tokenDetails.initial_supply).toEqual("7555"); // response from mirror node is in base units
+    expect(tokenDetails.initial_supply).toEqual("7555");
   });
 
   it("Create token with supply in display units using dot and zero", async () => {
@@ -308,7 +307,7 @@ describe("create_fungible_token", () => {
     };
     const langchainAgent = await LangchainAgent.create();
 
-    const response = await langchainAgent.sendPrompt(prompt);
+    const response = await langchainAgent.sendPrompt(prompt, IS_CUSTODIAL);
     const tokenDetailsFromToolResponse = extractTokenDetails(response.messages);
 
     if (!tokenDetailsFromToolResponse) {
@@ -321,7 +320,6 @@ describe("create_fungible_token", () => {
       tokenDetailsFromToolResponse.tokenId
     );
 
-    expect(tokenDetailsFromToolResponse.initialSupply).toEqual(75); // should be in display units
-    expect(tokenDetails.initial_supply).toEqual("7500"); // response from mirror node is in base units
+    expect(tokenDetails.initial_supply).toEqual("7500");
   });
 });

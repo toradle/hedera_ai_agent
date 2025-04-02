@@ -5,33 +5,32 @@ import {
   Client,
   Hbar,
   PrivateKey,
+  PublicKey,
   TokenId,
   TopicId,
 } from "@hashgraph/sdk";
 import { AccountData, hederaPrivateKeyFromString } from "./testnetUtils";
 
 import HederaAgentKit from "../../agent";
-import {
-  AirdropResult,
-  CreateFTOptions,
-  CreateNFTOptions,
-  CreateTopicResult,
-  HederaNetworkType,
-  SubmitMessageResult,
-} from "../../types";
-import { AirdropRecipient } from "../../tools/hts/transactions/airdrop";
+import { CreateFTOptions, CreateNFTOptions, HederaNetworkType } from "../../types";
+import { AirdropRecipient } from "../../tools/transactions/strategies";
+import { AirdropResult, CreateTokenResult, CreateTopicResult, SubmitMessageResult } from "../../tools";
+
 export class NetworkClientWrapper {
   private readonly accountId: AccountId;
   private readonly privateKey: PrivateKey;
+  private readonly publicKey: PublicKey;
   private readonly client: Client;
   private readonly agentKit: HederaAgentKit;
 
   constructor(
     accountIdString: string,
     privateKeyString: string,
+    publicKey: string,
     keyType: string,
     networkType: HederaNetworkType
   ) {
+    this.publicKey = PublicKey.fromString(publicKey);
     this.accountId = AccountId.fromString(accountIdString);
     this.privateKey = hederaPrivateKeyFromString({
       key: privateKeyString,
@@ -44,6 +43,7 @@ export class NetworkClientWrapper {
     this.agentKit = new HederaAgentKit(
       this.accountId.toString(),
       this.privateKey.toString(),
+      this.publicKey.toStringDer(),
       networkType
     );
   }
@@ -71,6 +71,7 @@ export class NetworkClientWrapper {
     return {
       accountId: accountId!.toString(),
       privateKey: accountPrivateKey.toStringRaw(),
+      publicKey: accountPublicKey.toStringRaw(),
     };
   }
 
@@ -84,12 +85,20 @@ export class NetworkClientWrapper {
   }
 
   async createFT(options: CreateFTOptions): Promise<string> {
-    const result = await this.agentKit.createFT(options);
+    const isCustodial: boolean = true; // this method is hardcoded as custodial
+
+    const result = await this.agentKit
+        .createFT(options, isCustodial)
+        .then(response => response.getRawResponse() as CreateTokenResult)
     return result.tokenId.toString();
   }
 
   async createNFT(options: CreateNFTOptions): Promise<string> {
-    const result = await this.agentKit.createNFT(options);
+    const isCustodial: boolean = true; // this method is hardcoded as custodial
+
+    const result = await this.agentKit
+        .createNFT(options, isCustodial)
+        .then(response => response.getRawResponse() as CreateTokenResult)
     return result.tokenId.toString();
   }
 
@@ -98,10 +107,13 @@ export class NetworkClientWrapper {
     tokenId: string,
     amount: number
   ): Promise<void> {
+    const isCustodial: boolean = true; // this method is hardcoded as custodial
+
     await this.agentKit.transferToken(
       TokenId.fromString(tokenId),
       receiverId,
-      amount
+      amount,
+      isCustodial,
     );
   }
 
@@ -109,21 +121,29 @@ export class NetworkClientWrapper {
     tokenId: string,
     recipients: AirdropRecipient[]
   ): Promise<AirdropResult> {
-    return this.agentKit.airdropToken(TokenId.fromString(tokenId), recipients);
+    const isCustodial: boolean = true; // this method is hardcoded as custodial
+
+    return await this.agentKit
+      .airdropToken(TokenId.fromString(tokenId), recipients, isCustodial)
+      .then(response => response.getRawResponse() as AirdropResult);
   }
 
   getAccountId(): string {
     return this.accountId.toString();
   }
 
-  createTopic(
+  async createTopic(
     topicMemo: string,
     submitKey: boolean
   ): Promise<CreateTopicResult> {
-    return this.agentKit.createTopic(topicMemo, submitKey);
+    const isCustodial: boolean = true; // this method is hardcoded as custodial
+
+    return this.agentKit
+        .createTopic(topicMemo, submitKey, isCustodial)
+        .then(response => response.getRawResponse() as CreateTopicResult);
   }
 
-  getAccountTokenBalance(
+  async getAccountTokenBalance(
       tokenId: string,
       networkType: string,
       accountId: string
@@ -131,11 +151,12 @@ export class NetworkClientWrapper {
     return this.agentKit.getHtsBalance(tokenId, networkType as HederaNetworkType, accountId);
   }
 
-  submitTopicMessage(topicId: string, message: string): Promise<SubmitMessageResult> {
-    return this.agentKit.submitTopicMessage(
-      TopicId.fromString(topicId),
-      message
-    );
+  async submitTopicMessage(topicId: string, message: string): Promise<SubmitMessageResult> {
+    const isCustodial: boolean = true; // this method is hardcoded as custodial
+
+    return this.agentKit
+      .submitTopicMessage(TopicId.fromString(topicId), message, isCustodial)
+      .then(response => response.getRawResponse() as SubmitMessageResult);
   }
 
 }

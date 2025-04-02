@@ -6,6 +6,8 @@ import { NetworkClientWrapper } from "./utils/testnetClient";
 import { AccountData } from "./utils/testnetUtils";
 import { wait } from "./utils/utils";
 
+const IS_CUSTODIAL = true;
+
 const extractTokenBalance = (messages: any[]) => {
   return messages.reduce((acc, { content }) => {
     try {
@@ -40,6 +42,7 @@ describe("get_hts_balance", () => {
       const networkClientWrapper = new NetworkClientWrapper(
         process.env.HEDERA_ACCOUNT_ID!,
         process.env.HEDERA_PRIVATE_KEY!,
+        process.env.HEDERA_PUBLIC_KEY!,
         process.env.HEDERA_KEY_TYPE!,
         "testnet"
       );
@@ -122,7 +125,8 @@ describe("get_hts_balance", () => {
           text: promptText,
         };
 
-        const response = await langchainAgent.sendPrompt(prompt);
+        const response = await langchainAgent.sendPrompt(prompt, IS_CUSTODIAL);
+        await wait(5000);
 
         const hederaActionBalanceInDisplayUnits = extractTokenBalance(response.messages);
         const mirrorNodeBalanceInDisplayUnits = await hederaApiClient.getTokenBalance(
@@ -134,7 +138,7 @@ describe("get_hts_balance", () => {
           accountId,
           tokenId
         ))?.balance ?? 0;
-        
+
         const decimals = (await hederaApiClient.getTokenDetails(tokenId))?.decimals;
         const hederaActionBalanceInBaseUnits = (Number(hederaActionBalanceInDisplayUnits) * 10 ** Number(decimals)).toFixed(0);
 
