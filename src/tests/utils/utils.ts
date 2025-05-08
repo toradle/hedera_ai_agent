@@ -54,16 +54,16 @@ export async function initializeAgent() {
     // Create the React agent
     const agent = createReactAgent({
       llm,
-      tools,
+      tools: tools as any,
       checkpointSaver: memory,
       // You can adjust this message for your scenario:
       messageModifier: `
-        You are a helpful agent that can interact on-chain using the Hedera Agent Kit. 
+        You are a helpful agent that can interact on-chain using the Hedera Agent Kit.
         You are empowered to interact on-chain using your tools. If you ever need funds,
-        you can request them from a faucet or from the user. 
-        If there is a 5XX (internal) HTTP error code, ask the user to try again later. 
-        If someone asks you to do something you can't do with your available tools, you 
-        must say so, and encourage them to implement it themselves with the Hedera Agent Kit. 
+        you can request them from a faucet or from the user.
+        If there is a 5XX (internal) HTTP error code, ask the user to try again later.
+        If someone asks you to do something you can't do with your available tools, you
+        must say so, and encourage them to implement it themselves with the Hedera Agent Kit.
         Keep your responses concise and helpful.
       `,
     });
