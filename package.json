@@ -4,8 +4,8 @@
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
-    "test": "ts-node tests/index.ts",
-    "test-vitest": "vitest run",
+    "demo:langchain": "tsx tests/index.ts",
+    "test": "vitest run",
     "prepare": "npm run build",
     "build": "tsc"
   },
@@ -14,18 +14,18 @@
   "license": "ISC",
   "description": "",
   "devDependencies": {
-    "ts-node": "^10.9.2",
     "typescript": "^5.7.2",
-    "vitest": "^3.0.7"
+    "vitest": "^3.0.7",
+    "tsx": "^4.19.4"
   },
   "dependencies": {
-    "@hashgraph/sdk": "^2.56.0",
-    "@langchain/core": "^0.3.26",
-    "@langchain/langgraph": "^0.2.34",
-    "@langchain/openai": "^0.3.16",
-    "@hashgraphonline/standards-agent-kit": "^0.0.18",
-    "bignumber.js": "^9.1.2",
-    "dotenv": "^16.4.7"
+    "@hashgraph/sdk": "^2.63.0",
+    "@hashgraphonline/standards-agent-kit": "0.0.22",
+    "@langchain/core": "^0.3.55",
+    "@langchain/langgraph": "^0.2.68",
+    "@langchain/openai": "^0.5.10",
+    "bignumber.js": "^9.3.0",
+    "dotenv": "^16.5.0"
   },
   "repository": {
     "type": "git",
