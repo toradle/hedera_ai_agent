@@ -3,20 +3,21 @@ import tsPlugin from '@typescript-eslint/eslint-plugin';
 import tsParser from '@typescript-eslint/parser';
 
 const eslintConfig = [
-  // Base configuration for TypeScript files
+  {
+    ignores: ['dist/**', 'node_modules/**', '*.d.ts', '**/*.d.ts'],
+  },
   {
     files: ['**/*.{ts,tsx}'],
     languageOptions: {
       parser: tsParser,
       parserOptions: {
-        ecmaFeatures: { modules: true, jsx: true },
+        ecmaFeatures: { modules: true },
         project: './tsconfig.json',
       },
     },
     plugins: {
       '@typescript-eslint': tsPlugin,
       sonarjs,
-      custom: noJsxCommentsPlugin,
     },
     rules: {
       '@typescript-eslint/no-explicit-any': 'warn',
@@ -25,14 +26,6 @@ const eslintConfig = [
         { allowExpressions: true },
       ],
       '@typescript-eslint/no-unused-vars': 'error',
-    },
-  },
-  {
-    files: ['**/*.{js,jsx,ts,tsx}'],
-    plugins: {
-      sonarjs,
-    },
-    rules: {
       'no-unneeded-ternary': ['error', { defaultAssignment: false }],
       'no-nested-ternary': 'error',
       'no-constant-binary-expression': 'error',

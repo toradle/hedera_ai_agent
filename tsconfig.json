@@ -3,7 +3,6 @@
     "target": "ES2020",
     "module": "ESNext",
     "lib": ["ES2020", "DOM", "DOM.Iterable"],
-    "rootDir": "./src",
     "strict": true,
     "noImplicitAny": true,
     "strictBindCallApply": true,
@@ -24,6 +23,6 @@
     "isolatedModules": true,
     "noEmit": true
   },
-  "include": ["src/**/*"],
-  "exclude": ["node_modules"]
+  "include": ["src/**/*", "examples/**/*", "tests/**/*", "*.config.ts"],
+  "exclude": ["node_modules", "dist"]
 }
