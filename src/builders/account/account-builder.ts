@@ -15,7 +15,6 @@ import {
   ScheduleSignTransaction,
 } from '@hashgraph/sdk';
 import BigNumber from 'bignumber.js';
-import { detectKeyTypeFromString } from '@hashgraphonline/standards-sdk';
 import {
   CreateAccountParams,
   HbarTransferParams,
@@ -33,6 +32,7 @@ import {
 } from '../../types';
 import { BaseServiceBuilder } from '../base-service-builder';
 import { HederaAgentKit } from '../../agent/agent';
+import { detectKeyTypeFromString } from '../../utils/key-type-detector';
 
 const DEFAULT_ACCOUNT_AUTORENEW_PERIOD_SECONDS = 7776000;
 

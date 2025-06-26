@@ -48,7 +48,7 @@ export {
 };
 
 export type AgentOperationalMode = 'directExecution' | 'provideBytes';
-export type HederaNetworkType = 'mainnet' | 'testnet';
+export type HederaNetworkType = 'mainnet' | 'testnet' | 'previewnet';
 
 /**
  * Configuration for custom mirror node providers.

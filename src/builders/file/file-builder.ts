@@ -6,7 +6,6 @@ import {
   PublicKey,
 } from '@hashgraph/sdk';
 import { Buffer } from 'buffer';
-import { detectKeyTypeFromString } from '@hashgraphonline/standards-sdk';
 import {
   CreateFileParams,
   AppendFileParams,
@@ -15,6 +14,7 @@ import {
 } from '../../types';
 import { BaseServiceBuilder } from '../base-service-builder';
 import { HederaAgentKit } from '../../agent/agent';
+import { detectKeyTypeFromString } from '../../utils/key-type-detector';
 
 const MAX_FILE_APPEND_BYTES = 6000;
 
@@ -22,7 +22,6 @@ const MAX_FILE_APPEND_BYTES = 6000;
  * FileBuilder facilitates Hedera File Service transactions.
  */
 export class FileBuilder extends BaseServiceBuilder {
-
   constructor(hederaKit: HederaAgentKit) {
     super(hederaKit);
   }
@@ -94,7 +93,9 @@ export class FileBuilder extends BaseServiceBuilder {
         console.warn(
           `FileBuilder: Content size (${contentsBytes.length} bytes) for appendFile exceeds single transaction limit (${MAX_FILE_APPEND_BYTES} bytes). Only the first chunk will be prepared. Implement multi-transaction append for larger files.`
         );
-        this.addNote(`Content for file append was truncated to ${MAX_FILE_APPEND_BYTES} bytes due to single transaction limit.`);
+        this.addNote(
+          `Content for file append was truncated to ${MAX_FILE_APPEND_BYTES} bytes due to single transaction limit.`
+        );
         transaction.setContents(
           contentsBytes.subarray(0, MAX_FILE_APPEND_BYTES)
         );

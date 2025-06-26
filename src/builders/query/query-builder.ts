@@ -23,7 +23,7 @@ import {
   NetworkInfo,
   NetworkFees,
   OpcodesResponse,
-} from '@hashgraphonline/standards-sdk';
+} from '../../services/mirror-node';
 import { HederaAgentKit } from '../../agent';
 import { TopicId, AccountId, PublicKey } from '@hashgraph/sdk';
 
@@ -208,7 +208,7 @@ export class QueryBuilder {
    */
   async getScheduledTransactionStatus(scheduleId: string): Promise<{
     executed: boolean;
-    executedDate?: Date;
+    executedDate?: Date | undefined;
     deleted: boolean;
   }> {
     return await this.mirrorNode.getScheduledTransactionStatus(scheduleId);

@@ -65,9 +65,9 @@ import {
 import { BaseServiceBuilder } from '../base-service-builder';
 import { Buffer } from 'buffer';
 import { HederaAgentKit } from '../../agent/agent';
-import { Logger } from '@hashgraphonline/standards-sdk';
 import { CustomFeeInputData } from '../../langchain/tools/hts/create-fungible-token-tool';
 import { AgentOperationalMode } from '../../types';
+import { Logger } from '../../utils/logger';
 
 const DEFAULT_AUTORENEW_PERIOD_SECONDS = 7776000;
 
@@ -272,7 +272,9 @@ function mapToSdkCustomFees(
           }`
         );
         throw new Error(
-          `Unsupported custom fee type: ${(exhaustiveCheck as unknown as { type?: string }).type}`
+          `Unsupported custom fee type: ${
+            (exhaustiveCheck as unknown as { type?: string }).type
+          }`
         );
       }
     }

@@ -2,9 +2,9 @@ import { StructuredTool, ToolParams } from '@langchain/core/tools';
 import { CallbackManagerForToolRun } from '@langchain/core/callbacks/manager';
 import { z } from 'zod';
 import { HederaAgentKit } from '../../../agent/agent';
-import { Logger as StandardsSdkLogger } from '@hashgraphonline/standards-sdk';
 import { ModelCapabilityDetector } from '../../../utils/model-capability-detector';
 import { ModelCapability } from '../../../types/model-capability';
+import { Logger } from '../../../utils/logger';
 
 /**
  * Field processing configuration
@@ -60,7 +60,7 @@ const MODEL_STRATEGIES: Record<ModelCapability, ResponseStrategy> = {
  */
 export interface BaseHederaQueryToolParams extends ToolParams {
   hederaKit: HederaAgentKit;
-  logger?: StandardsSdkLogger;
+  logger?: Logger;
   modelCapability?: ModelCapability;
   customStrategy?: Partial<ResponseStrategy>;
 }
@@ -78,7 +78,7 @@ export abstract class BaseHederaQueryTool<
   //@ts-ignore
 > extends StructuredTool<S> {
   protected hederaKit: HederaAgentKit;
-  protected logger: StandardsSdkLogger;
+  protected logger: Logger;
   protected responseStrategy: ResponseStrategy;
   protected modelCapability: ModelCapability;
   private notes: string[] = [];

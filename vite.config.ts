@@ -7,27 +7,21 @@ type BuildFormat = LibraryFormats;
 
 interface GlobalMap {
   [key: string]: string;
-  }
+}
 
 const EXTERNAL_DEPENDENCIES = [
-    '@hashgraph/sdk',
-    '@hashgraphonline/hashinal-wc',
-    '@hashgraphonline/standards-sdk',
-    '@hashgraphonline/standards-agent-kit',
-    '@langchain/core',
-    '@langchain/langgraph',
-    '@langchain/openai',
-    'bignumber.js',
-    'date-fns',
-    'dotenv',
-    'zod',
-  ];
+  '@hashgraph/sdk',
+  '@langchain/core',
+  '@langchain/langgraph',
+  '@langchain/openai',
+  'bignumber.js',
+  'date-fns',
+  'dotenv',
+  'zod',
+];
 
 const GLOBAL_MAP: GlobalMap = {
   '@hashgraph/sdk': 'HederaSDK',
-  '@hashgraphonline/hashinal-wc': 'HashinalsWalletConnectSDK',
-  '@hashgraphonline/standards-sdk': 'StandardsSDK',
-  '@hashgraphonline/standards-agent-kit': 'StandardsAgentKit',
   '@langchain/core': 'LangchainCore',
   '@langchain/langgraph': 'LangchainLanggraph',
   '@langchain/openai': 'LangchainOpenAI',
@@ -107,7 +101,6 @@ function createRollupOutput(format: BuildFormat) {
   };
 }
 
- 
 export default defineConfig(async () => {
   const format = (process.env.BUILD_FORMAT || 'es') as BuildFormat;
   const outputDir = getOutputDirectory(format);

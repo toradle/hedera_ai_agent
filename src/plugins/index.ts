@@ -6,7 +6,6 @@ export type {
   PluginContext,
   IPluginClient,
   IPluginStateManager,
-  HederaTool
+  HederaTool,
 } from './PluginInterface';
 export { PluginRegistry } from './PluginRegistry';
-export { OpenConvAIPlugin } from './openconvai/OpenConvAIPlugin';

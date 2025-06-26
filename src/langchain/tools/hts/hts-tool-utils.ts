@@ -1,4 +1,3 @@
-import { Logger as StandardsSdkLogger } from '@hashgraphonline/standards-sdk';
 import {
   CustomFee,
   AccountId,
@@ -9,9 +8,12 @@ import {
   FeeAssessmentMethod,
   Long,
 } from '@hashgraph/sdk';
+import { Logger } from '../../../utils/logger';
 
-export const SERIALIZED_KEY_DESCRIPTION = 'serialized string). Builder handles parsing.';
-export const FEE_COLLECTOR_DESCRIPTION = "Fee collector's account ID. Defaults to user's account if in user-centric context and not specified.";
+export const SERIALIZED_KEY_DESCRIPTION =
+  'serialized string). Builder handles parsing.';
+export const FEE_COLLECTOR_DESCRIPTION =
+  "Fee collector's account ID. Defaults to user's account if in user-centric context and not specified.";
 
 interface FeeData {
   feeCollectorAccountId: string;
@@ -40,7 +42,7 @@ interface FeeData {
  */
 export function parseCustomFeesJson(
   customFeesJson: string,
-  logger: StandardsSdkLogger
+  logger: Logger
 ): CustomFee[] {
   let parsedFeesInput: FeeData[];
   try {
@@ -108,14 +110,14 @@ export function parseCustomFeesJson(
           .setFeeCollectorAccountId(feeCollectorAccountId)
           .setNumerator(Long.fromValue(feeData.numerator))
           .setDenominator(Long.fromValue(feeData.denominator));
-        if (feeData.minimumAmount ) {
+        if (feeData.minimumAmount) {
           fractionalFee.setMin(
             typeof feeData.minimumAmount === 'string'
               ? Long.fromString(feeData.minimumAmount)
               : Long.fromNumber(feeData.minimumAmount)
           );
         }
-        if (feeData.maximumAmount ) {
+        if (feeData.maximumAmount) {
           fractionalFee.setMax(
             typeof feeData.maximumAmount === 'string'
               ? Long.fromString(feeData.maximumAmount)
@@ -194,7 +196,7 @@ export function parseCustomFeesJson(
     }
 
     if (
-      feeData.allCollectorsAreExempt  &&
+      feeData.allCollectorsAreExempt &&
       typeof feeData.allCollectorsAreExempt === 'boolean'
     ) {
       newFee.setAllCollectorsAreExempt(feeData.allCollectorsAreExempt);

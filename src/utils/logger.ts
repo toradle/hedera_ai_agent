@@ -1,47 +1,100 @@
- 
-/**
- * @description Defines a simple Logger interface for the HederaAgentKit.
- */
-export interface Logger {
-  debug(message: string, ...optionalParams: unknown[]): void;
-  info(message: string, ...optionalParams: unknown[]): void;
-  warn(message: string, ...optionalParams: unknown[]): void;
-  error(message: string, ...optionalParams: unknown[]): void;
+import pino from 'pino';
+
+export type LogLevel = 'debug' | 'info' | 'warn' | 'error' | 'silent';
+
+export interface LoggerOptions {
+  level?: LogLevel;
+  module?: string;
+  prettyPrint?: boolean;
+  silent?: boolean;
 }
+export class Logger {
+  private static instances: Map<string, Logger> = new Map();
+  private logger: pino.Logger;
+  private moduleContext: string;
 
-/**
- * @description A basic console logger implementation.
- */
-export class ConsoleLogger implements Logger {
-  private static instance: ConsoleLogger;
-  private readonly prefix: string;
+  constructor(options: LoggerOptions = {}) {
+    const globalDisable = process.env.DISABLE_LOGS === 'true';
 
-  private constructor(prefix = '[HederaAgentKit]') {
-    this.prefix = prefix;
+    const shouldSilence = options.silent || globalDisable;
+    const level = shouldSilence ? 'silent' : options.level || 'info';
+    this.moduleContext = options.module || 'app';
+
+    const shouldEnablePrettyPrint =
+      !shouldSilence && options.prettyPrint !== false;
+    const pinoOptions = {
+      level,
+      enabled: !shouldSilence,
+      transport: shouldEnablePrettyPrint
+        ? {
+            target: 'pino-pretty',
+            options: {
+              colorize: true,
+              translateTime: 'SYS:standard',
+              ignore: 'pid,hostname',
+            },
+          }
+        : undefined,
+    };
+
+    // @ts-ignore
+    this.logger = pino(pinoOptions);
   }
 
-  public static getInstance(prefix?: string): ConsoleLogger {
-    if (!ConsoleLogger.instance) {
-      ConsoleLogger.instance = new ConsoleLogger(prefix);
+  static getInstance(options: LoggerOptions = {}): Logger {
+    const moduleKey = options.module || 'default';
+
+    const globalDisable = process.env.DISABLE_LOGS === 'true';
+
+    if (globalDisable && Logger.instances.has(moduleKey)) {
+      const existingLogger = Logger.instances.get(moduleKey)!;
+      if (existingLogger.getLevel() !== 'silent') {
+        Logger.instances.delete(moduleKey);
+      }
     }
-    return ConsoleLogger.instance;
+
+    if (!Logger.instances.has(moduleKey)) {
+      Logger.instances.set(moduleKey, new Logger(options));
+    }
+
+    return Logger.instances.get(moduleKey)!;
   }
 
-  debug(message: string, ...optionalParams: unknown[]): void {
-    console.debug(`${this.prefix} DEBUG: ${message}`, ...optionalParams);
+  setLogLevel(level: LogLevel): void {
+    this.logger.level = level;
   }
 
-  info(message: string, ...optionalParams: unknown[]): void {
-    console.info(`${this.prefix} INFO: ${message}`, ...optionalParams);
+  getLevel(): LogLevel {
+    return this.logger.level as LogLevel;
   }
 
-  warn(message: string, ...optionalParams: unknown[]): void {
-    console.warn(`${this.prefix} WARN: ${message}`, ...optionalParams);
+  setSilent(silent: boolean): void {
+    if (silent) {
+      this.logger.level = 'silent';
+    }
   }
 
-  error(message: string, ...optionalParams: unknown[]): void {
-    console.error(`${this.prefix} ERROR: ${message}`, ...optionalParams);
+  setModule(module: string): void {
+    this.moduleContext = module;
+  }
+
+  debug(...args: any[]): void {
+    this.logger.debug({ module: this.moduleContext }, ...args);
+  }
+
+  info(...args: any[]): void {
+    this.logger.info({ module: this.moduleContext }, ...args);
+  }
+
+  warn(...args: any[]): void {
+    this.logger.warn({ module: this.moduleContext }, ...args);
+  }
+
+  error(...args: any[]): void {
+    this.logger.error({ module: this.moduleContext }, ...args);
+  }
+
+  trace(...args: any[]): void {
+    this.logger.trace({ module: this.moduleContext }, ...args);
   }
 }
-
-export const defaultLogger = ConsoleLogger.getInstance(); 

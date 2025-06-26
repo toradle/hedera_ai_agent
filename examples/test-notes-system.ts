@@ -6,15 +6,15 @@ import {
   HederaConversationalAgent,
   AgentResponse,
 } from '../src/agent/conversational-agent';
-
-import { NetworkType } from '@hashgraphonline/standards-sdk';
+import { HederaNetworkType } from '../src/types';
 
 async function testNotes(): Promise<void> {
   console.log('Starting Hedera Agent Kit - Notes System Test...');
 
   const operatorId = process.env.HEDERA_ACCOUNT_ID;
   const operatorKey = process.env.HEDERA_PRIVATE_KEY;
-  const network = (process.env.HEDERA_NETWORK || 'testnet') as NetworkType;
+  const network = (process.env.HEDERA_NETWORK ||
+    'testnet') as HederaNetworkType;
   const openaiApiKey = process.env.OPENAI_API_KEY;
   const userAccountId = process.env.USER_ACCOUNT_ID; // For user-centric operations
 
@@ -41,7 +41,7 @@ async function testNotes(): Promise<void> {
 
   const conversationalAgent = new HederaConversationalAgent(agentSigner, {
     operationalMode: 'provideBytes',
-    userAccountId: userAccountId,
+    userAccountId: userAccountId || undefined,
     verbose: true,
     openAIApiKey: openaiApiKey,
     scheduleUserTransactionsInBytesMode: true,

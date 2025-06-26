@@ -2,13 +2,11 @@ import { AbstractSigner } from '../signer/abstract-signer';
 import { HederaAgentKit, PluginConfig } from './agent';
 import { BaseChatModel } from '@langchain/core/language_models/chat_models';
 import { ChatOpenAI, ChatOpenAIFields } from '@langchain/openai';
-import { AgentExecutor, createOpenAIToolsAgent } from 'langchain/agents';
 import {
   ChatPromptTemplate,
   MessagesPlaceholder,
 } from '@langchain/core/prompts';
 import { AIMessage, BaseMessage, HumanMessage } from '@langchain/core/messages';
-import { Logger } from '@hashgraphonline/standards-sdk';
 import { TransactionReceipt } from '@hashgraph/sdk';
 import { StructuredTool } from '@langchain/core/tools';
 import { AgentOperationalMode, MirrorNodeConfig } from '../types';
@@ -20,6 +18,8 @@ import {
   CostCalculation,
   calculateTokenCostSync,
 } from '../utils/token-usage-tracker';
+import { Logger } from '../utils/logger';
+import { AgentExecutor, createOpenAIToolsAgent } from 'langchain/agents';
 
 /**
  * Configuration for the HederaConversationalAgent.
@@ -27,7 +27,7 @@ import {
 export interface HederaConversationalAgentConfig {
   operationalMode?: AgentOperationalMode;
   pluginConfig?: PluginConfig;
-  userAccountId?: string;
+  userAccountId?: string | undefined;
   customSystemMessagePreamble?: string;
   customSystemMessagePostamble?: string;
   verbose?: boolean;

@@ -1,11 +1,11 @@
 import { z } from 'zod';
 import { StructuredTool, ToolParams } from '@langchain/core/tools';
 import { HederaAgentKit } from '../../../agent/agent';
-import { Logger as StandardsSdkLogger } from '@hashgraphonline/standards-sdk';
 import { CallbackManagerForToolRun } from '@langchain/core/callbacks/manager';
 import { BaseServiceBuilder } from '../../../builders/base-service-builder';
 import { AccountId, Key, TransactionId } from '@hashgraph/sdk';
 import { parseKey } from '../../../utils/key-utils';
+import { Logger } from '../../../utils/logger';
 
 /**
  * Zod schema for transaction meta options that can be used with any Hedera transaction tool.
@@ -62,7 +62,7 @@ export type HederaTransactionMetaOptions = z.infer<
  */
 export interface BaseHederaTransactionToolParams extends ToolParams {
   hederaKit: HederaAgentKit;
-  logger?: StandardsSdkLogger;
+  logger?: Logger;
 }
 
 /**
@@ -95,7 +95,7 @@ export abstract class BaseHederaTransactionTool<
   >
 > {
   protected hederaKit: HederaAgentKit;
-  protected logger: StandardsSdkLogger;
+  protected logger: Logger;
   protected neverScheduleThisTool: boolean = false;
 
   /**

@@ -1,6 +1,6 @@
 import { BaseCallbackHandler } from '@langchain/core/callbacks/base';
 import { LLMResult } from '@langchain/core/outputs';
-import { Logger } from '@hashgraphonline/standards-sdk';
+import { Logger } from './logger';
 
 const DEFAULT_MODEL = 'gpt-4o-mini';
 

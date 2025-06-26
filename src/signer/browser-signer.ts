@@ -2,12 +2,12 @@ import {
   AccountId,
   Transaction,
   TransactionReceipt,
-  Signer as HederaSdkSigner,
   PrivateKey,
+  Status,
 } from '@hashgraph/sdk';
 import { AbstractSigner } from './abstract-signer';
 import { HederaNetworkType } from '../types';
-import { HashinalsWalletConnectSDK } from '@hashgraphonline/hashinal-wc';
+import { DAppConnector } from '@hashgraph/hedera-wallet-connect';
 
 /**
  * A signer implementation for browser environments that uses HashConnect for signing.
@@ -16,7 +16,7 @@ import { HashinalsWalletConnectSDK } from '@hashgraphonline/hashinal-wc';
 export class BrowserSigner extends AbstractSigner {
   private networkInternal: HederaNetworkType;
   private accountIdInternal: AccountId;
-  private hwcSdk: HashinalsWalletConnectSDK;
+  private dAppConnector: DAppConnector;
 
   /**
    * Constructs a BrowserSigner instance.
@@ -25,18 +25,17 @@ export class BrowserSigner extends AbstractSigner {
    * @param {string | AccountId} accountId - The Hedera account ID this signer will represent (must be paired with hwcSdk).
    */
   constructor(
-    hwcSdk: HashinalsWalletConnectSDK,
+    dAppConnector: DAppConnector,
     network: HederaNetworkType,
     accountId: string | AccountId
   ) {
     super();
-    this.hwcSdk = hwcSdk;
+    this.dAppConnector = dAppConnector;
     this.networkInternal = network;
     this.accountIdInternal = AccountId.fromString(accountId.toString());
 
-    const foundSigner = this.hwcSdk.dAppConnector?.signers?.find((s) => {
-      const hederaSigner = s as HederaSdkSigner;
-      const signerAccount = hederaSigner.getAccountId();
+    const foundSigner = this.dAppConnector?.signers?.find((signer) => {
+      const signerAccount = signer.getAccountId();
       if (signerAccount) {
         return signerAccount.toString() === this.accountIdInternal.toString();
       }
@@ -61,6 +60,103 @@ export class BrowserSigner extends AbstractSigner {
     return this.accountIdInternal;
   }
 
+  public async executeTransaction(
+    tx: Transaction,
+    disableSigner: boolean = false
+  ): Promise<TransactionReceipt> {
+    const signer = this.dAppConnector.signers.find(
+      (signer_) =>
+        signer_.getAccountId().toString() === this.accountIdInternal.toString()
+    );
+    if (!signer) {
+      throw new Error(
+        `No signer found for account ID ${this.accountIdInternal.toString()}`
+      );
+    }
+    if (!disableSigner) {
+      const signedTx = await tx.freezeWithSigner(signer);
+      const executedTx = await signedTx.executeWithSigner(signer);
+      return await executedTx.getReceiptWithSigner(signer);
+    } else {
+      const executedTx = await tx.executeWithSigner(signer);
+      return await executedTx.getReceiptWithSigner(signer);
+    }
+  }
+
+  public async executeTransactionWithErrorHandling(
+    tx: Transaction,
+    disableSigner: boolean
+  ): Promise<{
+    result?: TransactionReceipt | undefined;
+    error?: string | undefined;
+  }> {
+    try {
+      const result = await this.executeTransaction(tx, disableSigner);
+      if (result.status._code.toString() === Status.Success.toString()) {
+        return {
+          result,
+          error: undefined,
+        };
+      } else {
+        return {
+          result: undefined,
+          error: result.status.toString(),
+        };
+      }
+    } catch (e) {
+      const error = e as Error;
+      const message = error.message?.toLowerCase();
+
+      if (message.includes('insufficient payer balance')) {
+        return {
+          result: undefined,
+          error: 'Insufficient balance to complete the transaction.',
+        };
+      } else if (message.includes('reject')) {
+        return {
+          result: undefined,
+          error: 'You rejected the transaction',
+        };
+      } else if (message.includes('invalid signature')) {
+        return {
+          result: undefined,
+          error: 'Invalid signature. Please check your account and try again.',
+        };
+      } else if (message.includes('transaction expired')) {
+        return {
+          result: undefined,
+          error: 'Transaction expired. Please try again.',
+        };
+      } else if (message.includes('account not found')) {
+        return {
+          result: undefined,
+          error:
+            'Account not found. Please check the account ID and try again.',
+        };
+      } else if (message.includes('unauthorized')) {
+        return {
+          result: undefined,
+          error:
+            'Unauthorized. You may not have the necessary permissions for this action.',
+        };
+      } else if (message.includes('busy')) {
+        return {
+          result: undefined,
+          error: 'The network is busy. Please try again later.',
+        };
+      } else if (message.includes('invalid transaction')) {
+        return {
+          result: undefined,
+          error: 'Invalid transaction. Please check your inputs and try again.',
+        };
+      }
+      return {
+        result: undefined,
+        error: 'An unknown error occurred. Please try again.',
+      };
+    }
+  }
+
   /**
    * Signs and executes a Hedera transaction using the HashinalsWalletConnectSDK,
    * returning the transaction receipt. Transaction freezing is handled by HashinalsWalletConnectSDK.
@@ -71,7 +167,7 @@ export class BrowserSigner extends AbstractSigner {
   public async signAndExecuteTransaction(
     transaction: Transaction
   ): Promise<TransactionReceipt> {
-    const outcome = await this.hwcSdk.executeTransactionWithErrorHandling(
+    const outcome = await this.executeTransactionWithErrorHandling(
       transaction,
       false
     );

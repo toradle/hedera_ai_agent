@@ -1,9 +1,9 @@
 import { describe, expect, test, vi, beforeEach } from 'vitest';
-import { BasePlugin, PluginContext } from '../../src/plugins/BasePlugin';
+import { BasePlugin } from '../../src/plugins/BasePlugin';
 import { StructuredTool } from '@langchain/core/tools';
-import { HCS10Client } from '../../src/hcs10/HCS10Client';
-import { Logger } from '@hashgraphonline/standards-sdk';
+import { Logger } from '../../src/utils/logger';
 import { z } from 'zod';
+import { HederaTool, PluginContext } from '../../src';
 
 /**
  * Mock tool class for testing
@@ -24,7 +24,6 @@ class MockTool extends StructuredTool {
 describe('BasePlugin', () => {
   let mockContext: PluginContext;
   let mockLogger: Logger;
-  let mockClient: HCS10Client;
 
   class TestPlugin extends BasePlugin {
     id = 'test-plugin';
@@ -33,8 +32,8 @@ describe('BasePlugin', () => {
     version = '1.0.0';
     author = 'Test Author';
 
-    getTools(): StructuredTool[] {
-      return [new MockTool()];
+    getTools(): HederaTool[] {
+      return [new MockTool() as unknown as HederaTool];
     }
   }
 
@@ -46,10 +45,7 @@ describe('BasePlugin', () => {
       debug: vi.fn(),
     } as unknown as Logger;
 
-    mockClient = {} as HCS10Client;
-
     mockContext = {
-      client: mockClient,
       logger: mockLogger,
       config: {
         testOption: 'test-value'
@@ -102,7 +98,7 @@ describe('BasePlugin', () => {
     await plugin.initialize(mockContext);
 
     const tools = plugin.getTools();
-    const tool = tools[0] as MockTool;
+    const tool = tools[0] as unknown as MockTool;
 
     const result = await tool._call({ input: 'test' });
     expect(result).toBe('Mock result: test');

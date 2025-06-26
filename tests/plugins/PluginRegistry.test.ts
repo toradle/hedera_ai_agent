@@ -1,11 +1,12 @@
 import { describe, expect, test, vi, beforeEach } from 'vitest';
 import { PluginRegistry } from '../../src/plugins/PluginRegistry';
-import { PluginContext, BasePlugin } from '../../src/plugins/BasePlugin';
+import { BasePlugin } from '../../src/plugins/BasePlugin';
 import { StructuredTool } from '@langchain/core/tools';
-import { HCS10Client } from '../../src/hcs10/HCS10Client';
-import { Logger } from '@hashgraphonline/standards-sdk';
+import { Logger } from '../../src/utils/logger';
+import { HederaTool, PluginContext } from '../../src';
+import { z } from 'zod';
 
-const MOCK_PLUGIN_ID = MOCK_PLUGIN_ID;
+const MOCK_PLUGIN_ID = 'mock-plugin-id';
 
 /**
  * Mock tool for testing
@@ -13,6 +14,7 @@ const MOCK_PLUGIN_ID = MOCK_PLUGIN_ID;
 class MockTool extends StructuredTool {
   name = 'mock_tool';
   description = 'A mock tool for testing';
+  schema = z.object({});
 
   async _call(): Promise<string> {
     return 'Mock tool result';
@@ -29,14 +31,15 @@ class MockPlugin extends BasePlugin {
   version = '1.0.0';
   author = 'Test Author';
 
-  initialize = vi.fn(async (context: PluginContext) => {
+  override async initialize(context: PluginContext): Promise<void> {
     await super.initialize(context);
-  });
+  }
 
-  getTools = vi.fn(() => [new MockTool()]);
+  getTools(): HederaTool[] {
+    return [new MockTool() as unknown as HederaTool];
+  }
 
-  cleanup = vi.fn(async () => {
-  });
+  cleanup = vi.fn(async () => {});
 }
 
 describe('PluginRegistry', () => {
@@ -44,7 +47,6 @@ describe('PluginRegistry', () => {
   let mockPlugin: MockPlugin;
   let mockContext: PluginContext;
   let mockLogger: Logger;
-  let mockClient: HCS10Client;
 
   beforeEach(() => {
     mockLogger = {
@@ -54,12 +56,9 @@ describe('PluginRegistry', () => {
       debug: vi.fn(),
     } as unknown as Logger;
 
-    mockClient = {} as HCS10Client;
-
     mockContext = {
-      client: mockClient,
       logger: mockLogger,
-      config: {}
+      config: {},
     };
 
     registry = new PluginRegistry(mockContext);

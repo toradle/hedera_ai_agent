@@ -6,12 +6,10 @@ import {
   TransactionResponse,
   TransactionReceipt,
 } from '@hashgraph/sdk';
-import {
-  detectKeyTypeFromString,
-  Logger,
-} from '@hashgraphonline/standards-sdk';
 import { AbstractSigner } from './abstract-signer';
 import { HederaNetworkType } from '../types';
+import { Logger } from '../utils/logger';
+import { detectKeyTypeFromString } from '../utils/key-type-detector';
 
 /**
  * A signer implementation for server-side environments that uses a private key for signing.
@@ -41,9 +39,9 @@ export class ServerSigner extends AbstractSigner {
     super();
     this.accountIdInternal = AccountId.fromString(accountId.toString());
     this.networkInternal = network;
-    this.logger = new Logger({ 
-      module: 'ServerSigner', 
-      level: process.env.DEBUG === 'true' ? 'debug' : 'warn' 
+    this.logger = new Logger({
+      module: 'ServerSigner',
+      level: process.env.DEBUG === 'true' ? 'debug' : 'warn',
     });
 
     this.initializeMirrorNode(this.networkInternal, 'ServerSigner');

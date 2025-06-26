@@ -1,5 +1,5 @@
 import { Key, PublicKey } from '@hashgraph/sdk';
-import { detectKeyTypeFromString } from '@hashgraphonline/standards-sdk';
+import { detectKeyTypeFromString } from './key-type-detector';
 
 /**
  * Parses a string representation of a key into an SDK Key object.

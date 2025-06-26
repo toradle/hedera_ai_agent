@@ -10,8 +10,6 @@ import {
   ContractFunctionResult,
 } from '@hashgraph/sdk';
 import { Buffer } from 'buffer';
-import { detectKeyTypeFromString } from '@hashgraphonline/standards-sdk';
-
 import {
   CreateContractParams,
   ExecuteContractParams,
@@ -21,6 +19,7 @@ import {
 } from '../../types';
 import { BaseServiceBuilder } from '../base-service-builder';
 import { HederaAgentKit } from '../../agent/agent';
+import { detectKeyTypeFromString } from '../../utils/key-type-detector';
 
 const DEFAULT_CONTRACT_AUTORENEW_PERIOD_SECONDS = 7776000;
 

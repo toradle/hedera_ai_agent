@@ -43,31 +43,30 @@ Build LLM-powered applications that interact with the Hedera Network. Create con
     - [Using `HederaAgentKit` Directly](#using-hederaagentkit-directly)
     - [Tool Filtering](#tool-filtering)
     - [Token Usage Tracking and Cost Calculation](#token-usage-tracking-and-cost-calculation)
+      - [Key Features:](#key-features-1)
+      - [Response Structure:](#response-structure)
     - [Plugin System](#plugin-system)
   - [API Reference](#api-reference)
     - [HederaConversationalAgent Options](#hederaconversationalagent-options)
   - [Architecture Diagram](#architecture-diagram)
   - [Local Development](#local-development)
-  - [Related Projects and Advanced Patterns](#related-projects-and-advanced-patterns)
-    - [Agent-to-Agent Communication](#agent-to-agent-communication)
-    - [Standards SDK](#standards-sdk)
   - [Contributing](#contributing)
   - [License](#license)
 
 ## Installation
 
 ```bash
-npm install @hashgraphonline/hedera-agent-kit @hashgraph/sdk zod @langchain/openai @langchain/core
+npm install hedera-agent-kit
 # or
-yarn add @hashgraphonline/hedera-agent-kit @hashgraph/sdk zod @langchain/openai @langchain/core
+yarn add hedera-agent-kit
 ```
 
 For frontend integration with WalletConnect:
 
 ```bash
-npm install @hashgraphonline/hashinal-wc
+npm install @hashgraph/hedera-wallet-connect
 # or
-yarn add @hashgraphonline/hashinal-wc
+yarn add @hashgraph/hedera-wallet-connect
 ```
 
 _(Ensure you have `dotenv` for environment variable management if you use `.env` files.)_
@@ -110,8 +109,8 @@ The demo code is in `examples/langchain-demo.ts`. Here is a simplified excerpt:
 ```typescript
 import * as dotenv from 'dotenv';
 dotenv.config();
-import { ServerSigner } from '@hashgraphonline/hedera-agent-kit';
-import { HederaConversationalAgent } from '@hashgraphonline/hedera-agent-kit';
+import { ServerSigner } from 'hedera-agent-kit';
+import { HederaConversationalAgent } from 'hedera-agent-kit';
 
 async function main() {
   const operatorId = process.env.HEDERA_ACCOUNT_ID;
@@ -229,7 +228,7 @@ const response = await handleUserMessage('Transfer 10 HBAR to 0.0.12345');
 
 if (response.transactionBytes) {
   // Option 1: Using Hashinal WalletConnect SDK
-  import { HashinalsWalletConnectSDK } from '@hashgraphonline/hashinal-wc';
+  import { DAppConnector } from '@hashgraph/hedera-wallet-connect';
   import { Transaction } from '@hashgraph/sdk';
 
   const sdk = HashinalsWalletConnectSDK.getInstance();
@@ -365,12 +364,10 @@ async function handleHederaConversation() {
 When working with scheduled transactions, you can check their status and handle approvals programmatically:
 
 ```typescript
-import { HashinalsWalletConnectSDK } from '@hashgraphonline/hashinal-wc';
+import { DAppConnector } from '@hashgraph/hedera-wallet-connect';
 import { ScheduleSignTransaction } from '@hashgraph/sdk';
-import {
-  HederaMirrorNode,
-  TransactionParser,
-} from '@hashgraphonline/standards-sdk';
+import { HederaMirrorNode } from '../src/services/mirror-node';
+import { TransactionParser } from '../src/utils/transaction-parser';
 
 async function handleScheduledTransaction(
   scheduleId: string,
@@ -583,10 +580,7 @@ The Hedera Agent Kit provides a comprehensive set of tools organized by service 
 For more programmatic control, you can use `HederaAgentKit` directly instead of the conversational agent:
 
 ```typescript
-import {
-  HederaAgentKit,
-  ServerSigner,
-} from '@hashgraphonline/hedera-agent-kit';
+import { HederaAgentKit, ServerSigner } from 'hedera-agent-kit';
 import { Hbar } from '@hashgraph/sdk';
 
 async function useKitDirectly() {
@@ -630,13 +624,14 @@ async function useKitDirectly() {
 ### Tool Filtering
 
 You can control which tools are available to the conversational agent by providing a `toolFilter` function. This is useful when you want to:
+
 - Limit the agent's capabilities for security reasons
 - Create specialized agents focused on specific tasks
 - Implement role-based access control
 - Reduce the token count sent to the LLM by filtering out unnecessary tools
 
 ```typescript
-import { HederaConversationalAgent } from '@hashgraphonline/hedera-agent-kit';
+import { HederaConversationalAgent } from 'hedera-agent-kit';
 import { StructuredTool } from '@langchain/core/tools';
 
 // Example 1: Allow only read operations (no state changes)
@@ -644,15 +639,15 @@ const readOnlyAgent = new HederaConversationalAgent(agentSigner, {
   openAIApiKey: process.env.OPENAI_API_KEY,
   toolFilter: (tool: StructuredTool) => {
     const readOnlyTools = [
-      'get-', 
-      'query', 
+      'get-',
+      'query',
       'account-balance',
       'account-info',
       'topic-info',
-      'token-info'
+      'token-info',
     ];
-    return readOnlyTools.some(pattern => tool.name.includes(pattern));
-  }
+    return readOnlyTools.some((pattern) => tool.name.includes(pattern));
+  },
 });
 
 // Example 2: Disable specific high-risk operations
@@ -663,10 +658,10 @@ const restrictedAgent = new HederaConversationalAgent(agentSigner, {
       'hedera-account-delete',
       'hedera-hts-wipe-token-account',
       'hedera-hts-burn-nft',
-      'hedera-delete-contract'
+      'hedera-delete-contract',
     ];
     return !blockedTools.includes(tool.name);
-  }
+  },
 });
 
 // Example 3: Create an NFT-focused agent
@@ -682,10 +677,10 @@ const nftAgent = new HederaConversationalAgent(agentSigner, {
       'hedera-hts-associate-token',
       'hedera-account-get-nfts',
       'hedera-account-transfer-hbar', // For paying fees
-      'hedera-account-get-balance'
+      'hedera-account-get-balance',
     ];
     return nftTools.includes(tool.name);
-  }
+  },
 });
 
 // Example 4: Dynamic filtering based on user roles
@@ -699,17 +694,19 @@ async function createRoleBasedAgent(userRole: 'admin' | 'user' | 'viewer') {
           return tool.name.includes('get-') || tool.name.includes('query');
         case 'user':
           // Allow most operations except account management
-          return !tool.name.includes('account-delete') && 
-                 !tool.name.includes('account-create');
+          return (
+            !tool.name.includes('account-delete') &&
+            !tool.name.includes('account-create')
+          );
         case 'admin':
           // Allow all tools
           return true;
         default:
           return false;
       }
-    }
+    },
   });
-  
+
   await agent.initialize();
   return agent;
 }
@@ -718,13 +715,14 @@ async function createRoleBasedAgent(userRole: 'admin' | 'user' | 'viewer') {
 ### Token Usage Tracking and Cost Calculation
 
 The Hedera Agent Kit now includes comprehensive token usage tracking and cost calculation for OpenAI API calls. This feature enables:
+
 - Accurate billing based on actual LLM token consumption
 - Real-time cost monitoring
 - Usage history tracking
 - Dynamic pricing from OpenRouter API (300+ models)
 
 ```typescript
-import { HederaConversationalAgent, formatCost } from '@hashgraphonline/hedera-agent-kit';
+import { HederaConversationalAgent, formatCost } from 'hedera-agent-kit';
 
 // Initialize agent with token tracking
 const agent = new HederaConversationalAgent(signer, {
@@ -735,7 +733,9 @@ const agent = new HederaConversationalAgent(signer, {
 await agent.initialize();
 
 // Process a message - token usage is automatically tracked
-const response = await agent.processMessage('Create a new token called TestToken');
+const response = await agent.processMessage(
+  'Create a new token called TestToken'
+);
 
 // Access token usage for this request
 if (response.tokenUsage && response.cost) {
@@ -753,7 +753,11 @@ console.log(`Total cost: ${formatCost(totalUsage.cost)}`);
 // Get detailed usage history
 const history = agent.getTokenUsageHistory();
 history.forEach((usage, index) => {
-  console.log(`Request ${index + 1}: ${usage.totalTokens} tokens, ${formatCost(usage.cost)}`);
+  console.log(
+    `Request ${index + 1}: ${usage.totalTokens} tokens, ${formatCost(
+      usage.cost
+    )}`
+  );
 });
 
 // Integration with credits/billing systems
@@ -769,6 +773,7 @@ agent.resetTokenUsageTracking();
 ```
 
 #### Key Features:
+
 - **Automatic Tracking**: Token usage is tracked automatically for every API call
 - **Dynamic Pricing**: Fetches live pricing data from OpenRouter API with 24-hour caching
 - **Cost Breakdown**: Separate costs for prompt and completion tokens
@@ -776,6 +781,7 @@ agent.resetTokenUsageTracking();
 - **Model Support**: Supports all OpenAI models plus 300+ models from OpenRouter
 
 #### Response Structure:
+
 ```typescript
 interface AgentResponse {
   output: string;
@@ -801,10 +807,7 @@ interface AgentResponse {
 Extend the agent's capabilities with custom plugins:
 
 ```typescript
-import {
-  HederaAgentKit,
-  ServerSigner,
-} from '@hashgraphonline/hedera-agent-kit';
+import { HederaAgentKit, ServerSigner } from 'hedera-agent-kit';
 
 async function useCustomPlugin() {
   const signer = new ServerSigner(
@@ -922,22 +925,6 @@ npm run test
 ```bash
 npm run demo:langchain
 ```
-
-## Related Projects and Advanced Patterns
-
-### Agent-to-Agent Communication
-
-While this kit focuses on user-to-agent interactions, the HCS-10 OpenConvAI standard enables autonomous agent-to-agent communication on Hedera. HCS-10 defines protocols for:
-
-- AI agents discovering and connecting with each other
-- Approval-required transaction workflows between agents
-- Decentralized AI agent marketplaces
-
-For implementation examples, see [@standards-sdk/demo/hcs-10/transact-agent.ts](https://github.com/hashgraph-online/standards-sdk/blob/main/demo/hcs-10/transact-agent.ts).
-
-### Standards SDK
-
-The [@hashgraphonline/standards-sdk](https://github.com/hashgraph-online/standards-sdk) provides implementations of various Hedera standards including HCS-1 through HCS-11, useful for building more complex decentralized applications.
 
 ## Contributing
 

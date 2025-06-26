@@ -6,12 +6,9 @@ import {
   PrivateKey,
   Client,
 } from '@hashgraph/sdk';
-import {
-  HederaMirrorNode,
-  Logger as StandardsSdkLogger,
-  NetworkType as StandardsSdkNetworkType,
-} from '@hashgraphonline/standards-sdk';
+import { HederaMirrorNode } from '../services/mirror-node';
 import { HederaNetworkType } from '../types';
+import { Logger } from '../utils/logger';
 
 /**
  * AbstractSigner provides a common interface and shared functionality for different signing mechanisms.
@@ -94,8 +91,8 @@ export abstract class AbstractSigner {
     moduleName: string
   ): void {
     this.mirrorNode = new HederaMirrorNode(
-      network as StandardsSdkNetworkType,
-      new StandardsSdkLogger({
+      network,
+      new Logger({
         level: 'info',
         module: `${moduleName}-MirrorNode`,
       })

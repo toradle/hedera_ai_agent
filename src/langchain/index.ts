@@ -1,7 +1,6 @@
 import HederaAgentKit from '../agent/agent';
 import { HederaTool } from '../plugins/PluginInterface';
 import * as dotenv from 'dotenv';
-import { PrivateKey } from '@hashgraph/sdk';
 import { HederaCreateTopicTool } from './tools/hcs/create-topic-tool';
 import { HederaDeleteTopicTool } from './tools/hcs/delete-topic-tool';
 import { HederaSubmitMessageTool } from './tools/hcs/submit-message-tool';
@@ -79,15 +78,11 @@ dotenv.config();
  * @description Creates and aggregates all available Hedera LangChain tools.
  * This function is intended to be called by HederaAgentKit during its initialization.
  * @param {HederaAgentKit} hederaKit - The initialized HederaAgentKit instance.
- * @param {string} operatorId - The operator account ID.
- * @param {PrivateKey} operatorKey - The operator private key.
  * @param {ModelCapability} modelCapability - The model capability for response processing.
  * @returns {Tool[]} An array of LangChain Tool instances.
  */
 export async function createHederaTools(
   hederaKit: HederaAgentKit,
-  operatorId?: string,
-  operatorKey?: PrivateKey,
   modelCapability: ModelCapability = ModelCapability.MEDIUM
 ): Promise<HederaTool[]> {
   const toolParams: BaseHederaTransactionToolParams = {
@@ -243,5 +238,3 @@ export { HederaExecuteContractTool } from './tools/scs/execute-contract-tool';
 
 export { HederaGetHbarPriceTool } from './tools/network/get-hbar-price-tool';
 export { HederaGetTransactionTool } from './tools/transaction/get-transaction-tool';
-
-export * from './tools/hcs10';

@@ -13,7 +13,8 @@ import {
 } from '@hashgraph/sdk';
 import { Buffer } from 'buffer';
 import { AbstractSigner } from '../signer/abstract-signer';
-import { Logger, detectKeyTypeFromString } from '@hashgraphonline/standards-sdk';
+import { Logger } from '../utils/logger';
+import { detectKeyTypeFromString } from '../utils/key-type-detector';
 import type { HederaAgentKit } from '../agent/agent';
 
 /**

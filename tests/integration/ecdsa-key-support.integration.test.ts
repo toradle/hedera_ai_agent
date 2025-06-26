@@ -1,9 +1,9 @@
 import { describe, it, expect, beforeAll } from 'vitest';
 import { PrivateKey } from '@hashgraph/sdk';
-import { detectKeyTypeFromString } from '@hashgraphonline/standards-sdk';
 import { ServerSigner } from '../../src/signer/server-signer';
 import { HederaAgentKit } from '../../src/agent/agent';
 import { parseKey } from '../../src/utils/key-utils';
+import { detectKeyTypeFromString } from '../../src/utils/key-type-detector';
 import './setup-env';
 
 describe('ECDSA Key Support Integration Tests', () => {
@@ -209,6 +209,8 @@ describe('ECDSA Key Support Integration Tests', () => {
           bytecode: '0x123456',
           adminKey: adminKey,
           gas: 100000,
+          contractId: '0.0.1234567890',
+          functionName: 'functionName',
         })
         .getCurrentTransaction();
 

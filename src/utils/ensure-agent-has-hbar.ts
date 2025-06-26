@@ -1,23 +1,24 @@
 import { Hbar } from '@hashgraph/sdk';
 import { TransferTransaction } from '@hashgraph/sdk';
-import {
-  Logger,
-  HederaMirrorNode,
-  NetworkType,
-} from '@hashgraphonline/standards-sdk';
+import { Logger } from './logger';
+import { HederaNetworkType } from '../types';
+import { HederaMirrorNode } from '../services/mirror-node';
 
 export const MIN_REQUIRED_USD = 2.0;
 export const MIN_REQUIRED_HBAR_USD = 10.0;
 
 export async function ensureAgentHasEnoughHbar(
   logger: Logger,
-  network: 'mainnet' | 'testnet',
+  network: HederaNetworkType,
   accountId: string,
   agentName: string,
-  baseClient?: { getClient(): unknown; getAccountAndSigner(): { accountId: string; signer: unknown } }
+  baseClient?: {
+    getClient(): unknown;
+    getAccountAndSigner(): { accountId: string; signer: unknown };
+  }
 ): Promise<void> {
   try {
-    const mirrorNode = new HederaMirrorNode(network as NetworkType, logger);
+    const mirrorNode = new HederaMirrorNode(network, logger);
     const account = await mirrorNode.requestAccount(accountId);
     const balance = account.balance.balance;
     const hbarBalance = balance / 100_000_000;
@@ -42,7 +43,10 @@ export async function ensureAgentHasEnoughHbar(
             if (baseClient) {
               const funder = baseClient.getAccountAndSigner();
               const targetHbar = MIN_REQUIRED_HBAR_USD / hbarPrice;
-              const amountToTransferHbar = Math.max(0, targetHbar - hbarBalance);
+              const amountToTransferHbar = Math.max(
+                0,
+                targetHbar - hbarBalance
+              );
 
               if (amountToTransferHbar > 0) {
                 const transferTx = new TransferTransaction()
@@ -69,7 +73,9 @@ export async function ensureAgentHasEnoughHbar(
                 const fundTxResponse = await transferTx.execute(
                   client as import('@hashgraph/sdk').Client
                 );
-                await fundTxResponse.getReceipt(client as import('@hashgraph/sdk').Client);
+                await fundTxResponse.getReceipt(
+                  client as import('@hashgraph/sdk').Client
+                );
                 logger.info(
                   `Successfully funded ${agentName} account ${accountId}.`
                 );
