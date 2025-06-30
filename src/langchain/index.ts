@@ -1,6 +1,5 @@
 import HederaAgentKit from '../agent/agent';
 import { HederaTool } from '../plugins/PluginInterface';
-import * as dotenv from 'dotenv';
 import { HederaCreateTopicTool } from './tools/hcs/create-topic-tool';
 import { HederaDeleteTopicTool } from './tools/hcs/delete-topic-tool';
 import { HederaSubmitMessageTool } from './tools/hcs/submit-message-tool';
@@ -71,8 +70,6 @@ import { HederaGetTopicMessages } from './tools/hcs/get-topic-messages-tool';
 import { HederaGetFileContentsTool } from './tools/file/get-file-contents-tool';
 import { HederaDeleteNftSpenderAllowanceTool } from './tools/account/delete-nft-spender-allowance-tool';
 import { HederaDeleteNftSerialAllowancesTool } from './tools/account/delete-nft-allowance-all-serials-tool';
-
-dotenv.config();
 
 /**
  * @description Creates and aggregates all available Hedera LangChain tools.
@@ -238,3 +235,16 @@ export { HederaExecuteContractTool } from './tools/scs/execute-contract-tool';
 
 export { HederaGetHbarPriceTool } from './tools/network/get-hbar-price-tool';
 export { HederaGetTransactionTool } from './tools/transaction/get-transaction-tool';
+
+export { SignAndExecuteScheduledTransactionTool } from './tools/account/sign-and-execute-scheduled-transaction-tool';
+export { HederaDeleteNftSpenderAllowanceTool } from './tools/account/delete-nft-spender-allowance-tool';
+export { HederaDeleteNftSerialAllowancesTool } from './tools/account/delete-nft-allowance-all-serials-tool';
+export { HederaGetOutstandingAirdropsTool } from './tools/account/get-outstanding-airdrops-tool';
+export { HederaGetPendingAirdropsTool } from './tools/account/get-pending-airdrops-tool';
+
+export { HederaGetContractsTool } from './tools/scs/get-contracts-tool';
+export { HederaGetContractTool } from './tools/scs/get-contract-tool';
+
+export { HederaGetBlocksTool } from './tools/network/get-blocks-tool';
+export { HederaGetNetworkInfoTool } from './tools/network/get-network-info-tool';
+export { HederaGetNetworkFeesTool } from './tools/network/get-network-fees-tool';
