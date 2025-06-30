@@ -38,7 +38,6 @@ export interface HederaConversationalAgentConfig {
   modelCapability?: ModelCapability;
   mirrorNodeConfig?: MirrorNodeConfig;
   disableLogging?: boolean;
-  toolFilter?: (tool: StructuredTool) => boolean;
 }
 
 /**
@@ -262,18 +261,7 @@ export class HederaConversationalAgent {
 
     await this.hederaKit.initialize();
     this.systemMessage = this.constructSystemMessage();
-    let toolsFromKit = this.hederaKit.getAggregatedLangChainTools();
-
-    if (this.config.toolFilter) {
-      const originalCount = toolsFromKit.length;
-      toolsFromKit = toolsFromKit.filter(this.config.toolFilter);
-      const filteredCount = originalCount - toolsFromKit.length;
-      if (filteredCount > 0) {
-        this.logger.info(
-          `Filtered out ${filteredCount} tools based on provided filter`
-        );
-      }
-    }
+    const toolsFromKit = this.hederaKit.getAggregatedLangChainTools();
 
     if (toolsFromKit.length === 0) {
       this.logger.warn(

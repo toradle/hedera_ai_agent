@@ -129,39 +129,47 @@ export class HederaAgentKit {
       config: {
         ...(this.pluginConfigInternal?.appConfig || {}),
         hederaKit: this,
+        modelCapability: this.modelCapability,
       },
       client: {
         getNetwork: () => this.network,
       },
     };
 
+    // Ensure unique plugins by id
+    const uniquePlugins: IPlugin[] = [];
+    const seenIds = new Set<string>();
     if (this.pluginConfigInternal?.plugins) {
       for (const pluginInstance of this.pluginConfigInternal.plugins) {
-        try {
-          this.logger.info(
-            `Initializing directly provided plugin: ${pluginInstance.name}`
-          );
-          await pluginInstance.initialize(contextForPlugins);
-          this.loadedPlugins.push(pluginInstance);
-          this.logger.info(
-            `Successfully initialized and added directly provided plugin: ${pluginInstance.name}`
-          );
-        } catch (error: unknown) {
-          this.logger.error(
-            `Failed to initialize directly provided plugin ${
-              pluginInstance.name
-            }: ${error instanceof Error ? error.message : String(error)}`
-          );
+        if (!seenIds.has(pluginInstance.id)) {
+          uniquePlugins.push(pluginInstance);
+          seenIds.add(pluginInstance.id);
         }
       }
     }
 
-    const coreKitTools = await createHederaTools(this, this.modelCapability);
+    for (const pluginInstance of uniquePlugins) {
+      try {
+        this.logger.info(
+          `Initializing plugin: ${pluginInstance.name}`
+        );
+        await pluginInstance.initialize(contextForPlugins);
+        this.loadedPlugins.push(pluginInstance);
+        this.logger.info(
+          `Successfully initialized and added plugin: ${pluginInstance.name}`
+        );
+      } catch (error: unknown) {
+        this.logger.error(
+          `Failed to initialize plugin ${pluginInstance.name}: ${error instanceof Error ? error.message : String(error)}`
+        );
+      }
+    }
+
+    // Aggregate tools only from plugins
     const pluginTools: HederaTool[] = this.loadedPlugins.flatMap((plugin) => {
       return plugin.getTools();
     });
-
-    this.aggregatedTools = [...coreKitTools, ...pluginTools];
+    this.aggregatedTools = [...pluginTools];
 
     this.isInitialized = true;
     this.logger.info(
