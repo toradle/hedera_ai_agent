@@ -26,6 +26,7 @@ import type { HederaNetworkType } from '../src/types';
 import chalk from 'chalk';
 import gradient from 'gradient-string';
 import { enableHederaLogging } from './hedera-logger-override';
+import { HederaAccountPlugin, HederaHCSPlugin } from '../src/plugins/core';
 
 function createInterface(): readline.Interface {
   return readline.createInterface({
@@ -63,15 +64,15 @@ async function main(): Promise<void> {
 
   const banner = `
 ${hederaGradient(
-  '╔═══════════════════════════════════════════════════════════════╗'
-)}
+    '╔═══════════════════════════════════════════════════════════════╗'
+  )}
 ${hederaGradient(
-  '║                      HEDERA AGENT KIT                        ║'
-)}
+    '║                      HEDERA AGENT KIT                        ║'
+  )}
 ${hederaGradient(`║                   ${modeDescription.padEnd(30)} ║`)}
 ${hederaGradient(
-  '╚═══════════════════════════════════════════════════════════════╝'
-)}
+    '╚═══════════════════════════════════════════════════════════════╝'
+  )}
 `;
 
   console.log(banner);
@@ -105,7 +106,10 @@ ${hederaGradient(
     scheduleUserTransactionsInBytesMode: true,
     openAIModelName: 'gpt-4o-mini',
     pluginConfig: {
-      plugins: [new HelloWorldPlugin() as IPlugin],
+      plugins: [
+        new HederaHCSPlugin(),
+        new HederaAccountPlugin(),
+        new HelloWorldPlugin() as IPlugin],
     },
   });
 
@@ -146,10 +150,7 @@ ${hederaGradient(
       );
     } else {
       console.log(`${charcoal.dim('👤 User Account: Not configured')}`);
-    }
-    console.log(
-      `${primaryGreen('🔧 Tools:')} ${chalk.white('81 Hedera tools loaded')}`
-    );
+    };
     console.log();
     console.log(
       primaryBlue.dim('💬 Type "exit" to quit, or try "say hello to Hedera"')
@@ -232,9 +233,8 @@ ${hederaGradient(
       chatHistory.push({ type: 'ai', content: successMsg });
     } catch (e: unknown) {
       const error = e as Error;
-      const errorMsg = `Sorry, I encountered an error executing that with your key: ${
-        error.message || String(e)
-      }`;
+      const errorMsg = `Sorry, I encountered an error executing that with your key: ${error.message || String(e)
+        }`;
       console.error(
         `${errorColor('Agent >')} ${charcoal.dim(
           'Error executing transaction with user key:'
