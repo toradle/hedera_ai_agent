@@ -24,8 +24,8 @@
     "README.md"
   ],
   "scripts": {
-    "demo:auto": "tsx examples/langchain-demo.ts directExecution",
-    "demo:human": "tsx examples/langchain-demo.ts provideBytes",
+    "demo:auto": "tsx examples/langchain-demo.ts autonomous",
+    "demo:human": "tsx examples/langchain-demo.ts returnBytes",
     "demo:notes": "tsx examples/test-notes-system.ts",
     "test": "vitest run",
     "test:integration": "vitest run tests/integration",
@@ -66,6 +66,7 @@
   },
   "dependencies": {
     "@hashgraph/hedera-wallet-connect": "^1.5.1",
+    "@hashgraph/proto": "^2.19.0",
     "@hashgraph/sdk": "^2.66.0",
     "@langchain/core": "^0.3.61",
     "@langchain/langgraph": "^0.3.4",

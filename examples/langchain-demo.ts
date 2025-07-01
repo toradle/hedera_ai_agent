@@ -46,18 +46,18 @@ async function main(): Promise<void> {
   const charcoal = chalk.hex('#464646');
 
   const args = process.argv.slice(2);
-  const mode = args[0] || 'provideBytes';
+  const mode = args[0] || 'returnBytes';
 
-  if (!['provideBytes', 'directExecution'].includes(mode)) {
+  if (!['autonomous', 'returnBytes'].includes(mode)) {
     console.error(
       errorColor(
-        `Invalid mode: ${mode}. Use 'provideBytes' or 'directExecution'.`
+        `Invalid mode: ${mode}. Use 'autonomous' or 'returnBytes'.`
       )
     );
     process.exit(1);
   }
 
-  const isAutonomous = mode === 'directExecution';
+  const isAutonomous = mode === 'autonomous';
   const modeDescription = isAutonomous
     ? 'Autonomous Mode'
     : 'Human-in-the-Loop Mode';
@@ -99,7 +99,7 @@ ${hederaGradient(
   const agentSigner = new ServerSigner(operatorId, operatorKey, network);
 
   const conversationalAgent = new HederaConversationalAgent(agentSigner, {
-    operationalMode: mode as 'provideBytes' | 'directExecution',
+    operationalMode: mode as 'returnBytes' | 'autonomous',
     ...(userAccountId && { userAccountId }),
     verbose: false,
     openAIApiKey: openaiApiKey,

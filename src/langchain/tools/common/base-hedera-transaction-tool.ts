@@ -100,7 +100,7 @@ export abstract class BaseHederaTransactionTool<
 
   /**
    * Indicates if this tool requires multiple transactions to complete.
-   * Tools that require multiple transactions cannot be used in provideBytes mode.
+   * Tools that require multiple transactions cannot be used in returnBytes mode.
    */
   protected requiresMultipleTransactions: boolean = false;
 
@@ -235,7 +235,7 @@ export abstract class BaseHederaTransactionTool<
   /**
    * Handle direct execution mode for the transaction
    */
-  private async _handleDirectExecution(
+  private async _handleAutonomous(
     builder: BaseServiceBuilder,
     metaOpts: HederaTransactionMetaOptions | undefined,
     allNotes: string[]
@@ -243,7 +243,7 @@ export abstract class BaseHederaTransactionTool<
     const execOptions = this._buildScheduleOptions(metaOpts);
 
     this.logger.info(
-      `Executing transaction directly (mode: directExecution): ${this.name}`
+      `Executing transaction directly (mode: autonomous): ${this.name}`
     );
 
     const result = await builder.execute(execOptions);
@@ -253,20 +253,20 @@ export abstract class BaseHederaTransactionTool<
   /**
    * Handle providing transaction bytes mode
    */
-  private async _handleProvideBytes(
+  private async _handleReturnBytes(
     builder: BaseServiceBuilder,
     metaOpts: HederaTransactionMetaOptions | undefined,
     allNotes: string[]
   ): Promise<string> {
     if (this.requiresMultipleTransactions) {
       const errorMessage =
-        `The ${this.name} tool requires multiple transactions and cannot be used in provideBytes mode. ` +
-        `Please use directExecution mode or break down the operation into individual steps.`;
+        `The ${this.name} tool requires multiple transactions and cannot be used in returnBytes mode. ` +
+        `Please use autonomous mode or break down the operation into individual steps.`;
       this.logger.warn(errorMessage);
       return JSON.stringify({
         success: false,
         error: errorMessage,
-        requiresDirectExecution: true,
+        requiresAutonomous: true,
         notes: allNotes,
       });
     }
@@ -289,7 +289,7 @@ export abstract class BaseHederaTransactionTool<
     return (
       !this.neverScheduleThisTool &&
       (metaOptions?.schedule ??
-        (this.hederaKit.operationalMode === 'provideBytes' &&
+        (this.hederaKit.operationalMode === 'returnBytes' &&
           this.hederaKit.scheduleUserTransactionsInBytesMode))
     );
   }
@@ -303,7 +303,7 @@ export abstract class BaseHederaTransactionTool<
     allNotes: string[]
   ): Promise<string> {
     this.logger.info(
-      `Preparing scheduled transaction (mode: provideBytes, schedule: true): ${this.name}`
+      `Preparing scheduled transaction (mode: returnBytes, schedule: true): ${this.name}`
     );
 
     const execOptions = this._buildScheduleOptions(metaOpts, true);
@@ -348,7 +348,7 @@ export abstract class BaseHederaTransactionTool<
     allNotes: string[]
   ): Promise<string> {
     this.logger.info(
-      `Returning transaction bytes (mode: provideBytes, schedule: false): ${this.name}`
+      `Returning transaction bytes (mode: returnBytes, schedule: false): ${this.name}`
     );
 
     const bytes = await builder.getTransactionBytes({});
@@ -517,14 +517,14 @@ export abstract class BaseHederaTransactionTool<
       const allNotes = [...zodSchemaInfoNotes, ...builderAppliedDefaultNotes];
       this.logger.debug('All Notes combined:', allNotes);
 
-      if (this.hederaKit.operationalMode === 'directExecution') {
-        return this._handleDirectExecution(
+      if (this.hederaKit.operationalMode === 'autonomous') {
+        return this._handleAutonomous(
           builder,
           llmProvidedMetaOptions,
           allNotes
         );
       } else {
-        return this._handleProvideBytes(
+        return this._handleReturnBytes(
           builder,
           llmProvidedMetaOptions,
           allNotes
