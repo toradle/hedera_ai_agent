@@ -2,6 +2,7 @@ import { describe, it, expect } from 'vitest';
 import { HederaConversationalAgent } from '../../src/agent/conversational-agent';
 import { ServerSigner } from '../../src/signer/server-signer';
 import { ModelCapability } from '../../src/types/model-capability';
+import { getAllHederaCorePlugins } from '../../src/plugins/core';
 
 describe('Model Capability Configuration', () => {
   it('should configure model capability correctly for GPT-4o-mini', async () => {
@@ -47,6 +48,9 @@ describe('Model Capability Configuration', () => {
 
     const agent = new HederaConversationalAgent(signer, {
       verbose: false,
+      pluginConfig: {
+        plugins: getAllHederaCorePlugins(),
+      },
     });
 
     await agent.initialize();

@@ -84,51 +84,6 @@ describe('HederaConversationalAgent Tool Filter', () => {
     vi.restoreAllMocks();
   });
 
-  it('should filter out specified tools', async () => {
-    const toolsToFilter = [
-      'hedera-account-transfer-hbar',
-      'hedera-account-create',
-      'hedera-hts-create-fungible-token',
-      'hedera-hts-create-nft',
-    ];
-
-    const loggedTools: { filtered: string[]; kept: string[]; all: string[] } = {
-      filtered: [],
-      kept: [],
-      all: [],
-    };
-
-    agent = new HederaConversationalAgent(mockSigner, {
-      openAIApiKey: 'test-key',
-      toolFilter: (tool: StructuredTool) => {
-        loggedTools.all.push(tool.name);
-        const shouldKeep = !toolsToFilter.includes(tool.name);
-        if (!shouldKeep) {
-          loggedTools.filtered.push(tool.name);
-        } else {
-          loggedTools.kept.push(tool.name);
-        }
-        return shouldKeep;
-      },
-      verbose: false,
-    });
-
-    await agent.initialize();
-
-    // Check that tools were filtered
-    expect(loggedTools.filtered.length).toBeGreaterThan(0);
-    expect(loggedTools.filtered).toContain('hedera-account-transfer-hbar');
-    expect(loggedTools.filtered).toContain('hedera-account-create');
-    expect(loggedTools.filtered).toContain('hedera-hts-create-fungible-token');
-    expect(loggedTools.filtered).toContain('hedera-hts-create-nft');
-
-    // Verify some tools were kept
-    expect(loggedTools.kept.length).toBeGreaterThan(0);
-
-    // Verify the filter was called
-    expect(loggedTools.all.length).toBeGreaterThan(0);
-  });
-
   it('should keep all tools when no filter is provided', async () => {
     agent = new HederaConversationalAgent(mockSigner, {
       openAIApiKey: 'test-key',

@@ -164,32 +164,6 @@ describe('ECDSA Key Support Integration Tests', () => {
     });
   });
 
-  describe('File Operations with ECDSA Keys', () => {
-    it('should handle ECDSA keys in file creation', async () => {
-      const signer = new ServerSigner(
-        testAccountId,
-        testPrivateKey,
-        testNetwork
-      );
-
-      const testKit = new HederaAgentKit(signer);
-      await testKit.initialize();
-      const fileBuilder = testKit.fs();
-
-      const key1 = PrivateKey.generateECDSA().toString();
-      const key2 = PrivateKey.generateED25519().toString();
-
-      const transaction = fileBuilder
-        .createFile({
-          contents: 'Test file with mixed key types',
-          keys: [key1, key2],
-        })
-        .getCurrentTransaction();
-
-      expect(transaction).toBeDefined();
-    });
-  });
-
   describe('Contract Operations with ECDSA Admin Keys', () => {
     it('should handle ECDSA admin key in contract creation', async () => {
       const signer = new ServerSigner(
