@@ -34,14 +34,8 @@ import { HederaTransferHbarTool } from './tools/account/transfer-hbar-tool';
 import { HederaRevokeHbarAllowanceTool } from './tools/account/revoke-hbar-allowance-tool';
 import { HederaRevokeFungibleTokenAllowanceTool } from './tools/account/revoke-fungible-token-allowance-tool';
 import { SignAndExecuteScheduledTransactionTool } from './tools/account/sign-and-execute-scheduled-transaction-tool';
-import { HederaCreateFileTool } from './tools/file/create-file-tool';
-import { HederaAppendFileTool } from './tools/file/append-file-tool';
-import { HederaUpdateFileTool } from './tools/file/update-file-tool';
-import { HederaDeleteFileTool } from './tools/file/delete-file-tool';
-import { HederaCreateContractTool } from './tools/scs/create-contract-tool';
 import { HederaUpdateContractTool } from './tools/scs/update-contract-tool';
 import { HederaDeleteContractTool } from './tools/scs/delete-contract-tool';
-import { HederaExecuteContractTool } from './tools/scs/execute-contract-tool';
 import { BaseHederaTransactionToolParams } from './tools/common/base-hedera-transaction-tool';
 import { BaseHederaQueryToolParams } from './tools/common/base-hedera-query-tool';
 import { ModelCapability } from '../types/model-capability';
@@ -67,7 +61,6 @@ import { HederaAirdropTokenTool } from './tools/hts/airdrop-token-tool';
 import { HederaAssociateTokensTool } from './tools/hts/associate-tokens-tool';
 import { HederaUpdateTopicTool } from './tools/hcs/update-topic-tool';
 import { HederaGetTopicMessages } from './tools/hcs/get-topic-messages-tool';
-import { HederaGetFileContentsTool } from './tools/file/get-file-contents-tool';
 import { HederaDeleteNftSpenderAllowanceTool } from './tools/account/delete-nft-spender-allowance-tool';
 import { HederaDeleteNftSerialAllowancesTool } from './tools/account/delete-nft-allowance-all-serials-tool';
 
@@ -133,14 +126,8 @@ export async function createHederaTools(
     new HederaUnpauseTokenTool(toolParams),
     new HederaUpdateTokenTool(toolParams),
     new HederaWipeTokenAccountTool(toolParams),
-    new HederaCreateFileTool(toolParams),
-    new HederaAppendFileTool(toolParams),
-    new HederaUpdateFileTool(toolParams),
-    new HederaDeleteFileTool(toolParams),
-    new HederaCreateContractTool(toolParams),
     new HederaUpdateContractTool(toolParams),
     new HederaDeleteContractTool(toolParams),
-    new HederaExecuteContractTool(toolParams),
     new HederaGetTopicInfoTool(queryToolParams),
     new HederaGetTopicFeesTool(queryToolParams),
     new HederaGetTopicMessages(queryToolParams),
@@ -160,7 +147,6 @@ export async function createHederaTools(
     new HederaGetContractTool(queryToolParams),
     new HederaGetNetworkInfoTool(queryToolParams),
     new HederaGetNetworkFeesTool(queryToolParams),
-    new HederaGetFileContentsTool(queryToolParams),
   ];
 
   hederaKit.logger.info(
@@ -222,16 +208,8 @@ export { HederaGetAccountInfoTool } from './tools/account/get-account-info-tool'
 export { HederaGetAccountTokensTool } from './tools/account/get-account-tokens-tool';
 export { HederaGetAccountNftsTool } from './tools/account/get-account-nfts-tool';
 
-export { HederaCreateFileTool } from './tools/file/create-file-tool';
-export { HederaAppendFileTool } from './tools/file/append-file-tool';
-export { HederaUpdateFileTool } from './tools/file/update-file-tool';
-export { HederaDeleteFileTool } from './tools/file/delete-file-tool';
-export { HederaGetFileContentsTool } from './tools/file/get-file-contents-tool';
-
-export { HederaCreateContractTool } from './tools/scs/create-contract-tool';
 export { HederaUpdateContractTool } from './tools/scs/update-contract-tool';
 export { HederaDeleteContractTool } from './tools/scs/delete-contract-tool';
-export { HederaExecuteContractTool } from './tools/scs/execute-contract-tool';
 
 export { HederaGetHbarPriceTool } from './tools/network/get-hbar-price-tool';
 export { HederaGetTransactionTool } from './tools/transaction/get-transaction-tool';
