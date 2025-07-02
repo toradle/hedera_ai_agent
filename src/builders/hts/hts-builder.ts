@@ -103,7 +103,7 @@ function mapToSdkCustomFees(
     if (
       !feeCollectorStringToParse &&
       kitUserAccountId &&
-      kitOperationalMode === 'provideBytes'
+      kitOperationalMode === 'returnBytes'
     ) {
       feeCollectorStringToParse = kitUserAccountId;
       if (addNoteFn) {
@@ -212,7 +212,7 @@ function mapToSdkCustomFees(
           if (
             !fallbackFeeCollectorStringToParse &&
             kitUserAccountId &&
-            kitOperationalMode === 'provideBytes'
+            kitOperationalMode === 'returnBytes'
           ) {
             fallbackFeeCollectorStringToParse = kitUserAccountId;
             if (addNoteFn) {
@@ -300,10 +300,10 @@ export class HtsBuilder extends BaseServiceBuilder {
     if (
       !treasuryAccId &&
       this.kit.userAccountId &&
-      this.kit.operationalMode === 'provideBytes'
+      this.kit.operationalMode === 'returnBytes'
     ) {
       this.logger.info(
-        `[HtsBuilder.createFungibleToken] Using userAccountId ${this.kit.userAccountId} as treasury for FT creation in provideBytes mode.`
+        `[HtsBuilder.createFungibleToken] Using userAccountId ${this.kit.userAccountId} as treasury for FT creation in returnBytes mode.`
       );
       treasuryAccId = AccountId.fromString(this.kit.userAccountId);
       this.addNote(
@@ -312,7 +312,7 @@ export class HtsBuilder extends BaseServiceBuilder {
     }
     if (!treasuryAccId) {
       throw new Error(
-        '[HtsBuilder.createFungibleToken] Treasury Account ID is required (e.g., explicitly, via userAccountId for provideBytes mode, or via agent operator for directExecution if applicable).'
+        '[HtsBuilder.createFungibleToken] Treasury Account ID is required (e.g., explicitly, via userAccountId for returnBytes mode, or via agent operator for autonomous if applicable).'
       );
     }
 
@@ -434,10 +434,10 @@ export class HtsBuilder extends BaseServiceBuilder {
     if (
       !treasuryAccId &&
       this.kit.userAccountId &&
-      this.kit.operationalMode === 'provideBytes'
+      this.kit.operationalMode === 'returnBytes'
     ) {
       this.logger.info(
-        `[HtsBuilder.createNonFungibleToken] Using userAccountId ${this.kit.userAccountId} as treasury for NFT creation in provideBytes mode.`
+        `[HtsBuilder.createNonFungibleToken] Using userAccountId ${this.kit.userAccountId} as treasury for NFT creation in returnBytes mode.`
       );
       treasuryAccId = AccountId.fromString(this.kit.userAccountId);
       this.addNote(
@@ -446,7 +446,7 @@ export class HtsBuilder extends BaseServiceBuilder {
     }
     if (!treasuryAccId) {
       throw new Error(
-        '[HtsBuilder.createNonFungibleToken] Treasury Account ID is required (e.g., explicitly, via userAccountId for provideBytes mode, or via agent operator for directExecution if applicable).'
+        '[HtsBuilder.createNonFungibleToken] Treasury Account ID is required (e.g., explicitly, via userAccountId for returnBytes mode, or via agent operator for autonomous if applicable).'
       );
     }
 
