@@ -69,7 +69,6 @@ describe('HederaSCSPlugin Integration (Testnet)', () => {
   });
 
   // The following tests require a contract you control on testnet.
-  // Uncomment and set up a contract if you want to test update/delete.
 
   it('should update a contract (requires control of contract)', async () => {
     const testMemo = "This is a test memo";
