@@ -27,7 +27,7 @@ Build LLM-powered applications that interact with the Hedera Network. Create con
     - [Understanding Agent Responses](#understanding-agent-responses)
     - [Handling Different Response Types](#handling-different-response-types)
       - [1. Text-only Responses](#1-text-only-responses)
-      - [2. Transaction Bytes (provideBytes mode)](#2-transaction-bytes-providebytes-mode)
+      - [2. Transaction Bytes (returnBytes mode)](#2-transaction-bytes-returnBytes-mode)
       - [3. Schedule IDs (scheduled transactions)](#3-schedule-ids-scheduled-transactions)
     - [Working with Chat History](#working-with-chat-history)
     - [Example: Complete Prompt Handling Flow](#example-complete-prompt-handling-flow)
@@ -127,7 +127,7 @@ async function main() {
 
   const agentSigner = new ServerSigner(operatorId, operatorKey, network);
   const conversationalAgent = new HederaConversationalAgent(agentSigner, {
-    operationalMode: 'provideBytes',
+    operationalMode: 'returnBytes',
     userAccountId: userAccountId,
     verbose: false,
     openAIApiKey: openaiApiKey,
@@ -148,9 +148,9 @@ Understanding these concepts will help you make the most of the Hedera Agent Kit
   - `ServerSigner`: Holds a private key directly. Useful for backend agents where the agent's account pays for transactions it executes.
   - `BrowserSigner` (Conceptual for this README): Represents integrating with a user's browser wallet (e.g., HashPack). The agent prepares transaction bytes, and the user signs and submits them via their wallet.
 - **Operational Modes**: Configure how the agent handles transactions:
-  - `operationalMode: 'directExecution'`: Agent signs and submits all transactions using its `signer`. The agent's operator account pays.
-  - `operationalMode: 'provideBytes'`: Agent returns transaction bytes. Your application (and the user, via their wallet) is responsible for signing and submitting. This is key for user-centric apps.
-  - `scheduleUserTransactionsInBytesMode: boolean` (Default: `true`): When `operationalMode` is `'provideBytes'`, this flag makes the agent automatically schedule transactions initiated by the user (e.g., "transfer _my_ HBAR..."). The agent's operator account pays to _create the schedule entity_, and the user pays for the _actual scheduled transaction_ when they sign the `ScheduleSignTransaction`.
+  - `operationalMode: 'autonomous'`: Agent signs and submits all transactions using its `signer`. The agent's operator account pays.
+  - `operationalMode: 'returnBytes'`: Agent returns transaction bytes. Your application (and the user, via their wallet) is responsible for signing and submitting. This is key for user-centric apps.
+  - `scheduleUserTransactionsInBytesMode: boolean` (Default: `true`): When `operationalMode` is `'returnBytes'`, this flag makes the agent automatically schedule transactions initiated by the user (e.g., "transfer _my_ HBAR..."). The agent's operator account pays to _create the schedule entity_, and the user pays for the _actual scheduled transaction_ when they sign the `ScheduleSignTransaction`.
   - `metaOptions: { schedule: true }`: Allows the LLM to explicitly request scheduling for any tool call, overriding defaults.
 - **Human-in-the-Loop Flow**: The Quick Start example demonstrates this. The agent first creates a schedule (agent pays). Then, after user confirmation, it prepares a `ScheduleSignTransaction` (user pays to sign and submit this, triggering the original scheduled transaction).
 
@@ -165,7 +165,7 @@ To send a user's message to the agent and receive a response:
 ```typescript
 // Initialize the agent as shown in the Quick Start example
 const conversationalAgent = new HederaConversationalAgent(agentSigner, {
-  operationalMode: 'provideBytes',
+  operationalMode: 'returnBytes',
   userAccountId: userAccountId,
   openAIApiKey: openaiApiKey,
 });
@@ -200,7 +200,7 @@ The `processMessage` method returns an `AgentResponse` object with these key pro
 ```typescript
 interface AgentResponse {
   output: string; // The text response to show to the user
-  transactionBytes?: string; // Base64-encoded transaction bytes (when in 'provideBytes' mode)
+  transactionBytes?: string; // Base64-encoded transaction bytes (when in 'returnBytes' mode)
   scheduleId?: ScheduleId; // The schedule ID when a transaction was scheduled
   error?: string; // Error message if something went wrong
 }
@@ -219,7 +219,7 @@ const response = await handleUserMessage("What's my HBAR balance?");
 console.log(response.output); // Display to the user
 ```
 
-#### 2. Transaction Bytes (provideBytes mode)
+#### 2. Transaction Bytes (returnBytes mode)
 
 When the agent generates transaction bytes, you'll need to present them to the user for signing:
 
@@ -313,7 +313,7 @@ Here's a complete example bringing all the concepts together:
 async function handleHederaConversation() {
   // Initialize agent
   const agent = new HederaConversationalAgent(agentSigner, {
-    operationalMode: 'provideBytes',
+    operationalMode: 'returnBytes',
     userAccountId: userAccountId,
     openAIApiKey: openaiApiKey,
   });
@@ -429,7 +429,7 @@ async function handleScheduledTransaction(
 // Usage with HederaConversationalAgent
 async function exampleScheduledTransactionFlow() {
   const agent = new HederaConversationalAgent(agentSigner, {
-    operationalMode: 'provideBytes',
+    operationalMode: 'returnBytes',
     userAccountId: userAccountId,
     scheduleUserTransactionsInBytesMode: true, // Auto-schedule user transactions
   });
@@ -589,7 +589,7 @@ async function useKitDirectly() {
     process.env.HEDERA_PRIVATE_KEY!,
     'testnet'
   );
-  const kit = new HederaAgentKit(signer, undefined, 'directExecution');
+  const kit = new HederaAgentKit(signer, undefined, 'autonomous');
   await kit.initialize();
 
   // Transfer HBAR
@@ -727,7 +727,7 @@ import { HederaConversationalAgent, formatCost } from 'hedera-agent-kit';
 // Initialize agent with token tracking
 const agent = new HederaConversationalAgent(signer, {
   openAIApiKey: process.env.OPENAI_API_KEY,
-  operationalMode: 'provideBytes',
+  operationalMode: 'returnBytes',
 });
 
 await agent.initialize();
@@ -824,7 +824,7 @@ async function useCustomPlugin() {
       packages: ['@my-org/my-hedera-plugin'], // NPM package plugin
       appConfig: { customSetting: 'value' }, // Custom config passed to plugins
     },
-    'directExecution'
+    'autonomous'
   );
 
   await kit.initialize();
@@ -850,7 +850,7 @@ interface HederaConversationalAgentOptions {
 
   // Agent Configuration
   userAccountId?: string; // User's account ID for user-centric operations
-  operationalMode?: AgentOperationalMode; // 'directExecution' or 'provideBytes'
+  operationalMode?: AgentOperationalMode; // 'autonomous' or 'returnBytes'
   scheduleUserTransactionsInBytesMode?: boolean; // Auto-schedule user transactions
 
   // Plugin Configuration
@@ -889,7 +889,7 @@ graph TD;
     subgraph ExecutionPath ["Transaction Execution / Byte Generation"]
         ServiceBuilders -- "Based on OpModes & Tool Logic" --> DecisionPoint["Execute or GetBytes?"];
         DecisionPoint -- "Execute (Agent Pays/Signs via ServerSigner)" --> Signer;
-        DecisionPoint -- "ProvideBytes (User Pays/Signs)" --> TxBytes["Transaction Bytes"];
+        DecisionPoint -- "ReturnBytes (User Pays/Signs)" --> TxBytes["Transaction Bytes"];
         DecisionPoint -- "Schedule (Agent Pays for CreateSchedule)" --> Signer;
         TxBytes -- "Returned to AppCode --> User Wallet" --> UserWallet["User Wallet (HashPack, etc)"];
         Signer -- "Uses SDK Client" --> HederaNetwork["Hedera Network"];

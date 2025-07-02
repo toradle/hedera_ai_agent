@@ -33,7 +33,7 @@ async function exampleWithCustomMirrorNode(): Promise<void> {
   const agentKit = new HederaAgentKit(
     signer,
     undefined, // pluginConfig
-    'provideBytes', // operationalMode
+    'returnBytes', // operationalMode
     undefined, // userAccountId
     true, // scheduleUserTransactionsInBytesMode
     undefined, // modelCapability

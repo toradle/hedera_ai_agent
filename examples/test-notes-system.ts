@@ -40,7 +40,7 @@ async function testNotes(): Promise<void> {
   const agentSigner = new ServerSigner(operatorId, operatorKey, network);
 
   const conversationalAgent = new HederaConversationalAgent(agentSigner, {
-    operationalMode: 'provideBytes',
+    operationalMode: 'returnBytes',
     userAccountId: userAccountId || undefined,
     verbose: true,
     openAIApiKey: openaiApiKey,

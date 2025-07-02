@@ -37,7 +37,7 @@ describe('HederaHCSPlugin Integration (Testnet)', () => {
       openAIApiKey,
       verbose: true,
       scheduleUserTransactionsInBytesMode: false,
-      operationalMode: 'directExecution'
+      operationalMode: 'autonomous'
     });
 
     await builder.createTopic(params);

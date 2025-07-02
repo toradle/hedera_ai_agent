@@ -30,7 +30,7 @@ async function initializeTestKit(pluginConfig?: PluginConfig): Promise<HederaAge
   const kit = new HederaAgentKit(
     signer,
     pluginConfig,
-    'provideBytes',
+    'returnBytes',
     undefined,
     true,
     ModelCapability.MEDIUM,
