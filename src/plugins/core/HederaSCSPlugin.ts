@@ -1,10 +1,8 @@
 import { BasePlugin } from '../BasePlugin';
 import type { GenericPluginContext, HederaTool, IPlugin } from '../PluginInterface';
 import {
-  HederaCreateContractTool,
   HederaUpdateContractTool,
   HederaDeleteContractTool,
-  HederaExecuteContractTool,
   HederaGetContractsTool,
   HederaGetContractTool
 } from '../../langchain';
@@ -33,10 +31,8 @@ export class HederaSCSPlugin extends BasePlugin<GenericPluginContext> implements
     const toolParams = { hederaKit, logger };
     const queryToolParams = { hederaKit, logger, modelCapability };
     this.tools = [
-      new HederaCreateContractTool(toolParams),
       new HederaUpdateContractTool(toolParams),
       new HederaDeleteContractTool(toolParams),
-      new HederaExecuteContractTool(toolParams),
       new HederaGetContractsTool(queryToolParams),
       new HederaGetContractTool(queryToolParams)
     ];

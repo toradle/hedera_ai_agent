@@ -7,7 +7,6 @@ import {
   HederaHTSPlugin,
   HederaHCSPlugin,
   HederaAccountPlugin,
-  HederaFilePlugin,
   HederaSCSPlugin,
   HederaNetworkPlugin,
 } from '../../src/plugins/core';
@@ -45,7 +44,6 @@ async function initializeTestKit(pluginConfig?: PluginConfig): Promise<HederaAge
 
 describe('Core Plugins Integration Tests', () => {
   let kit: HederaAgentKit;
-  let conversationalAgent: HederaConversationalAgent;
 
   beforeAll(async () => {
     console.log('Setting up core plugins integration tests...');
@@ -99,20 +97,6 @@ describe('Core Plugins Integration Tests', () => {
       expect(tools.some(tool => tool.name.includes('hedera-account-transfer-hbar'))).toBe(true);
     });
 
-    it('should load HederaFilePlugin with file service tools', async () => {
-      const filePlugin = new HederaFilePlugin();
-      const pluginConfig: PluginConfig = {
-        plugins: [filePlugin],
-      };
-
-      kit = await initializeTestKit(pluginConfig);
-      const tools = kit.getAggregatedLangChainTools();
-      
-      expect(tools.length).toBe(5);
-      expect(tools.some(tool => tool.name.includes('hedera-file-create'))).toBe(true);
-      expect(tools.some(tool => tool.name.includes('hedera-file-get-contents'))).toBe(true);
-    });
-
     it('should load HederaSCSPlugin with smart contract tools', async () => {
       const scsPlugin = new HederaSCSPlugin();
       const pluginConfig: PluginConfig = {
@@ -123,9 +107,9 @@ describe('Core Plugins Integration Tests', () => {
       const tools = kit.getAggregatedLangChainTools();
 
       
-      expect(tools.length).toBe(6);
-      expect(tools.some(tool => tool.name.includes('hedera-scs-create-contract'))).toBe(true);
-      expect(tools.some(tool => tool.name.includes('hedera-scs-execute-contract'))).toBe(true);
+      expect(tools.length).toBe(4);
+      expect(tools.some(tool => tool.name.includes('hedera-get-contract'))).toBe(true);
+      expect(tools.some(tool => tool.name.includes('hedera-get-contracts'))).toBe(true);
     });
 
     it('should load HederaNetworkPlugin with network tools', async () => {
@@ -153,11 +137,10 @@ describe('Core Plugins Integration Tests', () => {
       kit = await initializeTestKit(pluginConfig);
       const tools = kit.getAggregatedLangChainTools();
 
-      expect(tools.length).toBe(66);
+      expect(tools.length).toBe(59);
       expect(tools.some(tool => tool.name.includes('hts'))).toBe(true);
       expect(tools.some(tool => tool.name.includes('hcs'))).toBe(true);
       expect(tools.some(tool => tool.name.includes('account'))).toBe(true);
-      expect(tools.some(tool => tool.name.includes('file'))).toBe(true);
       expect(tools.some(tool => tool.name.includes('scs'))).toBe(true);
       expect(tools.some(tool => tool.name.includes('network'))).toBe(true);
     });

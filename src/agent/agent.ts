@@ -19,10 +19,8 @@ import { HcsBuilder } from '../builders/hcs/hcs-builder';
 import { HtsBuilder } from '../builders/hts/hts-builder';
 import { AccountBuilder } from '../builders/account/account-builder';
 import { ScsBuilder } from '../builders/scs/scs-builder';
-import { FileBuilder } from '../builders/file/file-builder';
 import { QueryBuilder } from '../builders/query/query-builder';
 import { ExecuteResult } from '../builders/base-service-builder';
-import { createHederaTools } from '../langchain';
 import { ModelCapability } from '../types/model-capability';
 import { HederaMirrorNode } from '../services/mirror-node';
 import { Logger } from '../utils/logger';
@@ -245,18 +243,6 @@ export class HederaAgentKit {
       throw new Error(NOT_INITIALIZED_ERROR);
     }
     return new ScsBuilder(this);
-  }
-
-  /**
-   * Provides access to the Hedera File Service (HFS) builder.
-   * @returns {FileBuilder} An instance of FileBuilder.
-   * @throws {Error} If HederaAgentKit has not been initialized via `await initialize()`.
-   */
-  public fs(): FileBuilder {
-    if (!this.isInitialized) {
-      throw new Error(NOT_INITIALIZED_ERROR);
-    }
-    return new FileBuilder(this);
   }
 
   /**
