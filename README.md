@@ -24,7 +24,7 @@
 
 ### 1 – Install
 ```bash
-npm install /hedera-agent-kit           # or yarn / pnpm
+npm install hedera-agent-kit           # or yarn / pnpm
 ```
 
 
