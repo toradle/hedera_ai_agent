@@ -9,3 +9,10 @@ export type {
   HederaTool,
 } from './PluginInterface';
 export { PluginRegistry } from './PluginRegistry';
+export {
+  HederaAccountPlugin,
+  HederaHCSPlugin,
+  HederaHTSPlugin,
+  HederaSCSPlugin,
+  getAllHederaCorePlugins,
+} from './core';
