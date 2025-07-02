@@ -214,7 +214,7 @@ export class AccountBuilder extends BaseServiceBuilder {
     if (
       isUserInitiated &&
       this.kit.userAccountId &&
-      this.kit.operationalMode === 'provideBytes' &&
+      this.kit.operationalMode === 'returnBytes' &&
       params.transfers.length === 1
     ) {
       const receiverTransfer = params.transfers[0];
