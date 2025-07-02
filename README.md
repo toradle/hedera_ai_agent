@@ -139,8 +139,8 @@ type ChatEntry = { type: 'human' | 'ai'; content: string };
     chatHistory.push({ type: 'human', content: msg });
 
     const res = await agent.processMessage(msg, chatHistory);
-    console.log('AI:', res.output);
-    chatHistory.push({ type: 'ai', content: res.output });
+    console.log('AI:', res.message);
+    chatHistory.push({ type: 'ai', content: res.message });
 
     if (res.transactionBytes) {
       console.log('⚠️  Transaction bytes returned – present to wallet.');
