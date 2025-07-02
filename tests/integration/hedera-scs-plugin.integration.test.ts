@@ -34,7 +34,7 @@ describe('HederaSCSPlugin Integration (Testnet)', () => {
       openAIApiKey,
       verbose: true,
       scheduleUserTransactionsInBytesMode: false,
-      operationalMode: 'directExecution'
+      operationalMode: 'autonomous'
     });
     await agent.initialize();
 
