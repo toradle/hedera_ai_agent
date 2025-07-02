@@ -57,12 +57,16 @@ dotenv.config();
   });
   await agent.initialize();
   const res = await agent.processMessage('What is my HBAR balance?');
-  console.log(res.output);
+  console.log(res.message);
 })();
 ```
 
 ### 4 – Interactive Demos
 ```bash
+git clone https://github.com/hedera-dev/hedera-agent-kit.git
+cd hedera-agent-kit
+npm install
+cp .env.example .env   # add your keys
 # Autonomous (agent signs & pays)
 npm run demo:auto
 # Human-in-the-loop (agent returns transaction bytes, user signs in wallet)
@@ -85,7 +89,6 @@ npm run demo:human  # Requires USER_ACCOUNT_ID and USER_PRIVATE_KEY env vars for
 |---------|---------|
 | **`HederaConversationalAgent`** | High-level chat interface powered by an LLM + tools |
 | **`HederaAgentKit`** | Core engine bundling tools & network clients |
-| **Signers** | `ServerSigner` (backend / agent pays)<br>`BrowserSigner` (user wallet) |
 | **Operational Modes** | `autonomous` (execute)<br>`returnBytes` (return bytes).
 
 ---
