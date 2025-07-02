@@ -10,7 +10,7 @@ import { ChainValues } from '@langchain/core/utils/types';
 
 dotenv.config({ path: path.resolve(__dirname, '../../.env') });
 
-const DEFAULT_MODEL = DEFAULT_MODEL;
+const DEFAULT_MODEL = 'gpt-4o-mini';
 
 /**
  * Initializes HederaAgentKit with a ServerSigner for testing.

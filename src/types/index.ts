@@ -127,7 +127,7 @@ type ProtobufEncodedKey = {
   key: string;
 };
 
-type CustomFees = {
+export type CustomFees = {
   created_timestamp: string;
   fixed_fees: unknown[];
   fractional_fees: unknown[];
@@ -224,6 +224,7 @@ export type HCSMessage = {
   topic_id: string;
   supplyType: TokenSupplyType;
   maxSupply?: number | BigNumber;
+  raw_content?: string;
 };
 
 export type HCSMessageApiResponse = {
