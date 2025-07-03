@@ -39,6 +39,17 @@ interface AccountDetails {
   publicKey: SDKPublicKey;
 }
 
+/**
+ * Creates a new Hedera test account with the given initial HBAR balance.
+ * The balance is deducted from the operator account set in the environment.
+ *
+ * @param kit - HederaAgentKit with configured client and operator signer.
+ * @param initialBalanceHbar - Initial balance for the new account in HBAR.
+ *
+ * @returns AccountDetails with new accountId, privateKey, and publicKey.
+ *
+ * @throws If account creation fails or no accountId is returned.
+ */
 async function createNewTestAccount(
   kit: HederaAgentKit,
   initialBalanceHbar: number
@@ -120,7 +131,7 @@ describe('HederaHTSPlugin Integration (Testnet)', () => {
     operatorPublicKey = await kit.signer.getPublicKey();
 
     try {
-      const accountDetails = await createNewTestAccount(kit, 1); // Create with 50 HBAR
+      const accountDetails = await createNewTestAccount(kit, 50); // Create with 50 HBAR
       sharedSecondaryAccountId = accountDetails.accountId;
       sharedSecondaryAccountPrivateKey = accountDetails.privateKey;
       // Create a ServerSigner for this new account
@@ -1189,7 +1200,7 @@ describe('HederaHTSPlugin Integration (Testnet)', () => {
       console.log(`Created AirdropFT ${airdropSourceFtId}`);
 
       // 2. Create an additional recipient account and signer
-      additionalAccountDetails = await createNewTestAccount(kit, 10); // 3 HBAR initial balance
+      additionalAccountDetails = await createNewTestAccount(kit, 10); // 10 HBAR initial balance
       additionalAccountSigner = new ServerSigner(
         additionalAccountDetails.accountId,
         additionalAccountDetails.privateKey,
