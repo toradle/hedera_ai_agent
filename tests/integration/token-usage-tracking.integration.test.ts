@@ -29,7 +29,7 @@ describe('Token Usage Tracking Integration', () => {
     const signer = new ServerSigner(testAccountId, testPrivateKey, 'testnet');
     const agent = new HederaConversationalAgent(signer, {
       openAIApiKey: openaiApiKey,
-      operationalMode: 'provideBytes',
+      operationalMode: 'returnBytes',
       verbose: false,
       disableLogging: true,
     });

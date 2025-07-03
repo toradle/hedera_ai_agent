@@ -32,7 +32,7 @@ async function main(): Promise<void> {
   );
   const agent = new HederaConversationalAgent(signer, {
     openAIApiKey: openaiApiKey,
-    operationalMode: 'provideBytes',
+    operationalMode: 'returnBytes',
     verbose: false,
   });
 
