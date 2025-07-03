@@ -281,7 +281,7 @@ graph TD;
     end
 
     AgentKit -- "Provides tools to" --> Tools;
-    AgentKit -- "Configured with" --> Signer["AbstractSigner (ServerSigner/BrowserSigner)"];
+    AgentKit -- "Configured with" --> Signer["AbstractSigner (ServerSigner)"];
     AgentKit -- "Configured with" --> OpModes["Operational Modes"];
 
     Tools -- "Calls e.g., kit.accounts()" --> AgentKit;
@@ -309,8 +309,6 @@ npm install
 cp .env.example .env   # add your keys
 ```
 Please read [CONTRIBUTING.md](./CONTRIBUTING.md) and sign your commits under the DCO.
-
----
 
 ## 📜 License
 Apache 2.0
