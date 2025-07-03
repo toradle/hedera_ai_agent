@@ -581,7 +581,7 @@ describe('HederaHTSPlugin Integration (Testnet)', () => {
         // If no error, NFT still exists (unexpected after burn)
         console.warn("NFT still exists on chain after burn:", nftInfo);
         expect.fail("NFT still exists after burn.");
-      } catch (e) {
+      } catch (_e) {
         // Expected: after burn, NFT info query should fail because NFT was wiped/burned
         console.log("NFT no longer exists on chain after burn (expected).");
       }
