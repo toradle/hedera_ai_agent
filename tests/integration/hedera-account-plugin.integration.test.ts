@@ -97,8 +97,6 @@ describe('HederaAccountPlugin Integration (Testnet)', () => {
       `Approve ${amountToApprove} tokens for spender ${newAccountId} on token ${ftTokenId}`
     );
 
-    console.log('response', response)
-
     // TODO: there's no HederaMirrorNode method to check this test scenario. It will be better to add it in the future and call it here to check the result on chain.
     expect(response.success).toBe(true);
     expect(response.error).toBeUndefined();
@@ -109,7 +107,6 @@ describe('HederaAccountPlugin Integration (Testnet)', () => {
     const response = await agent.processMessage(
       `Approve ${amountToApprove} HBAR for spender ${newAccountId}`
     );
-        console.log('response', response)
 
     // TODO: there's no HederaMirrorNode method to check this test scenario. It will be better to add it in the future and call it here to check the result on chain.
     expect(response.success).toBe(true);
@@ -121,7 +118,6 @@ describe('HederaAccountPlugin Integration (Testnet)', () => {
     const approveResponse = await agent.processMessage(
       `Approve ${approveAmount} HBAR for spender ${newAccountId}`
     );
-        console.log('approveResponse', approveResponse)
 
     expect(approveResponse.success).toBe(true);
     expect(approveResponse.error).toBeUndefined();
@@ -131,7 +127,6 @@ describe('HederaAccountPlugin Integration (Testnet)', () => {
     const revokeResponse = await agent.processMessage(
       `Revoke HBAR allowance for spender ${newAccountId}`
     );
-            console.log('revokeResponse', revokeResponse)
 
     expect(revokeResponse.success).toBe(true);
     expect(revokeResponse.error).toBeUndefined();
@@ -142,7 +137,7 @@ describe('HederaAccountPlugin Integration (Testnet)', () => {
     const response = await agent.processMessage(
       `Approve NFT ${nftTokenId} serial ${mintedSerial} for spender ${newAccountId}`
     );
-    console.log('response', response)
+
     // TODO: there's no HederaMirrorNode method to check this test scenario. It will be better to add it in the future and call it here to check the result on chain.
     expect(response.success).toBe(true);
     expect(response.error).toBeUndefined();
@@ -152,7 +147,6 @@ describe('HederaAccountPlugin Integration (Testnet)', () => {
     const response = await agent.processMessage(
       `Revoke allowance for spender ${newAccountId} on token ${ftTokenId}`
     );
-        console.log('response', response)
 
     // TODO: there's no HederaMirrorNode method to check this test scenario. It will be better to add it in the future and call it here to check the result on chain.
     expect(response.success).toBe(true);
@@ -164,25 +158,16 @@ describe('HederaAccountPlugin Integration (Testnet)', () => {
     const response = await agent.processMessage(
       `Create a new account with public key ${newAccountPrivateKey.publicKey.toString()} and initial balance 1 HBAR.`
     );
-        console.log('response', response)
 
-    let extractedAccountId: AccountId | string = '';
-
-    if (
-      response.receipt &&
-      typeof response.receipt === 'object' &&
-      'accountId' in response.receipt
-    ) {
-      const { accountId } = response.receipt as TransactionReceipt;
-      extractedAccountId = accountId || ''
-    }
-
+    const client = signer.getClient()
+    const receipt = await signAndExecuteTransaction(response.transactionBytes, newAccountPrivateKey, client)
+    expect(receipt.status._code).toBe(22)
     expect(response.success).toBe(true);
     expect(response.error).toBeUndefined();
 
     await delay(5000)
 
-    const accountBalance = await hederaMirrorNode.getAccountBalance(extractedAccountId?.toString());
+    const accountBalance = await hederaMirrorNode.getAccountBalance(receipt.accountId?.toString() || '');
     expect(accountBalance).toBe(1);
   });
 
@@ -192,7 +177,6 @@ describe('HederaAccountPlugin Integration (Testnet)', () => {
     const deleteResponse = await agent.processMessage(
       `Delete account ${accountId} and transfer remaining balance to account ${mainAccountId}.`
     );
-    console.log('deleteResponse', deleteResponse)
 
     const client = signer.getClient()
     const receipt = await signAndExecuteTransaction(deleteResponse.transactionBytes, privateKey, client)
@@ -212,9 +196,8 @@ describe('HederaAccountPlugin Integration (Testnet)', () => {
     const { accountId, privateKey } = await createNewHederaAccount(signer.getClient(), signer, 1);
     const newMemo = "TestMemo";
     const response = await agent.processMessage(
-      `Update account ${accountId} memo to "${newMemo}". Sign with private key: ${privateKey.toString()}`
+      `Update account ${accountId} memo to be exactly like: ${newMemo}.`
     );
-        console.log('response', response)
 
     const client = signer.getClient()
     const receipt = await signAndExecuteTransaction(response.transactionBytes, privateKey, client)
@@ -236,8 +219,6 @@ describe('HederaAccountPlugin Integration (Testnet)', () => {
     const response = await agent.processMessage(
       `Transfer ${transferAmount} HBAR from account ${mainAccountId} to account ${receiverAccountId}`
     );
-        console.log('response', response)
-
     const client = signer.getClient()
     const receipt = await signAndExecuteTransaction(response.transactionBytes, privateKey, client)
 
@@ -272,10 +253,8 @@ describe('HederaAccountPlugin Integration (Testnet)', () => {
     const deleteAllowanceResponse = await agent.processMessage(
       `Delete NFT spender allowance for NFT ${nftTokenId} serial ${mintedSerial} from spender ${mainAccountId} (owner ${newAccountId}).`
     );
-        console.log('deleteAllowanceResponse', deleteAllowanceResponse)
 
     // TODO: there's no HederaMirrorNode method to check this test scenario. It will be better to add it in the future and call it here to check the result on chain.
-
     expect(deleteAllowanceResponse.success).toBe(true);
     expect(deleteAllowanceResponse.error).toBeUndefined();
   });
@@ -310,7 +289,7 @@ describe('HederaAccountPlugin Integration (Testnet)', () => {
     const response = await agent.processMessage(
       `Delete all spender allowances for NFT ${nftIdString} (owner ${newAccountId}).`
     );
-       console.log('response', response)
+
     expect(response.success).toBe(true);
     expect(response.error).toBeUndefined();
   });
@@ -321,7 +300,7 @@ describe('HederaAccountPlugin Integration (Testnet)', () => {
     const agentResponse = await agent.processMessage(
       `Get balance of account ${accountId}`
     );
-    console.log('agentResponse', agentResponse)
+
     expect(agentResponse.success).toBe(true);
     expect(agentResponse.error).toBeUndefined();
     expect(agentResponse.balance).toBeDefined();
@@ -344,7 +323,6 @@ describe('HederaAccountPlugin Integration (Testnet)', () => {
     const response = await agent.processMessage(
       `Get public key of account ${testAccountId.toString()}`
     );
-    console.log('response', response)
 
     expect(response.success).toBe(true);
     expect(response.error).toBeUndefined();
@@ -370,7 +348,6 @@ describe('HederaAccountPlugin Integration (Testnet)', () => {
     const agentResponse = await agent.processMessage(
       `Get account info for account ${testAccountId}`
     ) as any;
-    console.log('agentResponse', agentResponse)
 
     expect(agentResponse.success).toBe(true);
     expect(agentResponse.error).toBeUndefined();
@@ -394,7 +371,6 @@ describe('HederaAccountPlugin Integration (Testnet)', () => {
     const response = await agent.processMessage(
       `Get all token balances for account ${mainAccountId}`
     );
-    console.log('response', response)
 
     expect(response.success).toBe(true);
     expect(response.error).toBeUndefined();
@@ -445,7 +421,7 @@ describe('HederaAccountPlugin Integration (Testnet)', () => {
     const response = await agent.processMessage(
       `Get all NFTs for account ${accountId}`
     );
-    console.log('response', response)
+
     expect(response.success).toBe(true);
     expect(response.error).toBeUndefined();
     expect(response.accountId).toBe(accountId.toString());
@@ -455,7 +431,6 @@ describe('HederaAccountPlugin Integration (Testnet)', () => {
     await delay(5000)
 
     const mirrorNfts = await hederaMirrorNode.getAccountNfts(accountId.toString());
-    console.log('mirrorNfts', mirrorNfts)
 
     expect(response.nftCount).toBe(mirrorNfts?.length);
   });
