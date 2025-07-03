@@ -146,7 +146,6 @@ Understanding these concepts will help you make the most of the Hedera Agent Kit
 - **`HederaAgentKit`**: The core engine that bundles tools, manages network clients, and holds the `signer` configuration. It's used internally by `HederaConversationalAgent` but can also be used directly for more programmatic control.
 - **Signers (`AbstractSigner`)**: Determine how transactions are signed and paid for:
   - `ServerSigner`: Holds a private key directly. Useful for backend agents where the agent's account pays for transactions it executes.
-  - `BrowserSigner` (Conceptual for this README): Represents integrating with a user's browser wallet (e.g., HashPack). The agent prepares transaction bytes, and the user signs and submits them via their wallet.
 - **Operational Modes**: Configure how the agent handles transactions:
   - `operationalMode: 'autonomous'`: Agent signs and submits all transactions using its `signer`. The agent's operator account pays.
   - `operationalMode: 'returnBytes'`: Agent returns transaction bytes. Your application (and the user, via their wallet) is responsible for signing and submitting. This is key for user-centric apps.
@@ -879,7 +878,7 @@ graph TD;
     end
 
     AgentKit -- "Provides tools to" --> Tools;
-    AgentKit -- "Configured with" --> Signer["AbstractSigner (ServerSigner/BrowserSigner)"];
+    AgentKit -- "Configured with" --> Signer["AbstractSigner (ServerSigner)"];
     AgentKit -- "Configured with" --> OpModes["Operational Modes"];
 
     Tools -- "Calls e.g., kit.accounts()" --> AgentKit;
@@ -923,7 +922,7 @@ npm run test
 5. Run the demo:
 
 ```bash
-npm run demo:langchain
+npm run demo:auto
 ```
 
 ## Contributing
