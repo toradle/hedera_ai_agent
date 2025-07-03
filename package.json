@@ -66,6 +66,7 @@
   },
   "dependencies": {
     "@hashgraph/hedera-wallet-connect": "^1.5.1",
+    "@hashgraph/proto": "^2.19.0",
     "@hashgraph/sdk": "^2.66.0",
     "@langchain/core": "^0.3.61",
     "@langchain/langgraph": "^0.3.4",
