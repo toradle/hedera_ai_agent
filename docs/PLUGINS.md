@@ -10,7 +10,7 @@ Plugins in the Hedera Agent Kit are modular extensions that provide additional t
 
 ### Core Interfaces
 
-All plugins must implement the `IPlugin` interface from `@hashgraphonline/standards-agent-kit`:
+All plugins must implement the `IPlugin` interface:
 
 ```typescript
 interface IPlugin<T extends BasePluginContext = BasePluginContext> {
@@ -49,7 +49,7 @@ The simplest way to create a plugin is to extend the `GenericPlugin` base class:
 import {
   GenericPlugin,
   GenericPluginContext,
-} from '@hashgraphonline/standards-agent-kit';
+} from 'hedera-agent-kit';
 import { StructuredTool, DynamicStructuredTool } from '@langchain/core/tools';
 import { z } from 'zod';
 
@@ -146,7 +146,7 @@ To use your plugin with the Hedera Agent Kit, pass it during initialization:
 import { HederaAgentKit } from '../src';
 import { ServerSigner } from '../src/signer/server-signer';
 import { HelloWorldPlugin } from './hello-world-plugin';
-import { IPlugin } from '@hashgraphonline/standards-agent-kit';
+import { IPlugin } from 'hedera-agent-kit';
 
 // Create signer
 const signer = new ServerSigner(
@@ -343,7 +343,7 @@ const response = await conversationalAgent.processMessage(
 For managing multiple plugins, you can use the `PluginRegistry` from Standards Agent Kit:
 
 ```typescript
-import { PluginRegistry, PluginContext } from '@hashgraphonline/standards-agent-kit';
+import { PluginRegistry, PluginContext } from 'hedera-agent-kit';
 
 const context: PluginContext = {
   client: hcs10Client,
