@@ -220,7 +220,8 @@ export async function deployMockTestContract(
 export async function createNewHederaAccount(
   client: Client,
   payerSigner: ServerSigner,
-  initialBalanceHbar: number
+  initialBalanceHbar: number,
+  options?: { maxAutomaticTokenAssociations?: number }
 ): Promise<{
   accountId: AccountId;
   privateKey: PrivateKey;
@@ -232,6 +233,10 @@ export async function createNewHederaAccount(
     .setKeyWithoutAlias(newPublicKey)
     .setInitialBalance(new Hbar(initialBalanceHbar))
     .setNodeAccountIds([new AccountId(3)]);
+
+  if (options?.maxAutomaticTokenAssociations !== undefined) {
+    transaction.setMaxAutomaticTokenAssociations(options.maxAutomaticTokenAssociations);
+  }
 
   transaction.freezeWith(client);
   const signedTx = await transaction.sign(payerSigner.getOperatorPrivateKey());
