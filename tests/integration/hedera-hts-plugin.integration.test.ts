@@ -11,8 +11,15 @@ import {
   Status,
   Transaction,
   TokenDissociateTransaction,
-  TokenSupplyType, TransactionReceipt,
-  TokenDeleteTransaction, TokenInfoQuery, TokenType, TokenNftInfoQuery, NftId, Long,
+  TokenSupplyType,
+  TransactionReceipt,
+  TokenDeleteTransaction,
+  TokenInfoQuery,
+  TokenType,
+  TokenNftInfoQuery,
+  NftId,
+  Long,
+  AccountInfoQuery,
 } from '@hashgraph/sdk';
 import { HederaAgentKit, HederaConversationalAgent } from '../../src/agent';
 import dotenv from 'dotenv';
@@ -24,7 +31,11 @@ import {
   associateTokensWithAccount,
   createFungibleToken,
   createNftCollection,
-  generateUniqueName, mintFt,
+  generateUniqueName,
+  getNftOwner,
+  getTokenBalance,
+  getTokenBalanceQuery,
+  mintFt,
   mintNft
 } from "./utils";
 import { Buffer } from "buffer";
@@ -67,7 +78,7 @@ async function createNewTestAccount(
   console.log(
     `[createNewTestAccount] Attempting to create account with key ${newPublicKey.toStringDer()} and balance ${initialBalanceHbar} HBAR...`
   );
-  const frozenTx = await transaction.freezeWith(kit.client);
+  const frozenTx = transaction.freezeWith(kit.client);
   const signedTx = await frozenTx.sign(kit.signer.getOperatorPrivateKey());
   const txResponse = await signedTx.execute(kit.client);
   const receipt = await txResponse.getReceipt(kit.client);
@@ -206,7 +217,7 @@ describe('HederaHTSPlugin Integration (Testnet)', () => {
         TOKEN_ID_REGEX
       );
 
-      // Validate on chain result
+      // Validate on-chain result
       const tokenInfo = await new TokenInfoQuery()
         .setTokenId(receipt.tokenId as TokenId)
         .execute(signer.getClient());
@@ -257,7 +268,7 @@ describe('HederaHTSPlugin Integration (Testnet)', () => {
         TOKEN_ID_REGEX
       );
 
-      // Validate on chain result
+      // Validate on-chain result
       const tokenInfo = await new TokenInfoQuery()
         .setTokenId(receipt.tokenId as TokenId)
         .execute(signer.getClient());
@@ -308,7 +319,7 @@ describe('HederaHTSPlugin Integration (Testnet)', () => {
         TOKEN_ID_REGEX
       );
 
-      // Validate on chain result
+      // Validate on-chain result
       const tokenInfo = await new TokenInfoQuery()
         .setTokenId(receipt.tokenId as TokenId)
         .execute(signer.getClient());
@@ -379,7 +390,7 @@ describe('HederaHTSPlugin Integration (Testnet)', () => {
       expect(receipt).toBeDefined();
       expect(receipt.status).toEqual('SUCCESS');
 
-      // validate on chain
+      // validate on-chain
       const tokenInfoAfter = await new TokenInfoQuery()
         .setTokenId(mintableFtId)
         .execute(signer.getClient());
@@ -447,7 +458,7 @@ describe('HederaHTSPlugin Integration (Testnet)', () => {
       expect(receipt.totalSupply?.toString()).toEqual(expectedNewSupply.toString());
 
 
-      // perform on chain validation
+      // perform on-chain validation
       const tokenInfoAfter = await new TokenInfoQuery()
         .setTokenId(burnableFtId)
         .execute(signer.getClient());
@@ -548,7 +559,7 @@ describe('HederaHTSPlugin Integration (Testnet)', () => {
 
       // Mint an NFT
       const metadata = `NFT for transfer test ${generateUniqueName('Serial')}`;
-      const { serial } = await mintNft(signer, burnableNftCollectionId, metadata);
+      const {serial} = await mintNft(signer, burnableNftCollectionId, metadata);
       mintedSerial = serial.toString();
 
       console.log(`Minted NFT serial ${mintedSerial} into ${burnableNftCollectionId.toString()} for burn test.`);
@@ -571,7 +582,7 @@ describe('HederaHTSPlugin Integration (Testnet)', () => {
       );
 
 
-      // perform on chain verification
+      // perform on-chain verification
       try {
         const nftId = new NftId(burnableNftCollectionId, Number(mintedSerial));
         const nftInfo = await new TokenNftInfoQuery()
@@ -579,11 +590,11 @@ describe('HederaHTSPlugin Integration (Testnet)', () => {
           .execute(signer.getClient());
 
         // If no error, NFT still exists (unexpected after burn)
-        console.warn("NFT still exists on chain after burn:", nftInfo);
+        console.warn("NFT still exists on-chain after burn:", nftInfo);
         expect.fail("NFT still exists after burn.");
-      } catch (_e) {
+      } catch (e) {
         // Expected: after burn, NFT info query should fail because NFT was wiped/burned
-        console.log("NFT no longer exists on chain after burn (expected).");
+        console.log("NFT no longer exists on-chain after burn (expected).", e);
       }
     });
   });
@@ -618,6 +629,13 @@ describe('HederaHTSPlugin Integration (Testnet)', () => {
       expect(responsePause.success, `Pause Token Test Failed: ${responsePause.error}`).toBe(true);
       expect(receiptPause).toBeDefined();
       expect(receiptPause.status).toEqual('SUCCESS');
+
+      // Validate on-chain result
+      const pausedTokenInfo = await new TokenInfoQuery()
+        .setTokenId(pausableTokenId)
+        .execute(signer.getClient());
+
+      expect(pausedTokenInfo.pauseStatus).equal(true);
       console.log(`Token ${pausableTokenId.toString()} paused successfully.`);
 
       // Unpause the token
@@ -628,6 +646,13 @@ describe('HederaHTSPlugin Integration (Testnet)', () => {
       expect(responseUnpause.success, `Unpause Token Test Failed: ${responseUnpause.error}`).toBe(true);
       expect(receiptUnpause).toBeDefined();
       expect(receiptUnpause.status).toEqual('SUCCESS');
+
+      const unpausedTokenInfo = await new TokenInfoQuery()
+        .setTokenId(pausableTokenId)
+        .execute(signer.getClient());
+
+      expect(unpausedTokenInfo.pauseStatus).equal(false);
+
       console.log(`Token ${pausableTokenId.toString()} unpaused successfully.`);
     });
   });
@@ -664,6 +689,14 @@ describe('HederaHTSPlugin Integration (Testnet)', () => {
       expect(response.success, `UpdateToken Test Failed: ${response.error}`).toBe(true);
       expect(receipt).toBeDefined();
       expect(receipt.status).toEqual('SUCCESS');
+
+      // Validate on-chain result
+      const updatedTokenInfo = await new TokenInfoQuery()
+        .setTokenId(updatableTokenId)
+        .execute(signer.getClient());
+
+      expect(updatedTokenInfo.name).equal(newTokenName);
+      expect(updatedTokenInfo.symbol).equal(newTokenSymbol);
 
       console.log(`Token ${updatableTokenId.toString()} updated successfully.`);
     });
@@ -954,20 +987,25 @@ describe('HederaHTSPlugin Integration (Testnet)', () => {
     it('should freeze and then unfreeze a token for the shared secondary account using transaction bytes', async () => {
       // --- Freeze ---
       let prompt = `Freeze token ${tokenIdToFreeze.toString()} for account ${sharedSecondaryAccountId.toString()}.`;
-
       let result = await agent.processMessage(prompt);
 
-      expect(
-        result.success,
-      ).toBe(true);
+      expect(result.success).toBe(true);
       expect(result.error).not.toBeDefined();
+
+      // perform on-chain check
+      const accountInfo = await new AccountInfoQuery()
+        .setAccountId(sharedSecondaryAccountId)
+        .execute(signer.getClient());
+      const tokenRel = accountInfo.tokenRelationships.get(tokenIdToFreeze.toString());
+
+      expect(tokenRel?.isFrozen).toBe(true)
+
       console.log(
         `Token ${tokenIdToFreeze.toString()} successfully frozen for account ${sharedSecondaryAccountId.toString()}.`
       );
 
       // --- Unfreeze ---
       prompt = `Unfreeze token ${tokenIdToFreeze.toString()} for account ${sharedSecondaryAccountId.toString()}.`;
-
       const resultUnfreeze = await agent.processMessage(prompt);
 
       expect(
@@ -975,6 +1013,14 @@ describe('HederaHTSPlugin Integration (Testnet)', () => {
         `UnfreezeTool failed: ${resultUnfreeze.error}`
       ).toBe(true);
       expect(resultUnfreeze.error).not.toBeDefined();
+
+      // perform on-chain check
+      const accountInfoAfterUnfreeze = await new AccountInfoQuery()
+        .setAccountId(sharedSecondaryAccountId)
+        .execute(signer.getClient());
+      const tokenRelAfter = accountInfoAfterUnfreeze.tokenRelationships.get(tokenIdToFreeze.toString());
+
+      expect(tokenRelAfter?.isFrozen).toBe(false);
 
       console.log(
         `Executed unfreeze account for: account  ${sharedSecondaryAccountId} and token ${tokenIdToFreeze}`
@@ -1093,6 +1139,8 @@ describe('HederaHTSPlugin Integration (Testnet)', () => {
 
     it('should transfer fungible tokens', async () => {
       const amountToTransfer = 150;
+      const senderPreBalance = await getTokenBalance(operatorAccountId, transferSourceFtId, signer);
+      const receiverPreBalance = await getTokenBalance(sharedSecondaryAccountId, transferSourceFtId, signer);
 
       const tokenTransfers = [
         {
@@ -1116,6 +1164,12 @@ describe('HederaHTSPlugin Integration (Testnet)', () => {
       expect(result.success, `Fungible Token Transfer Failed: ${result.error}`).toBe(true);
       expect(receipt).toBeDefined();
       expect(receipt.status).toEqual('SUCCESS');
+
+      const senderPostBalance = await getTokenBalance(operatorAccountId, transferSourceFtId, signer);
+      const receiverPostBalance = await getTokenBalance(sharedSecondaryAccountId, transferSourceFtId, signer);
+
+      expect(senderPostBalance).toBe(senderPreBalance - amountToTransfer);
+      expect(receiverPostBalance).toBe(receiverPreBalance + amountToTransfer);
 
       console.log(`Transferred ${amountToTransfer} of FT ${transferSourceFtId}`);
     });
@@ -1149,7 +1203,7 @@ describe('HederaHTSPlugin Integration (Testnet)', () => {
 
       // Mint one NFT using helper method with metadata string
       const metadata = `NFT for transfer test ${generateUniqueName('Serial')}`;
-      const { serial } = await mintNft(signer, transferSourceNftCollectionId, metadata);
+      const {serial} = await mintNft(signer, transferSourceNftCollectionId, metadata);
       nftSerialToTransfer = serial;
 
       console.log(`Minted NFT serial ${nftSerialToTransfer}`);
@@ -1173,6 +1227,10 @@ describe('HederaHTSPlugin Integration (Testnet)', () => {
       expect(result.success, `NFT Transfer Failed: ${result.error}`).toBe(true);
       expect(receipt).toBeDefined();
       expect(receipt.status.toString()).toEqual('SUCCESS');
+
+      // perform on-chain check
+      const ownerAfter = await getNftOwner(transferSourceNftCollectionId, nftSerialToTransfer, signer);
+      expect(ownerAfter.toString()).toBe(sharedSecondaryAccountId.toString());
 
       console.log(`Transferred NFT ${transferSourceNftCollectionId}.${nftSerialToTransfer}`);
     });
@@ -1222,6 +1280,13 @@ describe('HederaHTSPlugin Integration (Testnet)', () => {
         {accountId: sharedSecondaryAccountId.toString(), amount: 456},
       ];
 
+      // Get pre-airdrop balances
+      const preBalances = await Promise.all(
+        recipients.map(r =>
+          getTokenBalanceQuery(r.accountId, airdropSourceFtId, signer)
+        )
+      );
+
       const prompt = `Airdrop token ${airdropSourceFtId.toString()}. Recipients: ${JSON.stringify(
         recipients
       )}. Memo: "FT Airdrop Test"`;
@@ -1231,6 +1296,21 @@ describe('HederaHTSPlugin Integration (Testnet)', () => {
 
       expect(receipt).toBeDefined();
       expect(receipt.status).toEqual('SUCCESS');
+
+      // Perform on-chain check
+      // Get post-airdrop balances
+      const postBalances = await Promise.all(
+        recipients.map(r =>
+          getTokenBalanceQuery(r.accountId, airdropSourceFtId, signer)
+        )
+      );
+
+      // Assert balances increased by expected amounts
+      recipients.forEach((recipient, i) => {
+        const expected = preBalances[i] + recipient.amount;
+        expect(postBalances[i]).toBe(expected);
+      });
+
       console.log(
         `Successfully airdropped ${airdropSourceFtId.toString()} to recipients.`
       );
@@ -1268,6 +1348,14 @@ describe('HederaHTSPlugin Integration (Testnet)', () => {
       );
       expect(receipt).toBeDefined();
       expect(receipt.status).toEqual('SUCCESS');
+
+      // perform on-chain verification
+      const tokenInfo = await new TokenInfoQuery()
+        .setTokenId(deletableTokenId)
+        .execute(signer.getClient());
+
+      expect(tokenInfo.isDeleted).toBe(true);
+
       console.log(
         `Token ${deletableTokenId.toString()} deleted successfully in dedicated test.`
       );

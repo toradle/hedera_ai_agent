@@ -1,5 +1,5 @@
 import { HederaAgentKit } from '../../src/agent';
-import { ServerSigner } from '../../src';
+import { AbstractSigner, ServerSigner } from '../../src';
 import { StructuredTool } from '@langchain/core/tools';
 import { ChatOpenAI } from '@langchain/openai';
 import { AgentExecutor, createOpenAIToolsAgent } from 'langchain/agents';
@@ -17,7 +17,7 @@ import {
   AccountId,
   TransactionReceipt,
   PublicKey as SDKPublicKey,
-  ContractCreateFlow
+  ContractCreateFlow, AccountInfoQuery, TokenNftInfoQuery, NftId, AccountBalanceQuery
 } from '@hashgraph/sdk';
 
 dotenv.config({ path: path.resolve(__dirname, '../../.env') });
@@ -375,4 +375,39 @@ export async function mintNft(
   const serial = receipt.serials[0].toNumber();
 
   return { receipt, serial };
+}
+
+// helper method for fetching balances with use of AccountInfoQuery
+export async function getTokenBalance(accountId: AccountId | string, tokenId: TokenId | string, signer: AbstractSigner): Promise<number> {
+  const accountInfo = await new AccountInfoQuery()
+    .setAccountId(accountId)
+    .execute(signer.getClient());
+
+  const tokenRel = accountInfo.tokenRelationships.get(tokenId.toString());
+  if (!tokenRel) throw new Error(`Token relationship not found for token ${tokenId}`);
+
+  return tokenRel.balance.toNumber();
+}
+
+export async function getNftOwner(
+  tokenId: TokenId | string,
+  serial: number,
+  signer: AbstractSigner
+): Promise<AccountId> {
+  if (!(tokenId instanceof TokenId)) {
+    tokenId = TokenId.fromString(tokenId);
+  }
+
+  const nftInfo = await new TokenNftInfoQuery()
+    .setNftId(new NftId(tokenId, serial))
+    .execute(signer.getClient());
+
+  return nftInfo[0].accountId;
+}
+
+export function getTokenBalanceQuery(accountId: string, tokenId: TokenId, signer: AbstractSigner): Promise<number> {
+  return new AccountBalanceQuery()
+    .setAccountId(accountId)
+    .execute(signer.getClient())
+    .then(balance => balance.tokens?._map.get(tokenId.toString())?.toNumber() ?? 0);
 }
