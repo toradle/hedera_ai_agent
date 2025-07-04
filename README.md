@@ -9,14 +9,15 @@
 ## 📋 Contents
 
 - [🚀 60-Second Quick-Start](#-60-second-quick-start)
-- [✨ Key Features](#-key-features)
-- [🧠 Core Concepts](#-core-concepts)
-- [💬 Handling Conversations](#-handling-conversations)
-- [🔧 Advanced Usage](#-advanced-usage)
-- [🛠️ Available Tools](#️-available-tools)
-- [🗺 Architecture Diagram](#-architecture-diagram)
-- [🧑‍💻 Local Development & Contributing](#-local-development--contributing)
-- [📜 License](#-license)
+- [Key Features](#key-features)
+- [Core Concepts](#core-concepts)
+- [Handling Conversations](#handling-conversations)
+- [Creating Custom Plugins](#creating-custom-plugins)
+- [Advanced Usage](#advanced-usage)
+- [Available Tools](#️available-tools)
+- [Architecture Diagram](#architecture-diagram)
+- [Local Development & Contributing](#local-development--contributing)
+- [License](#license)
 
 ---
 
@@ -75,16 +76,16 @@ npm run demo:human  # Requires USER_ACCOUNT_ID and USER_PRIVATE_KEY env vars for
 
 ---
 
-## ✨ Key Features
+## Key Features
 - Conversational Hedera (chat-driven blockchain actions)
 - Flexible transaction handling (Autonomous • Return Transaction Bytes)
 - Comprehensive toolset (Hedera Token Service, Hedera Consensus Service, Hedera Account Service, Hedera Smart Contract Service)
-- Extensible plugin system
+- Extensible plugin system (see how to create your own plugnins [here](https://github.com/hedera-dev/hedera-agent-kit/blob/main/docs/PLUGINS.md)
 - Simplified @hashgraph/sdk interaction
 
 ---
 
-## 🧠 Core Concepts
+## Core Concepts
 | Concept | Purpose |
 |---------|---------|
 | **`HederaConversationalAgent`** | High-level chat interface powered by an LLM + tools |
@@ -93,7 +94,7 @@ npm run demo:human  # Requires USER_ACCOUNT_ID and USER_PRIVATE_KEY env vars for
 
 ---
 
-## 💬 Handling Conversations
+## Handling Conversations
 ### Processing a Prompt
 ```ts
 type ChatEntry = { type: 'human' | 'ai'; content: string };
@@ -157,7 +158,11 @@ type ChatEntry = { type: 'human' | 'ai'; content: string };
 
 ---
 
-## 🔧 Advanced Usage
+## Creating Custom Plugins
+
+Check out our [Plugin Development Guide](https://github.com/hedera-dev/hedera-agent-kit/blob/main/docs/PLUGINS.md)
+
+## Advanced Usage
 | Topic | Summary |
 |-------|---------|
 | Using `HederaAgentKit` directly | Programmatic control with service builders |
@@ -256,7 +261,7 @@ async function useCustomPlugin() {
 
 ---
 
-## 🛠️ Available Tools
+## Available Tools
 Service categories:
 1. Account Management
 2. HBAR Transfers
@@ -268,7 +273,7 @@ Service categories:
 
 ---
 
-## 🗺 Architecture Diagram
+## Architecture Diagram
 ```mermaid
 graph TD;
     UserInput["User via Application UI"] --> AppCode["Application Logic (e.g., demo.ts)"];
@@ -301,7 +306,7 @@ graph TD;
 
 ---
 
-## 🧑‍💻 Local Development & Contributing
+## Local Development & Contributing
 ```bash
 git clone https://github.com/hedera-dev/hedera-agent-kit.git
 cd hedera-agent-kit
@@ -310,5 +315,5 @@ cp .env.example .env   # add your keys
 ```
 Please read [CONTRIBUTING.md](./CONTRIBUTING.md) and sign your commits under the DCO.
 
-## 📜 License
+## License
 Apache 2.0
