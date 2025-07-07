@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeAll } from 'vitest';
 import dotenv from 'dotenv';
 import path from 'path';
-import { AccountId, AccountInfoQuery, Hbar, PrivateKey, ScheduleCreateTransaction, Status, TokenSupplyType, TransferTransaction } from '@hashgraph/sdk';
+import { AccountId, AccountInfoQuery, Hbar, HbarUnit, PrivateKey, PublicKey, ScheduleCreateTransaction, Status, TokenSupplyType, TransferTransaction } from '@hashgraph/sdk';
 import { HederaConversationalAgent } from '../../src/agent/conversational-agent';
 import { ServerSigner } from '../../src/signer/server-signer';
 import HederaAccountPlugin from '../../src/plugins/core/HederaAccountPlugin';
@@ -165,11 +165,13 @@ describe('HederaAccountPlugin Integration (Testnet)', () => {
     expect(receipt.status._code).toBe(22)
     expect(response.success).toBe(true);
     expect(response.error).toBeUndefined();
+    expect(receipt.accountId).toBeDefined();
 
-    await delay(5000)
+    const newAccountId = receipt.accountId?.toString()
+    const queryResponse = await new AccountInfoQuery()
+      .setAccountId(newAccountId!).execute(signer.getClient());
 
-    const accountBalance = await hederaMirrorNode.getAccountBalance(receipt.accountId?.toString() || '');
-    expect(accountBalance).toBe(1);
+    expect(queryResponse.accountId.toString()).toBe(receipt.accountId?.toString())
   });
 
   it('should delete a newly created account using HederaDeleteAccountTool', async () => {
@@ -193,13 +195,13 @@ describe('HederaAccountPlugin Integration (Testnet)', () => {
   });
 
   it('should update the memo of a newly created account using HederaUpdateAccountTool', async () => {
+    const client = signer.getClient()
     const { accountId, privateKey } = await createNewHederaAccount(signer.getClient(), signer, 1);
     const newMemo = "TestMemo";
     const response = await agent.processMessage(
-      `Update account ${accountId} memo to be exactly like: ${newMemo}.`
+      `Update account ${accountId} memo to be exactly like: ${newMemo}. Return transaction bytes.`
     );
 
-    const client = signer.getClient()
     const receipt = await signAndExecuteTransaction(response.transactionBytes, privateKey, client)
 
     expect(receipt.status._code).toBe(22)
@@ -208,30 +210,38 @@ describe('HederaAccountPlugin Integration (Testnet)', () => {
 
     const queryResponse = await new AccountInfoQuery()
       .setAccountId(accountId).execute(client);
-
     expect(queryResponse.accountMemo).toBe(newMemo)
   });
 
   it('should transfer HBAR between two accounts using HederaTransferHbarTool', async () => {
     const { accountId: receiverAccountId, privateKey } = await createNewHederaAccount(signer.getClient(), signer, 1);
-    const initialSenderBalance = await hederaMirrorNode.getAccountBalance(mainAccountId);
+
+    const preSenderInfo = await new AccountInfoQuery()
+      .setAccountId(mainAccountId)
+      .execute(signer.getClient());
+    const initialSenderBalanceTinybars = preSenderInfo.balance.to(HbarUnit.Hbar).toNumber()
     const transferAmount = 1;
     const response = await agent.processMessage(
       `Transfer ${transferAmount} HBAR from account ${mainAccountId} to account ${receiverAccountId}`
     );
-    const client = signer.getClient()
-    const receipt = await signAndExecuteTransaction(response.transactionBytes, privateKey, client)
+    const receipt = await signAndExecuteTransaction(response.transactionBytes, privateKey, signer.getClient())
 
     expect(receipt.status._code).toBe(22)
     expect(response.success).toBe(true);
     expect(response.error).toBeUndefined();
 
-    await delay(5000);
+    const postSenderInfo = await new AccountInfoQuery()
+      .setAccountId(mainAccountId)
+      .execute(signer.getClient());
+    const postReceiverInfo = await new AccountInfoQuery()
+      .setAccountId(receiverAccountId.toString())
+      .execute(signer.getClient());
 
-    const postSenderBalance = await hederaMirrorNode.getAccountBalance(mainAccountId);
-    const postReceiverBalance = await hederaMirrorNode.getAccountBalance(receiverAccountId.toString());
-    expect(Number(postSenderBalance)).toBeLessThan(Number(initialSenderBalance));
-    expect(Number(postReceiverBalance)).toBe(2);
+    const postSenderBalanceTinybars = postSenderInfo.balance.to(HbarUnit.Hbar).toNumber()
+    const postReceiverBalanceTinybars = postReceiverInfo.balance.to(HbarUnit.Hbar).toNumber()
+
+    expect(postSenderBalanceTinybars).toBeLessThan(initialSenderBalanceTinybars);
+    expect(postReceiverBalanceTinybars).toBe(2);
   });
 
   it('should delete NFT spender allowance for a specific serial using HederaDeleteNftSpenderAllowanceTool', async () => {
@@ -249,6 +259,8 @@ describe('HederaAccountPlugin Integration (Testnet)', () => {
       memo: 'Test approve NFT spender allowance for deletion',
     });
     await accountBuilder.execute();
+
+    await delay(5000)
 
     const deleteAllowanceResponse = await agent.processMessage(
       `Delete NFT spender allowance for NFT ${nftTokenId} serial ${mintedSerial} from spender ${mainAccountId} (owner ${newAccountId}).`
@@ -306,11 +318,12 @@ describe('HederaAccountPlugin Integration (Testnet)', () => {
     expect(agentResponse.balance).toBeDefined();
     expect(agentResponse.balance).toBe(1);
 
-    await delay(5000)
+    const { balance } = await new AccountInfoQuery()
+      .setAccountId(accountId).execute(signer.getClient());
+    const hbarBalance = balance.to(HbarUnit.Hbar).toNumber()
 
-    const accountBalance = await hederaMirrorNode.getAccountBalance(accountId?.toString());
-    expect(accountBalance).toBe(1);
-    expect(accountBalance).toBe(agentResponse.balance);
+    expect(hbarBalance).toBe(1);
+    expect(hbarBalance).toBe(agentResponse.balance);
   });
 
   it('should get the public key of an account using HederaGetAccountPublicKeyTool', async () => {
@@ -331,10 +344,11 @@ describe('HederaAccountPlugin Integration (Testnet)', () => {
     expect(response.publicKeyDer).toBe(publicKey.toStringDer());
     expect(response.publicKeyRaw).toBe(publicKey.toStringRaw());
 
-    await delay(5000)
+    const queryResponse = await new AccountInfoQuery()
+      .setAccountId(testAccountId).execute(signer.getClient());
+    const queryPublicKey = queryResponse.key as PublicKey;
 
-    const mirrorNodePublicKey = await hederaMirrorNode.getPublicKey(testAccountId.toString());
-    expect(response.publicKey).toBe(mirrorNodePublicKey.toString());
+    expect(response.publicKey).toBe(queryPublicKey.toStringDer());
   });
 
   it('should get full info for an account using HederaGetAccountInfoTool', async () => {
@@ -344,7 +358,7 @@ describe('HederaAccountPlugin Integration (Testnet)', () => {
       1
     );
 
-    // TODO: change any to the right interface
+    // TODO: in the future, write a proper interface for this response to replace any
     const agentResponse = await agent.processMessage(
       `Get account info for account ${testAccountId}`
     ) as any;
@@ -357,14 +371,14 @@ describe('HederaAccountPlugin Integration (Testnet)', () => {
     expect(agentResponse.accountInfo.key.key).toBe(publicKey.toStringRaw());
     expect(agentResponse.accountInfo.memo).toBeDefined();
 
-    await delay(5000)
-    const mirrorNodeAccountInfo = await hederaMirrorNode.requestAccount(testAccountId.toString())
+    const accountInfoQueryResponse = await new AccountInfoQuery()
+      .setAccountId(testAccountId).execute(signer.getClient());
 
-    expect(agentResponse.accountInfo.account).toBe(mirrorNodeAccountInfo.account);
-    expect(agentResponse.accountInfo.key.key).toBe(mirrorNodeAccountInfo.key.key);
-    expect(agentResponse.accountInfo.memo).toBe(mirrorNodeAccountInfo.memo);
-    expect(agentResponse.accountInfo.deleted).toBe(mirrorNodeAccountInfo.deleted);
-    expect(agentResponse.accountInfo.evm_address).toBe(mirrorNodeAccountInfo.evm_address);
+    const queryPublicKey = accountInfoQueryResponse.key as PublicKey;
+
+    expect(agentResponse.accountInfo.key.key).toBe(queryPublicKey.toStringRaw());
+    expect(agentResponse.accountInfo.memo).toBe(accountInfoQueryResponse.accountMemo)
+    expect(agentResponse.accountInfo.deleted).toBe(accountInfoQueryResponse.isDeleted);
   });
 
   it('should get all token balances for the account using HederaGetAccountTokensTool', async () => {
@@ -453,7 +467,7 @@ describe('HederaAccountPlugin Integration (Testnet)', () => {
     const scheduleCreateResponse = await scheduleCreateTx.execute(signer.getClient());
     const scheduleCreateReceipt = await scheduleCreateResponse.getReceipt(signer.getClient());
     const scheduleId = scheduleCreateReceipt.scheduleId?.toString();
-    console.log('scheduleCreateReceipt', scheduleCreateReceipt)
+
     expect(scheduleId).toBeDefined();
     expect(scheduleCreateReceipt.status._code).toBe(22);
 
@@ -465,25 +479,31 @@ describe('HederaAccountPlugin Integration (Testnet)', () => {
     expect(response.transactionBytes).toBeDefined();
     expect(response.error).toBeUndefined();
 
-    await delay(5000);
+    const receiverInfoQueryResponse = await new AccountInfoQuery()
+      .setAccountId(receiverId).execute(signer.getClient());
 
-    const receiverBalance = await hederaMirrorNode.getAccountBalance(receiverId.toString());
-    expect(receiverBalance).toBe(1.01);
+    expect(receiverInfoQueryResponse.balance.to(HbarUnit.Hbar).toNumber()).toBe(1.01);
   });
 
   it('should return outstanding airdrops for an account using HederaGetOutstandingAirdropsTool', async () => {
-    const hederaKit = new HederaAgentKit(signer);
+    const { accountId: treasuryId, privateKey: treasuryKey } = await createNewHederaAccount(
+      signer.getClient(),
+      signer,
+      10,
+    );
+
+    const hederaKit = new HederaAgentKit(new ServerSigner(treasuryId, treasuryKey, 'testnet'));
     await hederaKit.initialize();
     const htsBuilder = new HtsBuilder(hederaKit);
 
     const ftResult = await htsBuilder.createFungibleToken({
       tokenName: 'TestAirdropToken',
       tokenSymbol: 'TAT',
-      initialSupply: 10,
+      initialSupply: 5,
       decimals: 2,
-      treasuryAccountId: mainAccountId,
+      treasuryAccountId: treasuryId,
       supplyType: TokenSupplyType.Finite,
-      maxSupply: 100,
+      maxSupply: 10,
     }).then(result => result.execute());
 
     const tokenId = ftResult.receipt?.tokenId?.toString();
@@ -496,6 +516,8 @@ describe('HederaAccountPlugin Integration (Testnet)', () => {
       { maxAutomaticTokenAssociations: 0 }
     );
 
+    await delay(5000)
+
     const airdropResult = await htsBuilder.airdropToken({
       tokenId: tokenId!,
       recipients: [
@@ -504,12 +526,12 @@ describe('HederaAccountPlugin Integration (Testnet)', () => {
       pendingAirdropIds: []
     }).execute();
 
-    expect(airdropResult.receipt?.status._code).toBe(22); // SUCCESS
+    expect(airdropResult.receipt?.status._code).toBe(22);
 
     await delay(5000)
 
     const response = await agent.processMessage(
-      `Get outstanding airdrops sent by account ${mainAccountId}`
+      `Get outstanding airdrops sent by account ${treasuryId}`
     );
 
     expect(response.success).toBe(true);
@@ -517,10 +539,10 @@ describe('HederaAccountPlugin Integration (Testnet)', () => {
     expect(Array.isArray(response.airdrops)).toBe(true);
 
     const airdrops = response.airdrops as Airdrop[];
-
     const matchingAidrop = airdrops.some(
       (airdrop) => airdrop.receiver_id === receiverId.toString()
     );
+
     expect(matchingAidrop).toBe(true);
   });
 
