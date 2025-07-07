@@ -108,6 +108,7 @@ describe('HederaHTSPlugin Integration (Testnet)', () => {
   let secondaryAccountSigner: ServerSigner; // Signer for the shared secondary account
   let operatorAccountId: AccountId;
   let createdTokenIds: TokenId[] = [];
+  let nonCustodialAgent: HederaConversationalAgent;
 
   console.log('HederaHTSPlugin Integration Test (Testnet)');
 
@@ -134,6 +135,17 @@ describe('HederaHTSPlugin Integration (Testnet)', () => {
       operationalMode: 'autonomous'
     });
     await agent.initialize();
+
+
+    nonCustodialAgent = new HederaConversationalAgent(signer, {
+      pluginConfig: {plugins: [new HederaHTSPlugin()]},
+      userAccountId: accountId,
+      openAIApiKey,
+      verbose: true,
+      scheduleUserTransactionsInBytesMode: false,
+      operationalMode: 'returnBytes'
+    });
+    await nonCustodialAgent.initialize();
 
     kit = new HederaAgentKit(signer, {appConfig: {openAIApiKey}}, "autonomous", undefined, false);
     await kit.initialize();
@@ -724,17 +736,15 @@ describe('HederaHTSPlugin Integration (Testnet)', () => {
       console.log(`Created token ${associatableTokenId.toString()} for association tests.`);
     });
 
-
-    // FIXME: failing due to `No transaction is currently being built` error
-    it.skip('should prepare transaction bytes for association, then allow secondary account to sign and execute', async () => {
+    it('should prepare transaction bytes for association, then allow secondary account to sign and execute', async () => {
       const prompt = `Prepare a transaction for account ${sharedSecondaryAccountId.toString()} to associate with token 0.0.6273446. Return the transaction bytes. metaOptions: { getBytes: true }`;
 
-      const response = await agent.processMessage(prompt);
+      const response = await nonCustodialAgent.processMessage(prompt);
 
       expect(response.success, `Failed to get transaction bytes: ${response.error}`).toBe(true);
-      expect(response.type).toBe('bytes');
+      expect(response.transactionBytes).toBeDefined();
 
-      const transactionBytes = Buffer.from(response.output as string, 'base64');
+      const transactionBytes = Buffer.from(response.transactionBytes as string, 'base64');
       const associateTx = (
         Transaction.fromBytes(transactionBytes) as TokenAssociateTransaction
       ).freezeWith(secondaryAccountSigner.getClient());
@@ -776,16 +786,15 @@ describe('HederaHTSPlugin Integration (Testnet)', () => {
       console.log(`Associated ${dissociatableTokenId} with ${sharedSecondaryAccountId} for dissociation test.`);
     });
 
-    // FIXME: failing due to `No transaction is currently being built` error
-    it.skip('should prepare and execute dissociation via secondary account signer', async () => {
+    it('should prepare and execute dissociation via secondary account signer', async () => {
       const prompt = `Prepare a transaction for account ${sharedSecondaryAccountId.toString()} to dissociate from token ${dissociatableTokenId.toString()}. Return the transaction bytes. metaOptions: { getBytes: true }`;
 
-      const response = await agent.processMessage(prompt);
+      const response = await nonCustodialAgent.processMessage(prompt);
 
       expect(response.success, `Failed to get transaction bytes: ${response.error}`).toBe(true);
-      expect(response.type).toBe('bytes');
+      expect(response.transactionBytes).toBeDefined();
 
-      const transactionBytes = Buffer.from(response.output as string, 'base64');
+      const transactionBytes = Buffer.from(response.transactionBytes as string, 'base64');
       const dissociateTx = (
         TokenDissociateTransaction.fromBytes(transactionBytes)
       ).freezeWith(secondaryAccountSigner.getClient());
@@ -824,8 +833,7 @@ describe('HederaHTSPlugin Integration (Testnet)', () => {
       console.log(`Created WipeableFT ${wipeableFtId} for wipe test.`);
     });
 
-    // FIXME: failing due to `No transaction is currently being built` error
-    it.skip('should fail to wipe tokens from the treasury account', async () => {
+    it('should fail to wipe tokens from the treasury account', async () => {
       const prompt = `Wipe ${amountToWipe} units of token ${wipeableFtId.toString()} from account ${operatorAccountId.toString()}. metaOptions: { wipeKeyShouldSign: true }`;
 
       const response = await agent.processMessage(prompt);
@@ -851,6 +859,7 @@ describe('HederaHTSPlugin Integration (Testnet)', () => {
         treasuryAccountId: operatorAccountId,
         adminKey: operatorPublicKey,
         supplyKey: operatorPublicKey,
+        feeKey: operatorPublicKey,
       });
 
       createdTokenIds.push(tokenWithFeeScheduleKeyId);
@@ -860,8 +869,7 @@ describe('HederaHTSPlugin Integration (Testnet)', () => {
       );
     });
 
-    // FIXME: failing due to `No transaction is currently being built` error
-    it.skip('should update the fee schedule for a token', async () => {
+    it('should update the fee schedule for a token', async () => {
       const customFeesJson = JSON.stringify([
         {
           type: 'FIXED',
@@ -1068,8 +1076,7 @@ describe('HederaHTSPlugin Integration (Testnet)', () => {
       );
     });
 
-    // FIXME: failing due to `No transaction is currently being built` error
-    it.skip('should grant KYC to the shared secondary account for the token', async () => {
+    it('should grant KYC to the shared secondary account for the token', async () => {
       const prompt = `Grant KYC to account ${sharedSecondaryAccountId.toString()} for token ${kycEnabledTokenId.toString()}. metaOptions: { kycKeyShouldSign: true }`; // Assuming kycKeyShouldSign metaOption might be needed, though operator (KYC key holder) signs by default.
 
       const result = await agent.processMessage(prompt);
@@ -1085,8 +1092,7 @@ describe('HederaHTSPlugin Integration (Testnet)', () => {
       );
     });
 
-    // FIXME: failing due to `No transaction is currently being built` error
-    it.skip('should revoke KYC from the shared secondary account for the token', async () => {
+    it('should revoke KYC from the shared secondary account for the token', async () => {
       // This test depends on the grant KYC test passing first.
       const prompt = `Revoke KYC from account ${sharedSecondaryAccountId.toString()} for token ${kycEnabledTokenId.toString()}. metaOptions: { kycKeyShouldSign: true }`;
 

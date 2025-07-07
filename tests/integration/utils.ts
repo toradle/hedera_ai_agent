@@ -240,6 +240,7 @@ export async function createFungibleToken(
     pauseKey?: SDKPublicKey;
     freezeKey?: SDKPublicKey;
     kycKey?: SDKPublicKey;
+    feeKey?: SDKPublicKey;
   }
 ): Promise<TokenId> {
   const tokenName = options.name || generateUniqueName('FT');
@@ -264,6 +265,7 @@ export async function createFungibleToken(
   if (options.pauseKey) tx = tx.setPauseKey(options.pauseKey);
   if (options.freezeKey) tx = tx.setFreezeKey(options.freezeKey);
   if (options.kycKey) tx = tx.setKycKey(options.kycKey);
+  if (options.feeKey) tx = tx.setFeeScheduleKey(options.feeKey);
 
   // Set max supply if finite
   if (supplyType === TokenSupplyType.Finite && options.maxSupply) {
