@@ -6,7 +6,6 @@ import {
 } from '../common/base-hedera-transaction-tool';
 import { BaseServiceBuilder } from '../../../builders';
 import { HtsBuilder } from '../../../builders';
-import { Long, NftId, TokenId } from "@hashgraph/sdk";
 
 const TransferNftZodSchemaCore = z.object({
   tokenId: z.string().describe('The token ID of the NFT (e.g., "0.0.xxxx").'),
@@ -46,20 +45,8 @@ export class HederaTransferNftTool extends BaseHederaTransactionTool<
     builder: BaseServiceBuilder,
     specificArgs: z.infer<typeof TransferNftZodSchemaCore>
   ): Promise<void> {
-    const serialNum = typeof specificArgs.serial === "string"
-      ? Long.fromString(specificArgs.serial)
-      : specificArgs.serial; // already a number
-
-    const parsedParams: TransferNFTParams = {
-      nftId: new NftId(TokenId.fromString(specificArgs.tokenId), serialNum),
-      senderAccountId: specificArgs.senderAccountId,
-      receiverAccountId: specificArgs.receiverAccountId,
-      isApproved: specificArgs.isApproved ?? false,  // provide default false if undefined
-      memo: specificArgs.memo ?? '',                 // provide default empty string if undefined
-    };
-
     await (builder as HtsBuilder).transferNft(
-      parsedParams
+      specificArgs as unknown as TransferNFTParams
     );
   }
 }

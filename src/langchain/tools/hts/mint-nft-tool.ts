@@ -48,15 +48,8 @@ export class HederaMintNftTool extends BaseHederaTransactionTool<
     builder: BaseServiceBuilder,
     specificArgs: z.infer<typeof MintNFTZodSchemaCore>
   ): Promise<void> {
-    const parsedParams: MintNFTParams = {
-      tokenId: specificArgs.tokenId,
-      metadata: specificArgs.metadata.map((m) => {
-        return Buffer.from(m, 'utf8');
-      }),
-      batchSize: specificArgs.batchSize,
-    }
     await (builder as HtsBuilder).mintNonFungibleToken(
-      parsedParams
+      specificArgs as unknown as MintNFTParams
     );
   }
 }
