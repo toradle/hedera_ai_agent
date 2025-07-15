@@ -18,6 +18,7 @@ export default class HederaAgentKit {
   }
 
   async createFungibleToken(params: z.infer<ReturnType<typeof createFungibleTokenParameters>>, context: Context) {
+    console.log("Creating fungible token", params)
     const treasuryAccountId = params.treasuryAccountId || context.accountId || this.client.operatorAccountId?.toString()
 
     if (!treasuryAccountId) {
@@ -46,7 +47,8 @@ export default class HederaAgentKit {
       const submitTx = await tx.execute(this.client)
       const receipt = await submitTx.getReceipt(this.client)
       result = {
-        status: receipt.status._code
+        status: receipt.status._code,
+        receipt: receipt
       }
     }
     return result

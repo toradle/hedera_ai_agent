@@ -8,11 +8,12 @@ import { Client, PrivateKey } from "@hashgraph/sdk";
 require("dotenv").config();
 
 const llm = new ChatOpenAI({
-  model: "gpt-4o",
+  model: "gpt-4o-mini",
 });
 
-const client = Client.forTestnet();
-// .setOperator(process.env.ACCOUNT_ID!, PrivateKey.fromStringED25519(process.env.PRIVATE_KEY!))
+const client = Client.forTestnet()
+//.setOperator(process.env.ACCOUNT_ID!, PrivateKey.fromStringED25519(process.env.PRIVATE_KEY!))
+
 const hederaAgentToolkit = new HederaAgentLangchainToolkit({
   client,
   configuration: {
@@ -44,11 +45,12 @@ const hederaAgentToolkit = new HederaAgentLangchainToolkit({
   const agentExecutor = new AgentExecutor({
     agent,
     tools,
+    returnIntermediateSteps: true
   });
 
   const response = await agentExecutor.invoke({
     input: `
-      Create a token called Hello World with symbol HELLO.
+      Create a token called Hello World with symbol HELLO with treasury account 0.0.123123. 
     `,
   });
 

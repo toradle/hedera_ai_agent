@@ -1,19 +1,17 @@
 import { Client } from "@hashgraph/sdk";
-import HederaAgentKit from "../hedera-agent-kit";
 
 import type { Context } from "./configuration";
 import tools, { Tool } from "./tools";
 
-class HederaAgentKitAPI {
-  hederaAgentKit: HederaAgentKit;
+class ClientAPI {
+  client: Client;
 
   context: Context;
 
   tools: Tool[];
 
   constructor(client: Client, context?: Context) {
-    const hederaAgentKitClient = new HederaAgentKit(client);
-    this.hederaAgentKit = hederaAgentKitClient;
+    this.client = client;
     this.context = context || {};
     this.tools = tools(this.context);
   }
@@ -22,7 +20,7 @@ class HederaAgentKitAPI {
     const tool = this.tools.find((t) => t.method === method);
     if (tool) {
       const output = JSON.stringify(
-        await tool.execute(this.hederaAgentKit, this.context, arg)
+        await tool.execute(this.client, this.context, arg)
       );
       return output;
     } else {
@@ -31,4 +29,4 @@ class HederaAgentKitAPI {
   }
 }
 
-export default HederaAgentKitAPI;
+export default ClientAPI;

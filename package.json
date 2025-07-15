@@ -12,9 +12,12 @@
   "dependencies": {
     "@hashgraph/sdk": "^2.68.0",
     "@langchain/core": "^0.3.62",
-    "@langchain/openai": "^0.5.18",
     "dotenv": "^17.2.0",
-    "langchain": "^0.3.29",
     "zod": "^4.0.5"
+  },
+  "devDependencies": {
+    "@langchain/openai": "^0.5.18",
+    "langchain": "^0.3.29",
+    "ts-node": "^10.9.2"
   }
 }

@@ -2,6 +2,7 @@ import { z } from 'zod';
 import { Context } from './configuration';
 import HederaAgentKit from '../hedera-agent-kit';
 import createFungibleToken from './fungible-token/create-fungible-token';
+import { Client } from '@hashgraph/sdk';
 
 export type Tool = {
   method: string;
@@ -13,7 +14,7 @@ export type Tool = {
       [action: string]: boolean;
     };
   };
-  execute: (hederaAgentKit: HederaAgentKit, context: Context, params: any) => Promise<any>;
+  execute: (client: Client, context: Context, params: any) => Promise<any>;
 };
 
 const tools = (context: Context): Tool[] => [
