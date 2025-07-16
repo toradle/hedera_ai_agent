@@ -1,6 +1,7 @@
 import { z } from 'zod';
 import { Context } from './configuration';
-import createFungibleToken from './tools/fungible-token/create-fungible-token';
+import nonFungibleTokenTool from './tools/non-fungible-token/create-non-fungible-token';
+import fungibleTokenTool from './tools/fungible-token/create-fungible-token';
 import { Client } from '@hashgraph/sdk';
 
 export type Tool = {
@@ -17,7 +18,8 @@ export type Tool = {
 };
 
 const tools = (context: Context): Tool[] => [
-  createFungibleToken(context)
+  fungibleTokenTool(context),
+  nonFungibleTokenTool(context),
 ]
 
 export default tools;

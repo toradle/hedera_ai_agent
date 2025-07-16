@@ -1,5 +1,6 @@
 export type Object =
   | 'fungibleToken'
+  | 'nonFungibleToken';
 
 export type Permission = 'create' | 'update' | 'read';
 
@@ -20,12 +21,11 @@ export enum AgentMode {
 
 // Context are settings that are applied to all requests made by the integration.
 export type Context = {
-  // Account is a Stripe Connected Account ID. If set, the integration will
-  // make requests for this Account.
+  // Account is a Connected Account ID. If set, the integration will
+  // make requests for this Account. TODO: check if it works
   accountId?: string;
 
-  // If set to 'modelcontextprotocol', the Stripe API calls will use a special
-  // header
+  // defines if the agent executes the transactions or returns the raw transaction bytes
   mode?: AgentMode;
 };
 

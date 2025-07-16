@@ -7,7 +7,7 @@ import { handleTransaction } from '../../strategies/tx-mode-strategy';
 import { createFungibleTokenParameters } from '../../parameter-schemas/hts.zod';
 import HederaBuilder from '../../hedera-utils/hedera-builder';
 
-export const createFungibleTokenPrompt = (_context: Context = {}) => `
+const createFungibleTokenPrompt = (_context: Context = {}) => `
 This tool will create a fungible token on Hedera.
 
 It takes four arguments:
@@ -19,7 +19,7 @@ It takes four arguments:
 
 
 
-export const createFungibleToken = async (
+const createFungibleToken = async (
   client: Client,
   context: Context,
   params: z.infer<ReturnType<typeof createFungibleTokenParameters>>
@@ -34,7 +34,7 @@ export const createFungibleToken = async (
     if (error instanceof Error) {
       return error.message
     }
-    return 'Failed to create product'; // TODO: make this a more specific error
+    return 'Failed to create fungible token'; // TODO: make this a more specific error
   }
 }
 

@@ -1,6 +1,5 @@
-import { Client, TokenCreateTransaction } from "@hashgraph/sdk";
-import { Context } from "../configuration";
-import { createFungibleTokenParameters } from "../parameter-schemas/hts.zod";
+import { TokenCreateTransaction, TokenSupplyType } from "@hashgraph/sdk";
+import { createFungibleTokenParameters, createNonFungibleTokenParameters } from "../parameter-schemas/hts.zod";
 import z from "zod";
 
 export default class HederaBuilder {
@@ -9,4 +8,7 @@ export default class HederaBuilder {
     return new TokenCreateTransaction(params)
   }
 
+  static createNonFungibleToken(params: z.infer<ReturnType<typeof createNonFungibleTokenParameters>>) {
+    return new TokenCreateTransaction({...params, supplyType: TokenSupplyType.Finite}); // NFT has to have the Finite supply set
+  }
 }

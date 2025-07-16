@@ -2,7 +2,7 @@
 
 import { Client } from "@hashgraph/sdk"
 import { Context } from "../configuration"
-import { createFungibleTokenParameters } from "../parameter-schemas/hts.zod"
+import { createFungibleTokenParameters, createNonFungibleTokenParameters } from "../parameter-schemas/hts.zod"
 import z from "zod"
 
 export default class HederaParameterNormaliser {
@@ -15,6 +15,18 @@ export default class HederaParameterNormaliser {
         return {
             ...params,
             treasuryAccountId
+        }
+    }
+
+    static normaliseCreateNonFungibleTokenParams(params: z.infer<ReturnType<typeof createNonFungibleTokenParameters>>, context: Context, client: Client) {
+        const treasuryAccountId = params.treasuryAccountId || context.accountId || client.operatorAccountId?.toString()
+        if (!treasuryAccountId) {
+            throw new Error("Must include treasury account ID")
+        }
+
+        return {
+            ...params,
+            treasuryAccountId,
         }
     }
 }

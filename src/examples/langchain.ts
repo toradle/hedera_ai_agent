@@ -4,16 +4,17 @@ import type { ChatPromptTemplate } from "@langchain/core/prompts";
 import { pull } from "langchain/hub";
 import { AgentExecutor, createStructuredChatAgent } from "langchain/agents";
 import { Client, PrivateKey } from "@hashgraph/sdk";
-import { AgentMode } from "../shared/configuration";
+import { AgentMode } from "@/shared/configuration";
+import dotenv from "dotenv";
 
-require("dotenv").config();
+dotenv.config();
 
 const llm = new ChatOpenAI({
   model: "gpt-4o-mini",
 });
 
 const client = Client.forTestnet()
-//.setOperator(process.env.ACCOUNT_ID!, PrivateKey.fromStringED25519(process.env.PRIVATE_KEY!))
+  .setOperator(process.env.ACCOUNT_ID!, PrivateKey.fromStringED25519(process.env.PRIVATE_KEY!))
 
 const hederaAgentToolkit = new HederaAgentLangchainToolkit({
   client,
@@ -22,10 +23,13 @@ const hederaAgentToolkit = new HederaAgentLangchainToolkit({
       fungibleToken: {
         create: true,
       },
+      nonFungibleToken: {
+        create: true,
+      },
     },
     context: {
-      mode: AgentMode.RETURN_BYTES,
-      accountId: "0.0.123123",
+      mode: AgentMode.AUTONOMOUS,
+      // accountId: "0.0.123123", // TODO: accountId should be passed only if the AgentMode is non-custodial?
     },
   },
 });
@@ -49,9 +53,16 @@ const hederaAgentToolkit = new HederaAgentLangchainToolkit({
     returnIntermediateSteps: true
   });
 
+  // EXAMPLE PROMPT FOR FT CREATION
+  // const response = await agentExecutor.invoke({
+  //   input: `
+  //     Create a token called Hello World with symbol HELLO with treasury account 0.0.123123.
+  //   `,
+  // });
+
   const response = await agentExecutor.invoke({
     input: `
-      Create a token called Hello World with symbol HELLO with treasury account 0.0.123123. 
+      Create a nft token called Hello World with symbol HELLO.
     `,
   });
 
