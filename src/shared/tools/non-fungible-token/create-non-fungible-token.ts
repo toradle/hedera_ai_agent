@@ -17,28 +17,28 @@ It takes four arguments:
 - treasuryAccountId (str, optional): The treasury account of the token.
 `;
 
-
-
 const createNonFungibleToken = async (
   client: Client,
   context: Context,
-  params: z.infer<ReturnType<typeof createNonFungibleTokenParameters>>
+  params: z.infer<ReturnType<typeof createNonFungibleTokenParameters>>,
 ) => {
   try {
-    const normalisedParams = HederaParameterNormaliser.normaliseCreateNonFungibleTokenParams(params, context, client)
-    const tx = HederaBuilder.createNonFungibleToken(normalisedParams)
-    const result = await handleTransaction(tx, client, context)
-    console.log("Result from create non-fungible token", result)
-    return result
+    const normalisedParams = HederaParameterNormaliser.normaliseCreateNonFungibleTokenParams(
+      params,
+      context,
+      client,
+    );
+    const tx = HederaBuilder.createNonFungibleToken(normalisedParams);
+    const result = await handleTransaction(tx, client, context);
+    console.log('Result from create non-fungible token', result);
+    return result;
   } catch (error) {
     if (error instanceof Error) {
-      return error.message
+      return error.message;
     }
     return 'Failed to create non-fungible token'; // TODO: make this a more specific error
   }
-}
-
-
+};
 
 const tool = (context: Context): Tool => ({
   method: 'create_non_fungible_token',

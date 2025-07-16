@@ -13,8 +13,10 @@ const llm = new ChatOpenAI({
   model: 'gpt-4o-mini',
 });
 
-const client = Client.forTestnet()
-  .setOperator(process.env.ACCOUNT_ID!, PrivateKey.fromStringED25519(process.env.PRIVATE_KEY!));
+const client = Client.forTestnet().setOperator(
+  process.env.ACCOUNT_ID!,
+  PrivateKey.fromStringED25519(process.env.PRIVATE_KEY!),
+);
 
 const hederaAgentToolkit = new HederaAgentLangchainToolkit({
   client,
@@ -30,6 +32,10 @@ const hederaAgentToolkit = new HederaAgentLangchainToolkit({
       },
       account: {
         transfer: true,
+      },
+      consensus: {
+        createTopic: true,
+        submitTopicMessage: true,
       },
     },
     context: {
@@ -90,9 +96,17 @@ const hederaAgentToolkit = new HederaAgentLangchainToolkit({
   //   `,
   // });
 
+  // EXAMPLE PROMPT FOR TOPIC CREATION
+  // const response = await agentExecutor.invoke({
+  //   input: `
+  //     Create topic with memo 'Hello World'. Set the admin key. Set submit key to 0x134b3a67bfab5fc4c32f1412839f24f95436a6145006400c1e523372107d99a2.
+  //   `,
+  // });
+
+  // EXAMPLE PROMPT FOR TOPIC MESSAGE SUBMISSION
   const response = await agentExecutor.invoke({
     input: `
-      Create topic with memo 'Hello World'. Set the admin key. Do not set the submit key.
+      Submit message "hello, HCS!" to topic 0.0.6361367.
     `,
   });
 

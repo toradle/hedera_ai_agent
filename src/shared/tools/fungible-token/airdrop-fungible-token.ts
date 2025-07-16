@@ -18,28 +18,28 @@ It takes five arguments:
 - transactionMemo (str, optional): optional memo for the transaction.
 `;
 
-
-
 const airdropFungibleToken = async (
   client: Client,
   context: Context,
-  params: z.infer<ReturnType<typeof airdropFungibleTokenParameters>>
+  params: z.infer<ReturnType<typeof airdropFungibleTokenParameters>>,
 ) => {
   try {
-    const normalisedParams = HederaParameterNormaliser.normaliseAirdropFungibleTokenParams(params, context, client)
-    const tx = HederaBuilder.airdropFungibleToken(normalisedParams)
-    const result = await handleTransaction(tx, client, context)
-    console.log("Result from airdrop fungible token", result)
-    return result
+    const normalisedParams = HederaParameterNormaliser.normaliseAirdropFungibleTokenParams(
+      params,
+      context,
+      client,
+    );
+    const tx = HederaBuilder.airdropFungibleToken(normalisedParams);
+    const result = await handleTransaction(tx, client, context);
+    console.log('Result from airdrop fungible token', result);
+    return result;
   } catch (error) {
     if (error instanceof Error) {
-      return error.message
+      return error.message;
     }
     return 'Failed to airdrop fungible token'; // TODO: make this a more specific error
   }
-}
-
-
+};
 
 const tool = (context: Context): Tool => ({
   method: 'airdrop_fungible_token',

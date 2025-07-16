@@ -21,21 +21,25 @@ It takes five arguments:
 const transferToken = async (
   client: Client,
   context: Context,
-  params: z.infer<ReturnType<typeof transferTokenParameters>>
+  params: z.infer<ReturnType<typeof transferTokenParameters>>,
 ) => {
   try {
-    const normalisedParams = HederaParameterNormaliser.normaliseTransferTokenParams(params, context, client)
-    const tx = HederaBuilder.transferToken(normalisedParams)
-    const result = await handleTransaction(tx, client, context)
-    console.log("Result from transfer token", result)
-    return result
+    const normalisedParams = HederaParameterNormaliser.normaliseTransferTokenParams(
+      params,
+      context,
+      client,
+    );
+    const tx = HederaBuilder.transferToken(normalisedParams);
+    const result = await handleTransaction(tx, client, context);
+    console.log('Result from transfer token', result);
+    return result;
   } catch (error) {
     if (error instanceof Error) {
-      return error.message
+      return error.message;
     }
     return 'Failed to transfer token'; // TODO: make this a more specific error
   }
-}
+};
 
 const tool = (context: Context): Tool => ({
   method: 'transfer_token',

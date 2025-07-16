@@ -4,8 +4,8 @@ import type { Tool } from '../../tools';
 import { Client } from '@hashgraph/sdk';
 import { handleTransaction } from '../../strategies/tx-mode-strategy';
 import HederaBuilder from '../../hedera-utils/hedera-builder';
-import { createTopicParameters } from "@/shared/parameter-schemas/hcs.zod";
-import HederaParameterNormaliser from "@/shared/hedera-utils/hedera-parameter-normaliser";
+import { createTopicParameters } from '@/shared/parameter-schemas/hcs.zod';
+import HederaParameterNormaliser from '@/shared/hedera-utils/hedera-parameter-normaliser';
 
 const createTopicPrompt = (_context: Context = {}) => `
 This tool will create a new topic on the Hedera network.
@@ -21,13 +21,17 @@ It takes the following optional arguments:
 const createTopic = async (
   client: Client,
   context: Context,
-  params: z.infer<ReturnType<typeof createTopicParameters>>
+  params: z.infer<ReturnType<typeof createTopicParameters>>,
 ) => {
   try {
-    const normalisedParams = HederaParameterNormaliser.normaliseCreateTopicParams(params, context, client);
+    const normalisedParams = HederaParameterNormaliser.normaliseCreateTopicParams(
+      params,
+      context,
+      client,
+    );
     const tx = HederaBuilder.createTopic(normalisedParams);
     const result = await handleTransaction(tx, client, context);
-    console.log("Result from create topic", result);
+    console.log('Result from create topic', result);
     return result;
   } catch (error) {
     if (error instanceof Error) {

@@ -1,9 +1,13 @@
-export type Object =
-  | 'fungibleToken'
-  | 'nonFungibleToken'
-  | 'account';
+export type Object = 'fungibleToken' | 'nonFungibleToken' | 'account' | 'consensus';
 
-export type Permission = 'create' | 'update' | 'read' | 'transfer' | 'airdrop';
+export type Permission =
+  | 'create'
+  | 'update'
+  | 'read'
+  | 'transfer'
+  | 'airdrop'
+  | 'createTopic'
+  | 'submitTopicMessage';
 
 export type Actions = {
   [K in Object]?: {
