@@ -10,7 +10,7 @@ import HederaParameterNormaliser from "@/shared/hedera-utils/hedera-parameter-no
 const transferHbarPrompt = (_context: Context = {}) => `
 This tool will transfer HBAR to an account.
 
-It takes four arguments:
+It takes three arguments:
 - hbarAmount (number): amount of hbar to transfer.
 - destinationAccountId (str): account to transfer hbar to.
 - transactionMemo (str, optional): optional memo for the transaction.

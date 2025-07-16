@@ -35,3 +35,20 @@ export const createNonFungibleTokenParameters = (_context: Context = {}) =>
       .describe('The treasury account of the token.'),
 
   })
+
+export const airdropFungibleTokenParameters = (_context: Context = {}) =>
+  z.object({
+    tokenId: z.string().describe('The id of the token.'),
+    amount: z.number().describe('The amount of tokens to airdrop.'),
+    sourceAccountId: z
+      .string()
+      .optional()
+      .describe('The account to airdrop the token from.'),
+    destinationAccountId: z
+      .string()
+      .describe('The account to airdrop the token to.'),
+    transactionMemo: z
+      .string()
+      .optional()
+      .describe('memo to include with transaction'),
+  })

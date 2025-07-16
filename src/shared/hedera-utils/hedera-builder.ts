@@ -1,6 +1,14 @@
-import { Hbar, TokenCreateTransaction, TokenSupplyType, TransferTransaction } from "@hashgraph/sdk";
-import { createFungibleTokenParameters, createNonFungibleTokenParameters } from "../parameter-schemas/hts.zod";
+import {
+  Hbar,
+  TokenCreateTransaction,
+  TokenSupplyType,
+  TransferTransaction,
+  TokenAirdropTransaction
+} from "@hashgraph/sdk";
+import { airdropFungibleTokenParameters, createFungibleTokenParameters, createNonFungibleTokenParameters } from "../parameter-schemas/hts.zod";
 import z from "zod";
+import transferHbar from "@/shared/tools/account/transfer-hbar";
+import { transferHbarParameters } from "@/shared/parameter-schemas/has.zod";
 
 export default class HederaBuilder {
 
@@ -12,10 +20,17 @@ export default class HederaBuilder {
     return new TokenCreateTransaction({...params, supplyType: TokenSupplyType.Finite}); // NFT has to have the Finite supply set
   }
 
-  static transferHbar(params: any) {
+  static transferHbar(params: z.infer<ReturnType<typeof transferHbarParameters>>) {
     return new TransferTransaction()
       .addHbarTransfer(params.destinationAccountId, new Hbar(params.hbarAmount))
-      .addHbarTransfer(params.sourceAccountId, new Hbar(params.hbarAmount).negated())
+      .addHbarTransfer(params.sourceAccountId as string, new Hbar(params.hbarAmount).negated())
+      .setTransactionMemo(params.transactionMemo || "");
+  }
+
+  static airdropFungibleToken(params: z.infer<ReturnType<typeof airdropFungibleTokenParameters>>) {
+    return new TokenAirdropTransaction()
+      .addTokenTransfer(params.tokenId, params.sourceAccountId as string, -params.amount)
+      .addTokenTransfer(params.tokenId, params.destinationAccountId, params.amount)
       .setTransactionMemo(params.transactionMemo || "");
   }
 }

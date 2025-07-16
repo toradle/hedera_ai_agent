@@ -22,6 +22,7 @@ const hederaAgentToolkit = new HederaAgentLangchainToolkit({
     actions: {
       fungibleToken: {
         create: true,
+        airdrop: true,
       },
       nonFungibleToken: {
         create: true,
@@ -70,11 +71,17 @@ const hederaAgentToolkit = new HederaAgentLangchainToolkit({
   //   `,
   // });
 
+  // const response = await agentExecutor.invoke({
+  //   input: `
+  //     Transfer 0.1 HBAR to account 0.0.123123. Add memo to transaction 'testing the tx'
+  //   `,
+  // });
+
   const response = await agentExecutor.invoke({
     input: `
-      Transfer 0.1 HBAR to account 0.0.123123. Add memo to transaction 'testing the tx'
+        Airdrop 100 tokens 0.0.5445171 to account 0.0.123123.
     `,
-  });
+  })
 
   console.log(response);
 })();

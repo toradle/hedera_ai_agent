@@ -2,7 +2,7 @@
 
 import { Client } from "@hashgraph/sdk"
 import { Context } from "../configuration"
-import { createFungibleTokenParameters, createNonFungibleTokenParameters } from "../parameter-schemas/hts.zod"
+import { airdropFungibleTokenParameters, createFungibleTokenParameters, createNonFungibleTokenParameters } from "../parameter-schemas/hts.zod"
 import z from "zod"
 import { transferHbarParameters } from "@/shared/parameter-schemas/has.zod";
 
@@ -32,6 +32,18 @@ export default class HederaParameterNormaliser {
   }
 
   static normaliseTransferHbar(params: z.infer<ReturnType<typeof transferHbarParameters>>, context: Context, client: Client) {
+    const sourceAccountId = params.sourceAccountId || context.accountId || client.operatorAccountId?.toString();
+    if (!sourceAccountId) {
+      throw new Error("Must include source account ID")
+    }
+
+    return {
+      ...params,
+      sourceAccountId,
+    }
+  }
+
+  static normaliseAirdropFungibleTokenParams(params: z.infer<ReturnType<typeof airdropFungibleTokenParameters>>, context: Context, client: Client) {
     const sourceAccountId = params.sourceAccountId || context.accountId || client.operatorAccountId?.toString();
     if (!sourceAccountId) {
       throw new Error("Must include source account ID")

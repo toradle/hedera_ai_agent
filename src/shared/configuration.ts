@@ -3,7 +3,7 @@ export type Object =
   | 'nonFungibleToken'
   | 'account';
 
-export type Permission = 'create' | 'update' | 'read' | 'transfer';
+export type Permission = 'create' | 'update' | 'read' | 'transfer' | 'airdrop';
 
 export type Actions = {
   [K in Object]?: {
