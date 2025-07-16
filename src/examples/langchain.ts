@@ -86,9 +86,15 @@ const hederaAgentToolkit = new HederaAgentLangchainToolkit({
   // })
 
   // EXAMPLE PROMPT FOR TOKEN TRANSFER
+  // const response = await agentExecutor.invoke({
+  //   input: `
+  //     Transfer 10 tokens of token ID 0.0.5445171 to account 0.0.6360769. Add memo 'Happy Birthday!'
+  //   `,
+  // });
+
   const response = await agentExecutor.invoke({
     input: `
-      Transfer 10 tokens of token ID 0.0.5445171 to account 0.0.6360769. Add memo 'Happy Birthday!'
+      Create topic with memo 'Hello World'. Set the admin key. Do not set the submit key.
     `,
   });
 

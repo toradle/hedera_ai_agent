@@ -5,6 +5,7 @@ import { Context } from "../configuration"
 import { airdropFungibleTokenParameters, createFungibleTokenParameters, createNonFungibleTokenParameters, transferTokenParameters } from "../parameter-schemas/hts.zod"
 import z from "zod"
 import { transferHbarParameters } from "@/shared/parameter-schemas/has.zod";
+import { createTopicParameters } from "@/shared/parameter-schemas/hcs.zod";
 
 export default class HederaParameterNormaliser {
   static normaliseCreateFungibleTokenParams(params: z.infer<ReturnType<typeof createFungibleTokenParameters>>, context: Context, client: Client) {
@@ -65,5 +66,27 @@ export default class HederaParameterNormaliser {
       ...params,
       sourceAccountId,
     }
+  }
+
+  static normaliseCreateTopicParams(params: z.infer<ReturnType<typeof createTopicParameters>>, context: Context, client: Client) {
+    const defaultAccountPublicKey = client.operatorPublicKey?.toStringDer(); // TODO: fetch public key for the context.accountId
+    const result = { ...params };
+
+    // Only add keys if the corresponding boolean flag is true and the key was not passed in the user prompt
+    if (params.isAdminKey && !params.adminKey) {
+      if (!defaultAccountPublicKey) {
+        throw new Error("Could not determine default account ID for admin key");
+      }
+      result.adminKey = defaultAccountPublicKey;
+    }
+
+    if (params.isSubmitKey && !params.submitKey) {
+      if (!defaultAccountPublicKey) {
+        throw new Error("Could not determine default account ID for submit key");
+      }
+      result.submitKey = defaultAccountPublicKey;
+    }
+
+    return result;
   }
 }

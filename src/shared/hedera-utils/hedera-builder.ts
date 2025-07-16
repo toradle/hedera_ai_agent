@@ -3,7 +3,9 @@ import {
   TokenCreateTransaction,
   TokenSupplyType,
   TransferTransaction,
-  TokenAirdropTransaction
+  TokenAirdropTransaction,
+  TopicCreateTransaction,
+  PublicKey
 } from "@hashgraph/sdk";
 import {
   airdropFungibleTokenParameters,
@@ -13,6 +15,7 @@ import {
 } from "../parameter-schemas/hts.zod";
 import z from "zod";
 import { transferHbarParameters } from "@/shared/parameter-schemas/has.zod";
+import { createTopicParameters } from "@/shared/parameter-schemas/hcs.zod";
 
 export default class HederaBuilder {
 
@@ -43,5 +46,21 @@ export default class HederaBuilder {
       .addTokenTransfer(params.tokenId, params.sourceAccountId as string, -params.amount)
       .addTokenTransfer(params.tokenId, params.receiverAccountId, params.amount)
       .setTransactionMemo(params.transactionMemo || "");
+  }
+
+  static createTopic(params: z.infer<ReturnType<typeof createTopicParameters>>) {
+    const transaction = new TopicCreateTransaction();
+
+    if (params.topicMemo) {
+      transaction.setTopicMemo(params.topicMemo);
+    }
+    if (params.adminKey) {
+      transaction.setAdminKey(PublicKey.fromString(params.adminKey)); // TODO: validate if it would work with DER/HEX encoded both type of keys
+    }
+    if (params.submitKey) {
+      transaction.setSubmitKey(PublicKey.fromString(params.submitKey)); // TODO: validate if it would work with DER/HEX encoded both type of keys
+    }
+
+    return transaction;
   }
 }

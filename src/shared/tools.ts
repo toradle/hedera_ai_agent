@@ -5,6 +5,7 @@ import createFungibleTokenTool from './tools/fungible-token/create-fungible-toke
 import transferHbarTool from './tools/account/transfer-hbar';
 import airdropFungibleToken from "./tools/fungible-token/airdrop-fungible-token";
 import transferFungibleToken from "./tools/fungible-token/transfer-token";
+import createTopicTool from "./tools/consensus/create-topic";
 import { Client } from '@hashgraph/sdk';
 
 export type Tool = {
@@ -25,7 +26,8 @@ const tools = (context: Context): Tool[] => [
   createNonFungibleTokenTool(context),
   transferHbarTool(context),
   airdropFungibleToken(context),
-  transferFungibleToken(context)
+  transferFungibleToken(context),
+  createTopicTool(context)
 ]
 
 export default tools;
