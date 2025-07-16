@@ -1,18 +1,18 @@
-import HederaAgentLangchainToolkit from "../langchain/toolkit";
-import { ChatOpenAI } from "@langchain/openai";
-import type { ChatPromptTemplate } from "@langchain/core/prompts";
-import { pull } from "langchain/hub";
-import { AgentExecutor, createStructuredChatAgent } from "langchain/agents";
-import { Client, PrivateKey } from "@hashgraph/sdk";
-import { AgentMode } from "../shared/configuration";
-
-require("dotenv").config();
+import HederaAgentLangchainToolkit from '../langchain/toolkit';
+import { ChatOpenAI } from '@langchain/openai';
+import type { ChatPromptTemplate } from '@langchain/core/prompts';
+import { pull } from 'langchain/hub';
+import { AgentExecutor, createStructuredChatAgent } from 'langchain/agents';
+import { Client } from '@hashgraph/sdk';
+import { AgentMode } from '../shared/configuration';
+import * as dotenv from 'dotenv';
+dotenv.config();
 
 const llm = new ChatOpenAI({
-  model: "gpt-4o-mini",
+  model: 'gpt-4o-mini',
 });
 
-const client = Client.forTestnet()
+const client = Client.forTestnet();
 //.setOperator(process.env.ACCOUNT_ID!, PrivateKey.fromStringED25519(process.env.PRIVATE_KEY!))
 
 const hederaAgentToolkit = new HederaAgentLangchainToolkit({
@@ -25,15 +25,13 @@ const hederaAgentToolkit = new HederaAgentLangchainToolkit({
     },
     context: {
       mode: AgentMode.RETURN_BYTES,
-      accountId: "0.0.123123",
+      accountId: '0.0.123123',
     },
   },
 });
 
 (async (): Promise<void> => {
-  const prompt = await pull<ChatPromptTemplate>(
-    "hwchase17/structured-chat-agent"
-  );
+  const prompt = await pull<ChatPromptTemplate>('hwchase17/structured-chat-agent');
 
   const tools = hederaAgentToolkit.getTools();
 
@@ -46,7 +44,7 @@ const hederaAgentToolkit = new HederaAgentLangchainToolkit({
   const agentExecutor = new AgentExecutor({
     agent,
     tools,
-    returnIntermediateSteps: true
+    returnIntermediateSteps: true,
   });
 
   const response = await agentExecutor.invoke({

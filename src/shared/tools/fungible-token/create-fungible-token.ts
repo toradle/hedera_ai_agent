@@ -17,28 +17,28 @@ It takes four arguments:
 - treasuryAccountId (str, optional): The treasury account of the token.
 `;
 
-
-
 export const createFungibleToken = async (
   client: Client,
   context: Context,
-  params: z.infer<ReturnType<typeof createFungibleTokenParameters>>
+  params: z.infer<ReturnType<typeof createFungibleTokenParameters>>,
 ) => {
   try {
-    const normalisedParams = HederaParameterNormaliser.normaliseCreateFungibleTokenParams(params, context, client)
-    const tx = HederaBuilder.createFungibleToken(normalisedParams)
-    const result = await handleTransaction(tx, client, context)
-    console.log("Result from create fungible token", result)
-    return result
+    const normalisedParams = HederaParameterNormaliser.normaliseCreateFungibleTokenParams(
+      params,
+      context,
+      client,
+    );
+    const tx = HederaBuilder.createFungibleToken(normalisedParams);
+    const result = await handleTransaction(tx, client, context);
+    console.log('Result from create fungible token', result);
+    return result;
   } catch (error) {
     if (error instanceof Error) {
-      return error.message
+      return error.message;
     }
     return 'Failed to create product'; // TODO: make this a more specific error
   }
-}
-
-
+};
 
 const tool = (context: Context): Tool => ({
   method: 'create_fungible_token',

@@ -16,8 +16,6 @@ export type Tool = {
   execute: (client: Client, context: Context, params: any) => Promise<any>;
 };
 
-const tools = (context: Context): Tool[] => [
-  createFungibleToken(context)
-]
+const tools = (context: Context): Tool[] => [createFungibleToken(context)];
 
 export default tools;

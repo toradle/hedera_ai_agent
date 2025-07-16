@@ -1,5 +1,4 @@
-export type Object =
-  | 'fungibleToken'
+export type Object = 'fungibleToken';
 
 export type Permission = 'create' | 'update' | 'read';
 
