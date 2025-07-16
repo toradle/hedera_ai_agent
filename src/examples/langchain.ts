@@ -1,18 +1,19 @@
-import HederaAgentLangchainToolkit from '../langchain/toolkit';
-import { ChatOpenAI } from '@langchain/openai';
-import type { ChatPromptTemplate } from '@langchain/core/prompts';
-import { pull } from 'langchain/hub';
-import { AgentExecutor, createStructuredChatAgent } from 'langchain/agents';
-import { Client } from '@hashgraph/sdk';
-import { AgentMode } from '../shared/configuration';
-import * as dotenv from 'dotenv';
-dotenv.config();
+import HederaAgentLangchainToolkit from "../langchain/toolkit";
+import { ChatOpenAI } from "@langchain/openai";
+import type { ChatPromptTemplate } from "@langchain/core/prompts";
+import { pull } from "langchain/hub";
+import { AgentExecutor, createStructuredChatAgent } from "langchain/agents";
+import { Client, LedgerId, PrivateKey } from "@hashgraph/sdk";
+import { AgentMode } from "../shared/configuration";
+
+require("dotenv").config();
 
 const llm = new ChatOpenAI({
   model: 'gpt-4o-mini',
 });
 
-const client = Client.forTestnet();
+const client = Client.forTestnet()
+client.ledgerId
 //.setOperator(process.env.ACCOUNT_ID!, PrivateKey.fromStringED25519(process.env.PRIVATE_KEY!))
 
 const hederaAgentToolkit = new HederaAgentLangchainToolkit({
@@ -25,7 +26,10 @@ const hederaAgentToolkit = new HederaAgentLangchainToolkit({
     },
     context: {
       mode: AgentMode.RETURN_BYTES,
-      accountId: '0.0.123123',
+      accountId: "0.0.123123",
+      mirrornodeConfig: {
+        ledgerId: LedgerId.TESTNET,
+      },
     },
   },
 });
@@ -49,7 +53,7 @@ const hederaAgentToolkit = new HederaAgentLangchainToolkit({
 
   const response = await agentExecutor.invoke({
     input: `
-      Create a token called Hello World with symbol HELLO with treasury account 0.0.123123. 
+     Get the balance of the account0.0.6360977. 
     `,
   });
 
