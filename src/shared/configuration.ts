@@ -1,7 +1,6 @@
-import { MirrornodeConfig } from "./hedera-utils/mirrornode/types";
+import { MirrornodeConfig } from './hedera-utils/mirrornode/types';
 
-export type Object =
-  | 'fungibleToken'
+export type Object = 'fungibleToken';
 
 export type Permission = 'create' | 'update' | 'read';
 
@@ -12,6 +11,12 @@ export type Actions = {
 } & {
   balance?: {
     read?: boolean;
+  };
+  accountQuery?: {
+    getAccountBalanceQuery?: boolean;
+    getAccountQuery?: boolean;
+    getAccountTokenBalancesQuery?: boolean;
+    getTopicMessagesQuery?: boolean;
   };
 };
 
