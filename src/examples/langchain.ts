@@ -4,7 +4,7 @@ import type { ChatPromptTemplate } from '@langchain/core/prompts';
 import { pull } from 'langchain/hub';
 import { AgentExecutor, createStructuredChatAgent } from 'langchain/agents';
 import { Client } from '@hashgraph/sdk';
-import { AgentMode } from '../shared/configuration';
+import { AgentMode } from "../shared/configuration";
 import * as dotenv from 'dotenv';
 dotenv.config();
 
