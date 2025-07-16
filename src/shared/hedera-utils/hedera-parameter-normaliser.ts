@@ -1,20 +1,25 @@
 // optional to use methods in here
 
-import { Client } from "@hashgraph/sdk"
-import { Context } from "../configuration"
-import { createFungibleTokenParameters } from "../parameter-schemas/hts.zod"
-import z from "zod"
+import { Client } from '@hashgraph/sdk';
+import { Context } from '../configuration';
+import { createFungibleTokenParameters } from '../parameter-schemas/hts.zod';
+import z from 'zod';
 
 export default class HederaParameterNormaliser {
-    static normaliseCreateFungibleTokenParams(params: z.infer<ReturnType<typeof createFungibleTokenParameters>>, context: Context, client: Client) {
-        const treasuryAccountId = params.treasuryAccountId || context.accountId || client.operatorAccountId?.toString()
+  static normaliseCreateFungibleTokenParams(
+    params: z.infer<ReturnType<typeof createFungibleTokenParameters>>,
+    context: Context,
+    client: Client,
+  ) {
+    const treasuryAccountId =
+      params.treasuryAccountId || context.accountId || client.operatorAccountId?.toString();
 
-        if (!treasuryAccountId) {
-            throw new Error("Must include treasury account ID")
-        }
-        return {
-            ...params,
-            treasuryAccountId
-        }
+    if (!treasuryAccountId) {
+      throw new Error('Must include treasury account ID');
     }
+    return {
+      ...params,
+      treasuryAccountId,
+    };
+  }
 }

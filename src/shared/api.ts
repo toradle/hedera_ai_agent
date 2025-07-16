@@ -1,7 +1,7 @@
-import { Client } from "@hashgraph/sdk";
+import { Client } from '@hashgraph/sdk';
 
-import type { Context } from "./configuration";
-import tools, { Tool } from "./tools";
+import type { Context } from './configuration';
+import tools, { Tool } from './tools';
 
 class HederaAgentAPI {
   client: Client;
@@ -13,22 +13,20 @@ class HederaAgentAPI {
   constructor(client: Client, context?: Context) {
     this.client = client;
     if (!this.client.ledgerId) {
-      throw new Error("Client must be connected to a network");
+      throw new Error('Client must be connected to a network');
     }
-    console.log("Client connected to network", this.client.ledgerId);
+    console.log('Client connected to network', this.client.ledgerId);
     this.context = context || {};
     this.tools = tools(this.context);
   }
 
-  async run(method: string, arg: any) {
-    const tool = this.tools.find((t) => t.method === method);
+  async run(method: string, arg: unknown) {
+    const tool = this.tools.find(t => t.method === method);
     if (tool) {
-      const output = JSON.stringify(
-        await tool.execute(this.client, this.context, arg)
-      );
+      const output = JSON.stringify(await tool.execute(this.client, this.context, arg));
       return output;
     } else {
-      throw new Error("Invalid method " + method);
+      throw new Error('Invalid method ' + method);
     }
   }
 }
