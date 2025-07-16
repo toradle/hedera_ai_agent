@@ -1,22 +1,16 @@
-import { BaseToolkit } from "@langchain/core/tools";
-import HederaAgentKitTool from "./tool";
-import HederaAgentKitAPI from "../shared/api";
-import tools from "../shared/tools";
-import { type Configuration } from "@/shared/configuration";
-import { Client } from "@hashgraph/sdk";
+import { BaseToolkit } from '@langchain/core/tools';
+import HederaAgentKitTool from './tool';
+import HederaAgentKitAPI from '../shared/api';
+import tools from '../shared/tools';
+import { type Configuration } from '@/shared/configuration';
+import { Client } from '@hashgraph/sdk';
 
 class HederaLangchainToolkit implements BaseToolkit {
   private _hederaAgentKit: HederaAgentKitAPI;
 
   tools: HederaAgentKitTool[];
 
-  constructor({
-    client,
-    configuration,
-  }: {
-    client: Client;
-    configuration: Configuration;
-  }) {
+  constructor({ client, configuration }: { client: Client; configuration: Configuration }) {
     this._hederaAgentKit = new HederaAgentKitAPI(client, configuration.context);
 
     const context = configuration.context || {};
@@ -26,13 +20,13 @@ class HederaLangchainToolkit implements BaseToolkit {
     // );
 
     this.tools = filteredTools.map(
-      (tool) =>
+      tool =>
         new HederaAgentKitTool(
           this._hederaAgentKit,
           tool.method,
           tool.description,
-          tool.parameters
-        )
+          tool.parameters,
+        ),
     );
   }
 

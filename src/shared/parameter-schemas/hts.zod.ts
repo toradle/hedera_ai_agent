@@ -1,5 +1,5 @@
-import { Context } from "../configuration";
-import { z } from "zod";
+import { Context } from '../configuration';
+import { z } from 'zod';
 
 export const createFungibleTokenParameters = (_context: Context = {}) =>
   z.object({
@@ -15,8 +15,7 @@ export const createFungibleTokenParameters = (_context: Context = {}) =>
       .string()
       .optional()
       .describe('The treasury account of the token.'),
-
-  })
+  });
 
 export const createNonFungibleTokenParameters = (_context: Context = {}) =>
   z.object({
@@ -33,8 +32,7 @@ export const createNonFungibleTokenParameters = (_context: Context = {}) =>
       .string()
       .optional()
       .describe('The treasury account of the token.'),
-
-  })
+  });
 
 export const airdropFungibleTokenParameters = (_context: Context = {}) =>
   z.object({
@@ -51,7 +49,7 @@ export const airdropFungibleTokenParameters = (_context: Context = {}) =>
       .string()
       .optional()
       .describe('memo to include with transaction'),
-  })
+  });
 
 export const transferTokenParameters = (_context: Context = {}) =>
   z.object({
@@ -68,4 +66,4 @@ export const transferTokenParameters = (_context: Context = {}) =>
       .string()
       .optional()
       .describe('Memo to include with transaction'),
-  })
+  });

@@ -21,13 +21,11 @@ export type Tool = {
   execute: (client: Client, context: Context, params: any) => Promise<any>;
 };
 
-const tools = (context: Context): Tool[] => [
-  createFungibleTokenTool(context),
+const tools = (context: Context): Tool[] => [createFungibleTokenTool(context),
   createNonFungibleTokenTool(context),
   transferHbarTool(context),
   airdropFungibleToken(context),
   transferFungibleToken(context),
-  createTopicTool(context)
-]
+  createTopicTool(context)];
 
 export default tools;
