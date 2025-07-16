@@ -1,7 +1,6 @@
 import { z } from 'zod';
 import { Context } from './configuration';
-import HederaAgentKit from '../hedera-agent-kit';
-import createFungibleToken from './fungible-token/create-fungible-token';
+import createFungibleToken from './tools/fungible-token/create-fungible-token';
 import { Client } from '@hashgraph/sdk';
 
 export type Tool = {

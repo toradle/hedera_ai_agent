@@ -3,7 +3,7 @@ import { Client } from "@hashgraph/sdk";
 import type { Context } from "./configuration";
 import tools, { Tool } from "./tools";
 
-class ClientAPI {
+class HederaAgentAPI {
   client: Client;
 
   context: Context;
@@ -29,4 +29,4 @@ class ClientAPI {
   }
 }
 
-export default ClientAPI;
+export default HederaAgentAPI;

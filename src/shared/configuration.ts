@@ -13,6 +13,11 @@ export type Actions = {
   };
 };
 
+export enum AgentMode {
+  AUTONOMOUS = 'autonomous',
+  RETURN_BYTES = 'returnBytes',
+}
+
 // Context are settings that are applied to all requests made by the integration.
 export type Context = {
   // Account is a Stripe Connected Account ID. If set, the integration will
@@ -21,7 +26,7 @@ export type Context = {
 
   // If set to 'modelcontextprotocol', the Stripe API calls will use a special
   // header
-  mode?: 'autonomous' | 'returnBytes';
+  mode?: AgentMode;
 };
 
 export type Configuration = {

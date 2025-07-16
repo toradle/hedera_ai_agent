@@ -2,10 +2,10 @@ import { z } from 'zod';
 import { StructuredTool } from '@langchain/core/tools';
 import { CallbackManagerForToolRun } from '@langchain/core/callbacks/manager';
 import { RunnableConfig } from '@langchain/core/runnables';
-import HederaAgentKitAPI from '../shared/api';
+import HederaAgentAPI from '../shared/api';
 
-class HederaAgentKitTool extends StructuredTool {
-  stripeAPI: HederaAgentKitAPI;
+class HederaTransactionTool extends StructuredTool {
+  hederaAgentAPI: HederaAgentAPI;
 
   method: string;
 
@@ -16,14 +16,14 @@ class HederaAgentKitTool extends StructuredTool {
   schema: z.ZodObject<any, any>;
 
   constructor(
-    HederaAgentKitAPI: HederaAgentKitAPI,
+    hederaAgentAPI: HederaAgentAPI,
     method: string,
     description: string,
     schema: z.ZodObject<any, any>
   ) {
     super();
 
-    this.stripeAPI = HederaAgentKitAPI;
+    this.hederaAgentAPI = hederaAgentAPI;
     this.method = method;
     this.name = method;
     this.description = description;
@@ -35,8 +35,8 @@ class HederaAgentKitTool extends StructuredTool {
     _runManager?: CallbackManagerForToolRun,
     _parentConfig?: RunnableConfig
   ): Promise<any> {
-    return this.stripeAPI.run(this.method, arg);
+    return this.hederaAgentAPI.run(this.method, arg);
   }
 }
 
-export default HederaAgentKitTool;
+export default HederaTransactionTool;

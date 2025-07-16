@@ -4,6 +4,7 @@ import type { ChatPromptTemplate } from "@langchain/core/prompts";
 import { pull } from "langchain/hub";
 import { AgentExecutor, createStructuredChatAgent } from "langchain/agents";
 import { Client, PrivateKey } from "@hashgraph/sdk";
+import { AgentMode } from "../shared/configuration";
 
 require("dotenv").config();
 
@@ -23,7 +24,7 @@ const hederaAgentToolkit = new HederaAgentLangchainToolkit({
       },
     },
     context: {
-      mode: "returnBytes",
+      mode: AgentMode.RETURN_BYTES,
       accountId: "0.0.123123",
     },
   },

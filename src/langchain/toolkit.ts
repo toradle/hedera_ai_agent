@@ -5,7 +5,7 @@ import tools from "../shared/tools";
 import { type Configuration } from "../shared/configuration";
 import { Client } from "@hashgraph/sdk";
 
-class HederaAgentLangchainToolkit implements BaseToolkit {
+class HieroLangchainToolkit implements BaseToolkit {
   private _hederaAgentKit: HederaAgentKitAPI;
 
   tools: HederaAgentKitTool[];
@@ -41,4 +41,4 @@ class HederaAgentLangchainToolkit implements BaseToolkit {
   }
 }
 
-export default HederaAgentLangchainToolkit;
+export default HieroLangchainToolkit;
