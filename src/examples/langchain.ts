@@ -23,6 +23,7 @@ const hederaAgentToolkit = new HederaAgentLangchainToolkit({
       fungibleToken: {
         create: true,
         airdrop: true,
+        transfer: true,
       },
       nonFungibleToken: {
         create: true,
@@ -77,11 +78,19 @@ const hederaAgentToolkit = new HederaAgentLangchainToolkit({
   //   `,
   // });
 
+  // EXAMPLE PROMPT FOR FT AIRDROP
+  // const response = await agentExecutor.invoke({
+  //   input: `
+  //       Airdrop 100 tokens 0.0.5445171 to account 0.0.123123.
+  //   `,
+  // })
+
+  // EXAMPLE PROMPT FOR TOKEN TRANSFER
   const response = await agentExecutor.invoke({
     input: `
-        Airdrop 100 tokens 0.0.5445171 to account 0.0.123123.
+      Transfer 10 tokens of token ID 0.0.5445171 to account 0.0.6360769. Add memo 'Happy Birthday!'
     `,
-  })
+  });
 
   console.log(response);
 })();

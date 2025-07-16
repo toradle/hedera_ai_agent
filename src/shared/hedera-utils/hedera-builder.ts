@@ -5,9 +5,13 @@ import {
   TransferTransaction,
   TokenAirdropTransaction
 } from "@hashgraph/sdk";
-import { airdropFungibleTokenParameters, createFungibleTokenParameters, createNonFungibleTokenParameters } from "../parameter-schemas/hts.zod";
+import {
+  airdropFungibleTokenParameters,
+  createFungibleTokenParameters,
+  createNonFungibleTokenParameters,
+  transferTokenParameters
+} from "../parameter-schemas/hts.zod";
 import z from "zod";
-import transferHbar from "@/shared/tools/account/transfer-hbar";
 import { transferHbarParameters } from "@/shared/parameter-schemas/has.zod";
 
 export default class HederaBuilder {
@@ -31,6 +35,13 @@ export default class HederaBuilder {
     return new TokenAirdropTransaction()
       .addTokenTransfer(params.tokenId, params.sourceAccountId as string, -params.amount)
       .addTokenTransfer(params.tokenId, params.destinationAccountId, params.amount)
+      .setTransactionMemo(params.transactionMemo || "");
+  }
+
+  static transferToken(params: z.infer<ReturnType<typeof transferTokenParameters>>) {
+    return new TransferTransaction()
+      .addTokenTransfer(params.tokenId, params.sourceAccountId as string, -params.amount)
+      .addTokenTransfer(params.tokenId, params.receiverAccountId, params.amount)
       .setTransactionMemo(params.transactionMemo || "");
   }
 }
