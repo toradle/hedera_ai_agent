@@ -1,0 +1,53 @@
+import { z } from 'zod';
+import type { Context } from '../../configuration';
+import type { Tool } from '../../tools';
+import { Client } from '@hashgraph/sdk';
+import { handleTransaction } from '../../strategies/tx-mode-strategy';
+import HederaBuilder from '../../hedera-utils/hedera-builder';
+import { transferHbarParameters } from "@/shared/parameter-schemas/has.zod";
+import HederaParameterNormaliser from "@/shared/hedera-utils/hedera-parameter-normaliser";
+
+const transferHbarPrompt = (_context: Context = {}) => `
+This tool will transfer HBAR to an account.
+
+It takes four arguments:
+- hbarAmount (number): amount of hbar to transfer.
+- destinationAccountId (str): account to transfer hbar to.
+- transactionMemo (str, optional): optional memo for the transaction.
+`;
+
+
+const transferHbar = async (
+  client: Client,
+  context: Context,
+  params: z.infer<ReturnType<typeof transferHbarParameters>>
+) => {
+  try {
+    const normalisedParams = HederaParameterNormaliser.normaliseTransferHbar(params, context, client)
+    const tx = HederaBuilder.transferHbar(normalisedParams)
+    const result = await handleTransaction(tx, client, context)
+    console.log("Result from transfer HBAR", result)
+    return result
+  } catch (error) {
+    if (error instanceof Error) {
+      return error.message
+    }
+    return 'Failed to transfer HBAR'; // TODO: make this a more specific error
+  }
+}
+
+
+const tool = (context: Context): Tool => ({
+  method: 'transfer_hbar_tool',
+  name: 'Transfer HBAR',
+  description: transferHbarPrompt(context),
+  parameters: transferHbarParameters(context),
+  actions: {
+    account: {
+      transferHbar: true,
+    },
+  },
+  execute: transferHbar,
+});
+
+export default tool;

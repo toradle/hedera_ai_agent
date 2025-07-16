@@ -26,6 +26,9 @@ const hederaAgentToolkit = new HederaAgentLangchainToolkit({
       nonFungibleToken: {
         create: true,
       },
+      account: {
+        transfer: true,
+      },
     },
     context: {
       mode: AgentMode.AUTONOMOUS,
@@ -60,9 +63,16 @@ const hederaAgentToolkit = new HederaAgentLangchainToolkit({
   //   `,
   // });
 
+  // EXAMPLE PROMPT FOR NFT CREATION
+  // const response = await agentExecutor.invoke({
+  //   input: `
+  //     Create a nft token called Hello World with symbol HELLO.
+  //   `,
+  // });
+
   const response = await agentExecutor.invoke({
     input: `
-      Create a nft token called Hello World with symbol HELLO.
+      Transfer 0.1 HBAR to account 0.0.123123. Add memo to transaction 'testing the tx'
     `,
   });
 

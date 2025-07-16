@@ -1,8 +1,9 @@
 export type Object =
   | 'fungibleToken'
-  | 'nonFungibleToken';
+  | 'nonFungibleToken'
+  | 'account';
 
-export type Permission = 'create' | 'update' | 'read';
+export type Permission = 'create' | 'update' | 'read' | 'transfer';
 
 export type Actions = {
   [K in Object]?: {
