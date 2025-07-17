@@ -2,8 +2,8 @@ import { HederaMirrornodeServiceDefaultImpl } from './hedera-mirrornode-service-
 import { MirrornodeConfig } from './types';
 
 export const getMirrornodeService = (mirrornodeConfig: MirrornodeConfig) => {
-  if (mirrornodeConfig.MirrornodeService) {
-    return mirrornodeConfig.MirrornodeService;
+  if (mirrornodeConfig.mirrornodeService) {
+    return mirrornodeConfig.mirrornodeService;
   }
   return new HederaMirrornodeServiceDefaultImpl(mirrornodeConfig.ledgerId);
 };

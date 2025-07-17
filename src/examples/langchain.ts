@@ -30,7 +30,7 @@ const hederaAgentToolkit = new HederaAgentLangchainToolkit({
     },
     context: {
       mode: AgentMode.RETURN_BYTES,
-      accountId: '0.0.123123',
+      accountId: '0.0.3038269',
       mirrornodeConfig: {
         ledgerId: LedgerId.TESTNET,
       },
@@ -52,7 +52,7 @@ const hederaAgentToolkit = new HederaAgentLangchainToolkit({
   const agentExecutor = new AgentExecutor({
     agent,
     tools,
-    returnIntermediateSteps: true,
+    returnIntermediateSteps: false,
   });
 
   // const response0 = await agentExecutor.invoke({
@@ -87,11 +87,43 @@ const hederaAgentToolkit = new HederaAgentLangchainToolkit({
 
   //console.log(response3);
 
-  const response0 = await agentExecutor.invoke({
+  // const response0 = await agentExecutor.invoke({
+  //   input: `
+  //     Get the newest topic message for the topic 0.0.6363003.
+  //   `,
+  // });
+
+  // console.log(JSON.stringify(response0, null, 2));
+
+  // const response1 = await agentExecutor.invoke({
+  //   input: `
+  //     Get the last 10 topic messages for the topic 0.0.6363003.
+  //   `,
+  // });
+
+  // console.log(JSON.stringify(response1, null, 2));
+
+  // const response2 = await agentExecutor.invoke({
+  //   input: `
+  //     Get the topic messages for the topic 0.0.6363003 from 2025-07-16T10:00:00Z to 2025-07-17T10:20:00Z.
+  //   `,
+  // });
+
+  // console.log(JSON.stringify(response2, null, 2));
+
+  const response3 = await agentExecutor.invoke({
     input: `
-      Get the topic messages for the topic 0.0.6363003. 
+      Get my HBAR balance.
     `,
   });
 
-  console.log(response0);
+  console.log(JSON.stringify(response3, null, 2));
+
+  const response4 = await agentExecutor.invoke({
+    input: `
+      Get my token balances.
+    `,
+  });
+
+  console.log(JSON.stringify(response4, null, 2));
 })();

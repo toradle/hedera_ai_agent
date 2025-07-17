@@ -4,9 +4,11 @@ import { getMirrornodeService } from '../../hedera-utils/mirrornode/hedera-mirro
 import { accountTokenBalancesQueryParameters } from '../../parameter-schemas/account-query.zod';
 import { Client } from '@hashgraph/sdk';
 import { Tool } from '@/shared/tools';
+import HederaParameterNormaliser from '../../hedera-utils/hedera-parameter-normaliser';
 
 export const getAccountTokenBalancesQueryPrompt = (_context: Context = {}) => `
 This tool will return the token balances for a given Hedera account.
+${_context.accountId ? '\nIf accountId is not provided, this accountId will be used.' : ''}
 
 It takes two arguments:
 - accountId (str): The account ID to query.
@@ -18,16 +20,25 @@ export const getAccountTokenBalancesQuery = async (
   context: Context,
   params: z.infer<ReturnType<typeof accountTokenBalancesQueryParameters>>,
 ) => {
-  console.log('Getting account token balances for account', params.accountId);
   try {
+    const normalisedParams = HederaParameterNormaliser.normaliseAccountTokenBalancesParams(
+      params,
+      context,
+      client,
+    );
+    console.log('Getting account token balances for account', normalisedParams.accountId);
     const mirrornodeService = getMirrornodeService(context.mirrornodeConfig!);
     const tokenBalances = await mirrornodeService.getAccountTokenBalances(
-      params.accountId,
-      params.tokenId,
+      normalisedParams.accountId,
+      normalisedParams.tokenId,
     );
-    return { accountId: params.accountId, tokenBalances: tokenBalances };
+    return { accountId: normalisedParams.accountId, tokenBalances: tokenBalances };
   } catch (error) {
     console.error('Error getting account token balances', error);
+    if (error instanceof Error) {
+      return error.message;
+    }
+    return 'Failed to get account token balances';
   }
 };
 

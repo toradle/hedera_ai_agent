@@ -1,5 +1,5 @@
 import { LedgerId } from '@hashgraph/sdk';
-import { HederaMirrornodeService } from './hedera-mirrornode-service';
+import { IHederaMirrornodeService } from './hedera-mirrornode-service.interface';
 import BigNumber from 'bignumber.js';
 
 export const LedgerIdToBaseUrl: Map<LedgerId, string> = new Map([
@@ -9,7 +9,7 @@ export const LedgerIdToBaseUrl: Map<LedgerId, string> = new Map([
 
 export type MirrornodeConfig = {
   ledgerId: LedgerId;
-  MirrornodeService?: HederaMirrornodeService;
+  mirrornodeService?: IHederaMirrornodeService;
 };
 
 export type AccountTokenBalancesQueryParams = {
@@ -43,15 +43,15 @@ export type TokenBalance = {
 export type TokenBalancesResponse = {
   tokens: TokenBalance[];
 };
-export interface AccountResponse {
+export type AccountResponse = {
   accountId: string;
   balance: AccountBalanceResponse;
-}
+};
 
-export interface AccountAPIResponse {
+export type AccountAPIResponse = {
   accountId: string;
   balance: AccountBalanceResponse;
-}
+};
 
 export type AccountBalanceResponse = {
   balance: BigNumber;
