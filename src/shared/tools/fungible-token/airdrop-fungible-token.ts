@@ -6,7 +6,7 @@ import { Client } from '@hashgraph/sdk';
 import { handleTransaction } from '../../strategies/tx-mode-strategy';
 import { airdropFungibleTokenParameters } from '../../parameter-schemas/hts.zod';
 import HederaBuilder from '../../hedera-utils/hedera-builder';
-import { getMirrornodeService } from '@/shared/hedera-utils/mirrornode/hedera-mirrornode-utils';
+import { getMirrornodeService } from '../../hedera-utils/mirrornode/hedera-mirrornode-utils';
 
 const airdropFungibleTokenPrompt = (_context: Context = {}) => `
 This tool will airdrop a fungible token on Hedera.

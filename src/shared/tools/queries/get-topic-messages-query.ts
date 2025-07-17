@@ -3,8 +3,8 @@ import { getMirrornodeService } from '../../hedera-utils/mirrornode/hedera-mirro
 import { topicMessagesQueryParameters } from '../../parameter-schemas/account-query.zod';
 import { Client } from '@hashgraph/sdk';
 import { z } from 'zod';
-import { Tool } from '@/shared/tools';
-import { TopicMessage, TopicMessagesQueryParams } from '@/shared/hedera-utils/mirrornode/types';
+import { Tool } from '../../tools';
+import { TopicMessage, TopicMessagesQueryParams } from '../../hedera-utils/mirrornode/types';
 
 export const getTopicMessagesQueryPrompt = (_context: Context = {}) => `
 This tool will return the messages for a given Hedera topic.

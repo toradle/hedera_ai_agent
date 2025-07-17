@@ -2,10 +2,10 @@
   "name": "hkav3",
   "version": "1.0.0",
   "main": "index.js",
-  "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\"",
-    "test:langchain": "ts-node src/examples/langchain.ts",
+    "test:langchain": "ts-node src/examples/langchain/langchain.ts",
+    "cli": "ts-node src/examples/langchain/cli-chat.ts",
     "build": "tsc",
     "format": "prettier \"src/**/*.{ts,tsx,js,mjs,jsx,json,md}\" --write",
     "format:check": "prettier \"src/**/*.{ts,tsx,js,mjs,jsx,json,md}\" --check",
@@ -26,6 +26,7 @@
   "devDependencies": {
     "@eslint/js": "^9.31.0",
     "@langchain/openai": "^0.5.18",
+    "@types/prompts": "^2.4.9",
     "@typescript-eslint/eslint-plugin": "^8.37.0",
     "@typescript-eslint/parser": "^8.37.0",
     "eslint": "^9.31.0",
@@ -35,6 +36,7 @@
     "husky": "^9.1.7",
     "langchain": "^0.3.29",
     "prettier": "^3.6.2",
+    "prompts": "^2.4.2",
     "ts-node": "^10.9.2",
     "tsconfig-paths": "^4.2.0",
     "typescript": "^5.8.3",
