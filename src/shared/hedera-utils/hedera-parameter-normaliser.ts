@@ -6,7 +6,6 @@ import {
   createFungibleTokenParametersNormalised,
   createNonFungibleTokenParameters,
   createNonFungibleTokenParametersNormalised,
-  transferTokenParameters,
 } from '../parameter-schemas/hts.zod';
 import { transferHbarParameters } from '@/shared/parameter-schemas/has.zod';
 import {
@@ -133,23 +132,6 @@ export default class HederaParameterNormaliser {
       ...params,
       sourceAccountId,
       recipients: normalisedRecipients,
-    };
-  }
-
-  static normaliseTransferTokenParams(
-    params: z.infer<ReturnType<typeof transferTokenParameters>>,
-    context: Context,
-    client: Client,
-  ) {
-    const sourceAccountId =
-      params.sourceAccountId ?? context.accountId ?? client.operatorAccountId?.toString();
-    if (!sourceAccountId) {
-      throw new Error('Must include source account ID');
-    }
-
-    return {
-      ...params,
-      sourceAccountId,
     };
   }
 

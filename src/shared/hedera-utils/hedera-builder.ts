@@ -13,7 +13,6 @@ import {
   airdropFungibleTokenParameters,
   createFungibleTokenParametersNormalised,
   createNonFungibleTokenParametersNormalised,
-  transferTokenParameters,
 } from '../parameter-schemas/hts.zod';
 import z from 'zod';
 import { transferHbarParameters } from '@/shared/parameter-schemas/has.zod';
@@ -88,13 +87,6 @@ export default class HederaBuilder {
     tx.setTransactionMemo(params.transactionMemo || '');
 
     return tx;
-  }
-
-  static transferToken(params: z.infer<ReturnType<typeof transferTokenParameters>>) {
-    return new TransferTransaction()
-      .addTokenTransfer(params.tokenId, params.sourceAccountId as string, -params.amount)
-      .addTokenTransfer(params.tokenId, params.receiverAccountId, params.amount)
-      .setTransactionMemo(params.transactionMemo || '');
   }
 
   static createTopic(params: z.infer<ReturnType<typeof createTopicParametersNormalised>>) {

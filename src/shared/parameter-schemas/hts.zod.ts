@@ -57,12 +57,3 @@ export const airdropFungibleTokenParameters = (_context: Context = {}) =>
       .describe('Array of recipient objects, each with accountId and amount.'),
     transactionMemo: z.string().optional().describe('memo to include with transaction'),
   });
-
-export const transferTokenParameters = (_context: Context = {}) =>
-  z.object({
-    tokenId: z.string().describe('The id of the token to transfer.'),
-    amount: z.number().describe('The amount of tokens to transfer.'),
-    sourceAccountId: z.string().optional().describe('The account to transfer the token from.'),
-    receiverAccountId: z.string().describe('The account to transfer the token to.'),
-    transactionMemo: z.string().optional().describe('Memo to include with transaction'),
-  });
