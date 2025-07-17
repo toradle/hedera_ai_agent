@@ -56,7 +56,7 @@ export default class HederaParameterNormaliser {
     client: Client,
   ) {
     const sourceAccountId =
-      params.sourceAccountId || context.accountId || client.operatorAccountId?.toString();
+      params.sourceAccountId ?? context.accountId ?? client.operatorAccountId?.toString();
     if (!sourceAccountId) {
       throw new Error('Must include source account ID');
     }
@@ -73,10 +73,11 @@ export default class HederaParameterNormaliser {
     client: Client,
   ) {
     const sourceAccountId =
-      params.sourceAccountId || context.accountId || client.operatorAccountId?.toString();
+      params.sourceAccountId ?? context.accountId ?? client.operatorAccountId?.toString();
     if (!sourceAccountId) {
       throw new Error('Must include source account ID');
     }
+    // const parsedAmount = params.amount * 10**mirrorNode.getTokenDetails(params.tokenId).decimals  TODO: fetch token decimals from mirror node
 
     return {
       ...params,
@@ -90,7 +91,7 @@ export default class HederaParameterNormaliser {
     client: Client,
   ) {
     const sourceAccountId =
-      params.sourceAccountId || context.accountId || client.operatorAccountId?.toString();
+      params.sourceAccountId ?? context.accountId ?? client.operatorAccountId?.toString();
     if (!sourceAccountId) {
       throw new Error('Must include source account ID');
     }

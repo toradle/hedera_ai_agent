@@ -83,11 +83,11 @@ const hederaAgentToolkit = new HederaAgentLangchainToolkit({
   // });
 
   // EXAMPLE PROMPT FOR FT AIRDROP
-  // const response = await agentExecutor.invoke({
-  //   input: `
-  //       Airdrop 100 tokens 0.0.5445171 to account 0.0.123123.
-  //   `,
-  // })
+  const response = await agentExecutor.invoke({
+    input: `
+        Airdrop 100 tokens 0.0.5465304 to account 0.0.4515756 and 12 tokens to account 0.0.5393196. Add memo 'Happy New Year!'
+    `,
+  });
 
   // EXAMPLE PROMPT FOR TOKEN TRANSFER
   // const response = await agentExecutor.invoke({
@@ -104,11 +104,11 @@ const hederaAgentToolkit = new HederaAgentLangchainToolkit({
   // });
 
   // EXAMPLE PROMPT FOR TOPIC MESSAGE SUBMISSION
-  const response = await agentExecutor.invoke({
-    input: `
-      Submit message "hello, HCS!" to topic 0.0.6361367.
-    `,
-  });
+  // const response = await agentExecutor.invoke({
+  //   input: `
+  //     Submit message "hello, HCS!" to topic 0.0.6361367.
+  //   `,
+  // });
 
   console.log(response);
 })();

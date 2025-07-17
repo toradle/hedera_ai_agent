@@ -21,12 +21,20 @@ export const createNonFungibleTokenParameters = (_context: Context = {}) =>
     treasuryAccountId: z.string().optional().describe('The treasury account of the token.'),
   });
 
+const AirdropRecipientSchema = z.object({
+  accountId: z.string().describe('Recipient account ID (e.g., "0.0.xxxx").'),
+  amount: z.union([z.number(), z.string()]).describe('Amount in base unit.'),
+});
+
 export const airdropFungibleTokenParameters = (_context: Context = {}) =>
   z.object({
     tokenId: z.string().describe('The id of the token.'),
     amount: z.number().describe('The amount of tokens to airdrop.'),
     sourceAccountId: z.string().optional().describe('The account to airdrop the token from.'),
-    destinationAccountId: z.string().describe('The account to airdrop the token to.'),
+    recipients: z
+      .array(AirdropRecipientSchema)
+      .min(1)
+      .describe('Array of recipient objects, each with accountId and amount.'),
     transactionMemo: z.string().optional().describe('memo to include with transaction'),
   });
 

@@ -40,10 +40,20 @@ export default class HederaBuilder {
   }
 
   static airdropFungibleToken(params: z.infer<ReturnType<typeof airdropFungibleTokenParameters>>) {
-    return new TokenAirdropTransaction()
-      .addTokenTransfer(params.tokenId, params.sourceAccountId as string, -params.amount)
-      .addTokenTransfer(params.tokenId, params.destinationAccountId, params.amount)
-      .setTransactionMemo(params.transactionMemo || '');
+    const tx = new TokenAirdropTransaction();
+    const totalAmount = params.recipients.reduce(
+      (sum, recipient) => sum + Number(recipient.amount),
+      0,
+    );
+    tx.addTokenTransfer(params.tokenId, params.sourceAccountId!, -totalAmount);
+
+    // Add transfers to each recipient
+    for (const recipient of params.recipients) {
+      tx.addTokenTransfer(params.tokenId, recipient.accountId, Number(recipient.amount));
+    }
+    tx.setTransactionMemo(params.transactionMemo || '');
+
+    return tx;
   }
 
   static transferToken(params: z.infer<ReturnType<typeof transferTokenParameters>>) {
