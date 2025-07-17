@@ -5,6 +5,7 @@ import {
   TokenBalancesResponse,
   TopicMessagesResponse,
 } from './types';
+
 export interface HederaMirrornodeService {
   getAccount(accountId: string): Promise<AccountResponse>;
   getAccountHBarBalance(accountId: string): Promise<BigNumber>;

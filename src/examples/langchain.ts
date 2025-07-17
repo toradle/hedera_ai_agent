@@ -47,7 +47,6 @@ const hederaAgentToolkit = new HederaAgentLangchainToolkit({
     context: {
       mode: AgentMode.AUTONOMOUS,
       accountId: process.env.ACCOUNT_ID!,
-      accountPublicKey: '0x8fe9a72e98255a9b62811aecc2ccc0ac3625f58a2d527f6872f6a9dcb60ac35a',
       mirrornodeConfig: {
         ledgerId: LedgerId.TESTNET,
       },
@@ -75,18 +74,16 @@ const hederaAgentToolkit = new HederaAgentLangchainToolkit({
   // EXAMPLE PROMPT FOR FT CREATION
   // const response = await agentExecutor.invoke({
   //   input: `
-  //     Create a token called Hello World with symbol HELLO. Set decimals to 3, initial supply to 1234 and supply type to infinite.
-  //     Set the admin key to my key and set the the kyc key.
-  //     Set the freeze key to 0x96add0b42afe88d6a4af291e5dc3f6e40a999c652120af7b4ead3f98e3c25589.
+  //     Create a token called Hello World with symbol HELLO. Set decimals to 3, initial supply to 1234 and supply type to infinite. Set supply key.
   //   `,
   // });
 
   // EXAMPLE PROMPT FOR NFT CREATION
-  const response = await agentExecutor.invoke({
-    input: `
-      Create a nft token called Hello World with symbol HELLO. Set admin key to my key. Set the kyc key. Set the max supply to 123.
-    `,
-  });
+  // const response = await agentExecutor.invoke({
+  //   input: `
+  //     Create a nft token called Hello World with symbol HELLO. Set supply key.
+  //   `,
+  // });
 
   // const response = await agentExecutor.invoke({
   //   input: `
@@ -109,11 +106,11 @@ const hederaAgentToolkit = new HederaAgentLangchainToolkit({
   // });
 
   // EXAMPLE PROMPT FOR TOPIC CREATION
-  // const response = await agentExecutor.invoke({
-  //   input: `
-  //     Create topic with memo 'Hello World'. Set the admin key. Set submit key to 0x134b3a67bfab5fc4c32f1412839f24f95436a6145006400c1e523372107d99a2.
-  //   `,
-  // });
+  const response = await agentExecutor.invoke({
+    input: `
+      Create topic with memo 'Hello World'. Set the admin key. Set submit key..
+    `,
+  });
 
   // EXAMPLE PROMPT FOR TOPIC MESSAGE SUBMISSION
   // const response = await agentExecutor.invoke({
@@ -153,13 +150,13 @@ const hederaAgentToolkit = new HederaAgentLangchainToolkit({
 
   //console.log(response3);
 
-  const response0 = await agentExecutor.invoke({
-    input: `
-      Get the topic messages for the topic 0.0.6363003. 
-    `,
-  });
-
-  console.log(response0);
+  // const response0 = await agentExecutor.invoke({
+  //   input: `
+  //     Get the topic messages for the topic 0.0.6363003.
+  //   `,
+  // });
+  //
+  // console.log(response0);
 
   console.log(response);
 })();

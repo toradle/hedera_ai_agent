@@ -3,26 +3,37 @@
 import {
   airdropFungibleTokenParameters,
   createFungibleTokenParameters,
+  createFungibleTokenParametersNormalised,
   createNonFungibleTokenParameters,
+  createNonFungibleTokenParametersNormalised,
   transferTokenParameters,
 } from '../parameter-schemas/hts.zod';
 import { transferHbarParameters } from '@/shared/parameter-schemas/has.zod';
 import {
   createTopicParameters,
+  createTopicParametersNormalised,
   submitTopicMessageParameters,
 } from '@/shared/parameter-schemas/hcs.zod';
 import { Client } from '@hashgraph/sdk';
 import { Context } from '../configuration';
 import z from 'zod';
+import { HederaMirrornodeService } from '@/shared/hedera-utils/mirrornode/hedera-mirrornode-service';
 
 export default class HederaParameterNormaliser {
-  static normaliseCreateFungibleTokenParams(
+  static async normaliseCreateFungibleTokenParams(
     params: z.infer<ReturnType<typeof createFungibleTokenParameters>>,
     context: Context,
     client: Client,
+    mirrorNode: HederaMirrornodeService,
   ) {
-    const treasuryAccountId =
-      params.treasuryAccountId ?? context.accountId ?? client.operatorAccountId?.toString();
+    const accountId = context.accountId || client.operatorAccountId?.toString();
+    if (!accountId) throw new Error('Account ID must be defined');
+
+    const normalized: z.infer<ReturnType<typeof createFungibleTokenParametersNormalised>> = {
+      ...params,
+    };
+
+    const treasuryAccountId = params.treasuryAccountId ?? accountId;
 
     if (!treasuryAccountId) {
       throw new Error('Must include treasury account ID');
@@ -34,8 +45,16 @@ export default class HederaParameterNormaliser {
       supplyType === 'finite' ? (params.maxSupply ?? 1_000_000 * 10 ** params.decimals) : undefined;
     const initialSupply = params.initialSupply ? params.initialSupply * 10 ** params.decimals : 0;
 
+    const publicKey =
+      (await mirrorNode.getAccount(accountId).then(r => r.accountPublicKey)) ??
+      client.operatorPublicKey?.toStringDer();
+
+    if (params.isSupplyKey) {
+      normalized.supplyKey = publicKey;
+    }
+
     return {
-      ...params,
+      ...normalized,
       treasuryAccountId,
       supplyType,
       maxSupply,
@@ -44,21 +63,29 @@ export default class HederaParameterNormaliser {
     };
   }
 
-  static normaliseCreateNonFungibleTokenParams(
+  static async normaliseCreateNonFungibleTokenParams(
     params: z.infer<ReturnType<typeof createNonFungibleTokenParameters>>,
     context: Context,
     client: Client,
+    mirrorNode: HederaMirrornodeService,
   ) {
-    const treasuryAccountId =
-      params.treasuryAccountId || context.accountId || client.operatorAccountId?.toString();
-    if (!treasuryAccountId) {
-      throw new Error('Must include treasury account ID');
-    }
+    const accountId = context.accountId || client.operatorAccountId?.toString();
+    if (!accountId) throw new Error('Account ID must be defined');
 
-    return {
+    const treasuryAccountId = params.treasuryAccountId || accountId;
+    if (!treasuryAccountId) throw new Error('Must include treasury account ID');
+
+    const publicKey =
+      (await mirrorNode.getAccount(accountId).then(r => r.accountPublicKey)) ??
+      client.operatorPublicKey?.toStringDer();
+
+    const normalized: z.infer<ReturnType<typeof createNonFungibleTokenParametersNormalised>> = {
       ...params,
       treasuryAccountId,
+      supplyKey: publicKey,
     };
+
+    return normalized;
   }
 
   static normaliseTransferHbar(
@@ -113,30 +140,29 @@ export default class HederaParameterNormaliser {
     };
   }
 
-  static normaliseCreateTopicParams(
+  static async normaliseCreateTopicParams(
     params: z.infer<ReturnType<typeof createTopicParameters>>,
     context: Context,
     client: Client,
+    mirrorNode: HederaMirrornodeService,
   ) {
-    const defaultAccountPublicKey = client.operatorPublicKey?.toStringDer(); // TODO: fetch public key for the context.accountId
-    const result = { ...params };
+    const accountId = context.accountId || client.operatorAccountId?.toString();
+    if (!accountId) throw new Error('Account ID must be defined');
 
-    // Only add keys if the corresponding boolean flag is true and the key was not passed in the user prompt
-    if (params.isAdminKey && !params.adminKey) {
-      if (!defaultAccountPublicKey) {
-        throw new Error('Could not determine default account ID for admin key');
-      }
-      result.adminKey = defaultAccountPublicKey;
-    }
+    const publicKey =
+      (await mirrorNode.getAccount(accountId).then(r => r.accountPublicKey)) ??
+      client.operatorPublicKey?.toStringDer();
 
-    if (params.isSubmitKey && !params.submitKey) {
-      if (!defaultAccountPublicKey) {
+    const normalised: z.infer<ReturnType<typeof createTopicParametersNormalised>> = { ...params };
+
+    if (params.isSubmitKey) {
+      if (!publicKey) {
         throw new Error('Could not determine default account ID for submit key');
       }
-      result.submitKey = defaultAccountPublicKey;
+      normalised.submitKey = publicKey;
     }
 
-    return result;
+    return normalised;
   }
 
   static normaliseSubmitTopicMessageParams(

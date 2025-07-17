@@ -45,13 +45,18 @@ export type TokenBalancesResponse = {
 };
 export interface AccountResponse {
   accountId: string;
+  accountPublicKey: string;
   balance: AccountBalanceResponse;
 }
 
-export interface AccountAPIResponse {
+export type AccountAPIResponse = {
   accountId: string;
+  key: {
+    key: string;
+    _type: KeyEncryptionType;
+  };
   balance: AccountBalanceResponse;
-}
+};
 
 export type AccountBalanceResponse = {
   balance: BigNumber;
@@ -65,3 +70,5 @@ export type TopicMessagesAPIResponse = {
     next: string | null;
   };
 };
+
+export type KeyEncryptionType = 'ED25519' | 'ECDSA_SECP256K1';

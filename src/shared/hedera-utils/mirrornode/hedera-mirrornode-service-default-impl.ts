@@ -1,14 +1,14 @@
 import { LedgerId } from '@hashgraph/sdk';
 import { HederaMirrornodeService } from './hedera-mirrornode-service';
 import {
-  TopicMessage,
-  TopicMessagesResponse,
-  TopicMessagesQueryParams,
-  TopicMessagesAPIResponse,
-  AccountResponse,
-  TokenBalancesResponse,
-  LedgerIdToBaseUrl,
   AccountAPIResponse,
+  AccountResponse,
+  LedgerIdToBaseUrl,
+  TokenBalancesResponse,
+  TopicMessage,
+  TopicMessagesAPIResponse,
+  TopicMessagesQueryParams,
+  TopicMessagesResponse,
 } from './types';
 import BigNumber from 'bignumber.js';
 
@@ -28,6 +28,7 @@ export class HederaMirrornodeServiceDefaultImpl implements HederaMirrornodeServi
     const data: AccountAPIResponse = await response.json();
     return {
       accountId: data.accountId,
+      accountPublicKey: data.key.key,
       balance: data.balance,
     };
   }
@@ -44,8 +45,7 @@ export class HederaMirrornodeServiceDefaultImpl implements HederaMirrornodeServi
     const tokenIdParam = tokenId ? `&token.id=${tokenId}` : '';
     const url = `${this.baseUrl}/accounts/${accountId}/tokens?${tokenIdParam}`;
     const response = await fetch(url);
-    const data: TokenBalancesResponse = await response.json();
-    return data;
+    return await response.json();
   }
 
   async getTopicMessages(queryParams: TopicMessagesQueryParams): Promise<TopicMessagesResponse> {

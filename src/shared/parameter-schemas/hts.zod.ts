@@ -4,17 +4,21 @@ import { z } from 'zod';
 export const createFungibleTokenParameters = (_context: Context = {}) =>
   z.object({
     tokenName: z.string().describe('The name of the token.'),
-    tokenSymbol: z.string().optional().describe('The symbol of the token.'),
+    tokenSymbol: z.string().describe('The symbol of the token.'),
     initialSupply: z.number().int().optional().describe('The initial supply of the token.'),
     supplyType: z.enum(['finite', 'infinite']).optional().describe('Supply type of the token.'),
     maxSupply: z.number().int().optional().describe('The maximum supply of the token.'),
     decimals: z.number().int().optional().default(0).describe('The number of decimals.'),
     treasuryAccountId: z.string().optional().describe('The treasury account of the token.'),
-    adminKey: z.string().optional().describe('The admin key.'),
-    kycKey: z.string().optional().describe('The kyc key.'),
-    wipeKey: z.string().optional().describe('The wipe key.'),
-    freezeKey: z.string().optional().describe('The freeze key.'),
-    supplyKey: z.string().optional().describe('The supply key.'),
+    isSupplyKey: z.string().optional().describe('The supply key.'),
+  });
+
+export const createFungibleTokenParametersNormalised = (_context: Context = {}) =>
+  createFungibleTokenParameters(_context).extend({
+    supplyKey: z
+      .string()
+      .optional()
+      .describe('The supply key. If not provided, defaults to the operator’s public key.'),
   });
 
 export const createNonFungibleTokenParameters = (_context: Context = {}) =>
@@ -22,16 +26,19 @@ export const createNonFungibleTokenParameters = (_context: Context = {}) =>
     tokenName: z.string().describe('The name of the token.'),
     tokenSymbol: z.string().describe('The symbol of the token.'),
     maxSupply: z
+      .number()
       .int()
       .optional()
-      .default(100) // if not passed, set to 100
+      .default(100)
       .describe('The maximum supply of the token.'),
     treasuryAccountId: z.string().optional().describe('The treasury account of the token.'),
-    adminKey: z.string().optional().describe('The admin key.'),
-    kycKey: z.string().optional().describe('The kyc key.'),
-    wipeKey: z.string().optional().describe('The wipe key.'),
-    freezeKey: z.string().optional().describe('The freeze key.'),
-    supplyKey: z.string().describe('The supply key - it is required for non-fungible tokens.'),
+  });
+
+export const createNonFungibleTokenParametersNormalised = (_context: Context = {}) =>
+  createNonFungibleTokenParameters(_context).extend({
+    supplyKey: z
+      .string()
+      .describe('The supply key. If not provided, defaults to the operator’s public key.'),
   });
 
 const AirdropRecipientSchema = z.object({

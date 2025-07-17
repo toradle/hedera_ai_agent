@@ -11,19 +11,21 @@ import {
 } from '@hashgraph/sdk';
 import {
   airdropFungibleTokenParameters,
-  createFungibleTokenParameters,
-  createNonFungibleTokenParameters,
+  createFungibleTokenParametersNormalised,
+  createNonFungibleTokenParametersNormalised,
   transferTokenParameters,
 } from '../parameter-schemas/hts.zod';
 import z from 'zod';
 import { transferHbarParameters } from '@/shared/parameter-schemas/has.zod';
 import {
-  createTopicParameters,
+  createTopicParametersNormalised,
   submitTopicMessageParameters,
 } from '@/shared/parameter-schemas/hcs.zod';
 
 export default class HederaBuilder {
-  static createFungibleToken(params: z.infer<ReturnType<typeof createFungibleTokenParameters>>) {
+  static createFungibleToken(
+    params: z.infer<ReturnType<typeof createFungibleTokenParametersNormalised>>,
+  ) {
     const tx = new TokenCreateTransaction()
       .setTokenName(params.tokenName)
       .setTreasuryAccountId(params.treasuryAccountId!)
@@ -42,21 +44,19 @@ export default class HederaBuilder {
       tx.setMaxSupply(params.maxSupply);
     }
 
-    if (params.adminKey) tx.setAdminKey(PublicKey.fromString(params.adminKey));
-    if (params.kycKey) tx.setKycKey(PublicKey.fromString(params.kycKey));
-    if (params.wipeKey) tx.setWipeKey(PublicKey.fromString(params.wipeKey));
-    if (params.freezeKey) tx.setFreezeKey(PublicKey.fromString(params.freezeKey));
-    if (params.supplyKey) tx.setSupplyKey(PublicKey.fromString(params.supplyKey));
+    if (params.supplyKey) {
+      tx.setSupplyKey(PublicKey.fromString(params.supplyKey));
+    }
 
     return tx;
   }
 
   static createNonFungibleToken(
-    params: z.infer<ReturnType<typeof createNonFungibleTokenParameters>>,
+    params: z.infer<ReturnType<typeof createNonFungibleTokenParametersNormalised>>,
   ) {
     const maxSupply = params.maxSupply ?? 100; // default max supply for NFT
 
-    const tx = new TokenCreateTransaction()
+    return new TokenCreateTransaction()
       .setTokenName(params.tokenName)
       .setTokenSymbol(params.tokenSymbol)
       .setTreasuryAccountId(params.treasuryAccountId!)
@@ -64,13 +64,6 @@ export default class HederaBuilder {
       .setSupplyType(TokenSupplyType.Finite) // NFT supply is always finite
       .setMaxSupply(maxSupply)
       .setSupplyKey(PublicKey.fromString(params.supplyKey!));
-
-    if (params.adminKey) tx.setAdminKey(PublicKey.fromString(params.adminKey));
-    if (params.kycKey) tx.setKycKey(PublicKey.fromString(params.kycKey));
-    if (params.wipeKey) tx.setWipeKey(PublicKey.fromString(params.wipeKey));
-    if (params.freezeKey) tx.setFreezeKey(PublicKey.fromString(params.freezeKey));
-
-    return tx;
   }
 
   static transferHbar(params: z.infer<ReturnType<typeof transferHbarParameters>>) {
@@ -104,14 +97,11 @@ export default class HederaBuilder {
       .setTransactionMemo(params.transactionMemo || '');
   }
 
-  static createTopic(params: z.infer<ReturnType<typeof createTopicParameters>>) {
+  static createTopic(params: z.infer<ReturnType<typeof createTopicParametersNormalised>>) {
     const transaction = new TopicCreateTransaction();
 
     if (params.topicMemo) {
       transaction.setTopicMemo(params.topicMemo);
-    }
-    if (params.adminKey) {
-      transaction.setAdminKey(PublicKey.fromString(params.adminKey));
     }
     if (params.submitKey) {
       transaction.setSubmitKey(PublicKey.fromString(params.submitKey));
