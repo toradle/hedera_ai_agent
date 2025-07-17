@@ -1,4 +1,4 @@
-import { Context } from '@/shared/configuration';
+import { Context } from 'typescript/src/shared/configuration';
 import { z } from 'zod';
 
 export const transferHbarParameters = (_context: Context = {}) =>

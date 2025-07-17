@@ -6,7 +6,7 @@ import { Client } from '@hashgraph/sdk';
 import { handleTransaction } from '../../strategies/tx-mode-strategy';
 import { createFungibleTokenParameters } from '../../parameter-schemas/hts.zod';
 import HederaBuilder from '../../hedera-utils/hedera-builder';
-import { getMirrornodeService } from '@/shared/hedera-utils/mirrornode/hedera-mirrornode-utils';
+import { getMirrornodeService } from 'typescript/src/shared/hedera-utils/mirrornode/hedera-mirrornode-utils';
 
 const createFungibleTokenPrompt = (context: Context = {}) => {
   const contextInfo = context.accountId

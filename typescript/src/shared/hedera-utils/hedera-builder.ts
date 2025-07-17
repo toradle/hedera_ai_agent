@@ -15,11 +15,11 @@ import {
   createNonFungibleTokenParametersNormalised,
 } from '../parameter-schemas/hts.zod';
 import z from 'zod';
-import { transferHbarParameters } from '@/shared/parameter-schemas/has.zod';
+import { transferHbarParameters } from 'typescript/src/shared/parameter-schemas/has.zod';
 import {
   createTopicParametersNormalised,
   submitTopicMessageParameters,
-} from '@/shared/parameter-schemas/hcs.zod';
+} from 'typescript/src/shared/parameter-schemas/hcs.zod';
 
 export default class HederaBuilder {
   static createFungibleToken(

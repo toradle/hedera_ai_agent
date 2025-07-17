@@ -10,7 +10,7 @@ dotenv.config();
 import { AgentMode } from '../shared/configuration';
 import { GET_ACCOUNT_TOKEN_BALANCES_QUERY_TOOL } from '../shared/tools/queries/get-account-token-balances-query';
 import { GET_HBAR_BALANCE_QUERY_TOOL } from '../shared/tools/queries/get-hbar-balance-query';
-import { HederaMirrornodeServiceDefaultImpl } from '@/shared/hedera-utils/mirrornode/hedera-mirrornode-service-default-impl';
+import { HederaMirrornodeServiceDefaultImpl } from 'typescript/src/shared/hedera-utils/mirrornode/hedera-mirrornode-service-default-impl';
 
 const llm = new ChatOpenAI({
   model: 'gpt-4o-mini',

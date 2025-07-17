@@ -1,9 +1,9 @@
 import { z } from 'zod';
-import { Context } from '@/shared/configuration';
+import { Context } from 'typescript/src/shared/configuration';
 import { getMirrornodeService } from '../../hedera-utils/mirrornode/hedera-mirrornode-utils';
 import { accountTokenBalancesQueryParameters } from '../../parameter-schemas/account-query.zod';
 import { Client } from '@hashgraph/sdk';
-import { Tool } from '@/shared/tools';
+import { Tool } from 'typescript/src/shared/tools';
 import HederaParameterNormaliser from '../../hedera-utils/hedera-parameter-normaliser';
 
 export const getAccountTokenBalancesQueryPrompt = (_context: Context = {}) => `
