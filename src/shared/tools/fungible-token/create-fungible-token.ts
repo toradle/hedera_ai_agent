@@ -47,11 +47,6 @@ const tool = (context: Context): Tool => ({
   name: 'Create Fungible Token',
   description: createFungibleTokenPrompt(context),
   parameters: createFungibleTokenParameters(context),
-  actions: {
-    fungibleToken: {
-      create: true,
-    },
-  },
   execute: createFungibleToken,
 });
 
