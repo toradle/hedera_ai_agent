@@ -22,14 +22,25 @@ export default class HederaParameterNormaliser {
     client: Client,
   ) {
     const treasuryAccountId =
-      params.treasuryAccountId || context.accountId || client.operatorAccountId?.toString();
+      params.treasuryAccountId ?? context.accountId ?? client.operatorAccountId?.toString();
 
     if (!treasuryAccountId) {
       throw new Error('Must include treasury account ID');
     }
+
+    const supplyType = params.supplyType ?? 'finite';
+    const decimals = params.decimals ?? 0;
+    const maxSupply =
+      supplyType === 'finite' ? (params.maxSupply ?? 1_000_000 * 10 ** params.decimals) : undefined;
+    const initialSupply = params.initialSupply ? params.initialSupply * 10 ** params.decimals : 0;
+
     return {
       ...params,
       treasuryAccountId,
+      supplyType,
+      maxSupply,
+      decimals,
+      initialSupply,
     };
   }
 

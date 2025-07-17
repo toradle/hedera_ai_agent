@@ -4,6 +4,7 @@ import {
   TokenAirdropTransaction,
   TokenCreateTransaction,
   TokenSupplyType,
+  TokenType,
   TopicCreateTransaction,
   TopicMessageSubmitTransaction,
   TransferTransaction,
@@ -23,13 +24,53 @@ import {
 
 export default class HederaBuilder {
   static createFungibleToken(params: z.infer<ReturnType<typeof createFungibleTokenParameters>>) {
-    return new TokenCreateTransaction(params);
+    const tx = new TokenCreateTransaction()
+      .setTokenName(params.tokenName)
+      .setTreasuryAccountId(params.treasuryAccountId!)
+      .setTokenType(TokenType.FungibleCommon)
+      .setDecimals(params.decimals)
+      .setInitialSupply(params.initialSupply ?? 0)
+      .setSupplyType(
+        params.supplyType === 'infinite' ? TokenSupplyType.Infinite : TokenSupplyType.Finite,
+      );
+
+    if (params.tokenSymbol) {
+      tx.setTokenSymbol(params.tokenSymbol);
+    }
+
+    if (params.supplyType === 'finite' && params.maxSupply !== undefined) {
+      tx.setMaxSupply(params.maxSupply);
+    }
+
+    if (params.adminKey) tx.setAdminKey(PublicKey.fromString(params.adminKey));
+    if (params.kycKey) tx.setKycKey(PublicKey.fromString(params.kycKey));
+    if (params.wipeKey) tx.setWipeKey(PublicKey.fromString(params.wipeKey));
+    if (params.freezeKey) tx.setFreezeKey(PublicKey.fromString(params.freezeKey));
+    if (params.supplyKey) tx.setSupplyKey(PublicKey.fromString(params.supplyKey));
+
+    return tx;
   }
 
   static createNonFungibleToken(
     params: z.infer<ReturnType<typeof createNonFungibleTokenParameters>>,
   ) {
-    return new TokenCreateTransaction({ ...params, supplyType: TokenSupplyType.Finite }); // NFT has to have the Finite supply set
+    const maxSupply = params.maxSupply ?? 100; // default max supply for NFT
+
+    const tx = new TokenCreateTransaction()
+      .setTokenName(params.tokenName)
+      .setTokenSymbol(params.tokenSymbol)
+      .setTreasuryAccountId(params.treasuryAccountId!)
+      .setTokenType(TokenType.NonFungibleUnique)
+      .setSupplyType(TokenSupplyType.Finite) // NFT supply is always finite
+      .setMaxSupply(maxSupply)
+      .setSupplyKey(PublicKey.fromString(params.supplyKey!));
+
+    if (params.adminKey) tx.setAdminKey(PublicKey.fromString(params.adminKey));
+    if (params.kycKey) tx.setKycKey(PublicKey.fromString(params.kycKey));
+    if (params.wipeKey) tx.setWipeKey(PublicKey.fromString(params.wipeKey));
+    if (params.freezeKey) tx.setFreezeKey(PublicKey.fromString(params.freezeKey));
+
+    return tx;
   }
 
   static transferHbar(params: z.infer<ReturnType<typeof transferHbarParameters>>) {
@@ -70,10 +111,10 @@ export default class HederaBuilder {
       transaction.setTopicMemo(params.topicMemo);
     }
     if (params.adminKey) {
-      transaction.setAdminKey(PublicKey.fromString(params.adminKey)); // TODO: validate if it would work with DER/HEX encoded both type of keys
+      transaction.setAdminKey(PublicKey.fromString(params.adminKey));
     }
     if (params.submitKey) {
-      transaction.setSubmitKey(PublicKey.fromString(params.submitKey)); // TODO: validate if it would work with DER/HEX encoded both type of keys
+      transaction.setSubmitKey(PublicKey.fromString(params.submitKey));
     }
 
     return transaction;

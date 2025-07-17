@@ -13,6 +13,14 @@ class HederaLangchainToolkit implements BaseToolkit {
   constructor({ client, configuration }: { client: Client; configuration: Configuration }) {
     this._hederaAgentKit = new HederaAgentKitAPI(client, configuration.context);
 
+    if (
+      configuration.context &&
+      configuration.context.accountId &&
+      !configuration.context.accountPublicKey
+    ) {
+      // TODO: fetch and set the public key
+      // configuration.context.accountPublicKey = '';
+    }
     const context = configuration.context || {};
     const filteredTools = tools(context);
     // .filter((tool) =>

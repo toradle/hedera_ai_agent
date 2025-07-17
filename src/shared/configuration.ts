@@ -29,6 +29,8 @@ export type Context = {
   // Account is a Connected Account ID. If set, the integration will
   // make requests for this Account. TODO: check if it works
   accountId?: string;
+  // Account Public Key is either passed in configuration or fetched based on the passed accountId
+  accountPublicKey?: string;
 
   // defines if the agent executes the transactions or returns the raw transaction bytes
   mode?: AgentMode;

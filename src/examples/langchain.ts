@@ -40,7 +40,8 @@ const hederaAgentToolkit = new HederaAgentLangchainToolkit({
     },
     context: {
       mode: AgentMode.AUTONOMOUS,
-      // accountId: '0.0.123123', // TODO: accountId should be passed only if the AgentMode is non-custodial?
+      accountId: process.env.ACCOUNT_ID!,
+      accountPublicKey: '0x8fe9a72e98255a9b62811aecc2ccc0ac3625f58a2d527f6872f6a9dcb60ac35a',
     },
   },
 });
@@ -65,16 +66,18 @@ const hederaAgentToolkit = new HederaAgentLangchainToolkit({
   // EXAMPLE PROMPT FOR FT CREATION
   // const response = await agentExecutor.invoke({
   //   input: `
-  //     Create a token called Hello World with symbol HELLO with treasury account 0.0.123123.
+  //     Create a token called Hello World with symbol HELLO. Set decimals to 3, initial supply to 1234 and supply type to infinite.
+  //     Set the admin key to my key and set the the kyc key.
+  //     Set the freeze key to 0x96add0b42afe88d6a4af291e5dc3f6e40a999c652120af7b4ead3f98e3c25589.
   //   `,
   // });
 
   // EXAMPLE PROMPT FOR NFT CREATION
-  // const response = await agentExecutor.invoke({
-  //   input: `
-  //     Create a nft token called Hello World with symbol HELLO.
-  //   `,
-  // });
+  const response = await agentExecutor.invoke({
+    input: `
+      Create a nft token called Hello World with symbol HELLO. Set admin key to my key. Set the kyc key. Set the max supply to 123.
+    `,
+  });
 
   // const response = await agentExecutor.invoke({
   //   input: `
@@ -83,11 +86,11 @@ const hederaAgentToolkit = new HederaAgentLangchainToolkit({
   // });
 
   // EXAMPLE PROMPT FOR FT AIRDROP
-  const response = await agentExecutor.invoke({
-    input: `
-        Airdrop 100 tokens 0.0.5465304 to account 0.0.4515756 and 12 tokens to account 0.0.5393196. Add memo 'Happy New Year!'
-    `,
-  });
+  // const response = await agentExecutor.invoke({
+  //   input: `
+  //       Airdrop 100 tokens 0.0.5465304 to account 0.0.4515756 and 12 tokens to account 0.0.5393196. Add memo 'Happy New Year!'
+  //   `,
+  // });
 
   // EXAMPLE PROMPT FOR TOKEN TRANSFER
   // const response = await agentExecutor.invoke({
@@ -106,7 +109,7 @@ const hederaAgentToolkit = new HederaAgentLangchainToolkit({
   // EXAMPLE PROMPT FOR TOPIC MESSAGE SUBMISSION
   // const response = await agentExecutor.invoke({
   //   input: `
-  //     Submit message "hello, HCS!" to topic 0.0.6361367.
+  //     Submit a message "hello, HCS!" to topic 0.0.6361367.
   //   `,
   // });
 
