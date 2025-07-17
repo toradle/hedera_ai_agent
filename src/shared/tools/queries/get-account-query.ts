@@ -38,11 +38,6 @@ const getAccountQueryTool = (context: Context): Tool => ({
   name: 'Get Account Query',
   description: getAccountQueryPrompt(context),
   parameters: accountQueryParameters(context),
-  actions: {
-    accountQuery: {
-      getAccountQuery: true,
-    },
-  },
   execute: getAccountQuery,
 });
 

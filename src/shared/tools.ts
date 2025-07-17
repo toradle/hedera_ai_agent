@@ -18,11 +18,6 @@ export type Tool = {
   name: string;
   description: string;
   parameters: z.ZodObject<any, any>;
-  actions: {
-    [key: string]: {
-      [action: string]: boolean;
-    };
-  };
   execute: (client: Client, context: Context, params: any) => Promise<any>;
 };
 
