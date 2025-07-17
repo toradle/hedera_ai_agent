@@ -27,7 +27,7 @@ const airdropFungibleToken = async (
   params: z.infer<ReturnType<typeof airdropFungibleTokenParameters>>,
 ) => {
   try {
-    const mirrornodeService = getMirrornodeService(context.mirrornodeConfig!);
+    const mirrornodeService = getMirrornodeService(context.mirrornodeService!, client.ledgerId!);
     console.log('Raw params', params);
     const normalisedParams = await HederaParameterNormaliser.normaliseAirdropFungibleTokenParams(
       params,

@@ -41,7 +41,7 @@ const createFungibleToken = async (
   params: z.infer<ReturnType<typeof createFungibleTokenParameters>>,
 ) => {
   try {
-    const mirrornodeService = getMirrornodeService(context.mirrornodeConfig!);
+    const mirrornodeService = getMirrornodeService(context.mirrornodeService!, client.ledgerId!);
     const normalisedParams = await HederaParameterNormaliser.normaliseCreateFungibleTokenParams(
       params,
       context,

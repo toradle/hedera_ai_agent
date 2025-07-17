@@ -24,7 +24,8 @@ const createTopic = async (
 ) => {
   try {
     const mirrornodeService: IHederaMirrornodeService = getMirrornodeService(
-      context.mirrornodeConfig!,
+      context.mirrornodeService!,
+      client.ledgerId!,
     );
     const normalisedParams = await HederaParameterNormaliser.normaliseCreateTopicParams(
       params,

@@ -35,7 +35,7 @@ const createNonFungibleToken = async (
   params: z.infer<ReturnType<typeof createNonFungibleTokenParameters>>,
 ) => {
   try {
-    const mirrornodeService = getMirrornodeService(context.mirrornodeConfig!);
+    const mirrornodeService = getMirrornodeService(context.mirrornodeService!, client.ledgerId!);
     const normalisedParams = await HederaParameterNormaliser.normaliseCreateNonFungibleTokenParams(
       params,
       context,

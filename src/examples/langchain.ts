@@ -3,13 +3,14 @@ import { ChatOpenAI } from '@langchain/openai';
 import type { ChatPromptTemplate } from '@langchain/core/prompts';
 import { pull } from 'langchain/hub';
 import { AgentExecutor, createStructuredChatAgent } from 'langchain/agents';
-import { Client, PrivateKey } from '@hashgraph/sdk';
+import { Client, LedgerId, PrivateKey } from '@hashgraph/sdk';
 import * as dotenv from 'dotenv';
 
 dotenv.config();
 import { AgentMode } from '../shared/configuration';
 import { GET_ACCOUNT_TOKEN_BALANCES_QUERY_TOOL } from '../shared/tools/queries/get-account-token-balances-query';
 import { GET_HBAR_BALANCE_QUERY_TOOL } from '../shared/tools/queries/get-hbar-balance-query';
+import { HederaMirrornodeServiceDefaultImpl } from '@/shared/hedera-utils/mirrornode/hedera-mirrornode-service-default-impl';
 
 const llm = new ChatOpenAI({
   model: 'gpt-4o-mini',
@@ -27,6 +28,7 @@ const hederaAgentToolkit = new HederaAgentLangchainToolkit({
     context: {
       mode: AgentMode.RETURN_BYTES,
       accountId: '0.0.3038269',
+      mirrornodeService: new HederaMirrornodeServiceDefaultImpl(LedgerId.TESTNET),
     },
   },
 });
