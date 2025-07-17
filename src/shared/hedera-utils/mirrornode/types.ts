@@ -1,4 +1,4 @@
-import { LedgerId } from '@hashgraph/sdk';
+import { LedgerId, TokenType } from '@hashgraph/sdk';
 import { IHederaMirrornodeService } from './hedera-mirrornode-service.interface';
 import BigNumber from 'bignumber.js';
 
@@ -72,3 +72,11 @@ export type TopicMessagesAPIResponse = {
 };
 
 export type KeyEncryptionType = 'ED25519' | 'ECDSA_SECP256K1';
+
+export type TokenDetails = {
+  decimals: string;
+  name: string;
+  symbol: string;
+  maxSupply: number;
+  type: TokenType;
+};

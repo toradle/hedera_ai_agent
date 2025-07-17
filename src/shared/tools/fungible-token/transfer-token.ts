@@ -13,7 +13,7 @@ This tool will transfer tokens on Hedera.
 It takes five arguments:
 - tokenId (str): The id of the token to transfer.
 - amount (int): The amount of tokens to transfer.
-- sourceAccountId (str, optional): The account to transfer the token from.
+- sourceAccountId (str, optional): The account to airdrop the token from. If the user does not explicitly provide a value for this field, do not include it at all in the request — leave it undefined. Do not set it to null or any placeholder string.
 - receiverAccountId (str): The account to transfer the token to.
 - transactionMemo (str, optional): optional memo for the transaction.
 `;
@@ -37,7 +37,7 @@ const transferToken = async (
     if (error instanceof Error) {
       return error.message;
     }
-    return 'Failed to transfer token'; // TODO: make this a more specific error
+    return 'Failed to transfer token';
   }
 };
 

@@ -35,7 +35,7 @@ const transferHbar = async (
     if (error instanceof Error) {
       return error.message;
     }
-    return 'Failed to transfer HBAR'; // TODO: make this a more specific error
+    return 'Failed to transfer HBAR';
   }
 };
 

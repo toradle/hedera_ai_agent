@@ -7,6 +7,7 @@ import HederaBuilder from '../../hedera-utils/hedera-builder';
 import { createTopicParameters } from '@/shared/parameter-schemas/hcs.zod';
 import HederaParameterNormaliser from '@/shared/hedera-utils/hedera-parameter-normaliser';
 import { getMirrornodeService } from '@/shared/hedera-utils/mirrornode/hedera-mirrornode-utils';
+import { IHederaMirrornodeService } from '@/shared/hedera-utils/mirrornode/hedera-mirrornode-service.interface';
 
 const createTopicPrompt = (_context: Context = {}) => `
 This tool will create a new topic on the Hedera network.
@@ -22,7 +23,9 @@ const createTopic = async (
   params: z.infer<ReturnType<typeof createTopicParameters>>,
 ) => {
   try {
-    const mirrornodeService = getMirrornodeService(context.mirrornodeConfig!);
+    const mirrornodeService: IHederaMirrornodeService = getMirrornodeService(
+      context.mirrornodeConfig!,
+    );
     const normalisedParams = await HederaParameterNormaliser.normaliseCreateTopicParams(
       params,
       context,

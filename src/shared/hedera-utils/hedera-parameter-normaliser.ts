@@ -17,18 +17,18 @@ import {
 import { Client } from '@hashgraph/sdk';
 import { Context } from '../configuration';
 import z from 'zod';
-import { HederaMirrornodeService } from '@/shared/hedera-utils/mirrornode/hedera-mirrornode-service';
 import {
   accountBalanceQueryParameters,
   accountTokenBalancesQueryParameters,
 } from '../parameter-schemas/account-query.zod';
+import { IHederaMirrornodeService } from '@/shared/hedera-utils/mirrornode/hedera-mirrornode-service.interface';
 
 export default class HederaParameterNormaliser {
   static async normaliseCreateFungibleTokenParams(
     params: z.infer<ReturnType<typeof createFungibleTokenParameters>>,
     context: Context,
     client: Client,
-    mirrorNode: HederaMirrornodeService,
+    mirrorNode: IHederaMirrornodeService,
   ) {
     const accountId = context.accountId || client.operatorAccountId?.toString();
     if (!accountId) throw new Error('Account ID must be defined');
@@ -71,7 +71,7 @@ export default class HederaParameterNormaliser {
     params: z.infer<ReturnType<typeof createNonFungibleTokenParameters>>,
     context: Context,
     client: Client,
-    mirrorNode: HederaMirrornodeService,
+    mirrorNode: IHederaMirrornodeService,
   ) {
     const accountId = context.accountId || client.operatorAccountId?.toString();
     if (!accountId) throw new Error('Account ID must be defined');
@@ -109,21 +109,30 @@ export default class HederaParameterNormaliser {
     };
   }
 
-  static normaliseAirdropFungibleTokenParams(
+  static async normaliseAirdropFungibleTokenParams(
     params: z.infer<ReturnType<typeof airdropFungibleTokenParameters>>,
     context: Context,
     client: Client,
+    mirrorNode: IHederaMirrornodeService,
   ) {
     const sourceAccountId =
       params.sourceAccountId ?? context.accountId ?? client.operatorAccountId?.toString();
+
     if (!sourceAccountId) {
       throw new Error('Must include source account ID');
     }
-    // const parsedAmount = params.amount * 10**mirrorNode.getTokenDetails(params.tokenId).decimals  TODO: fetch token decimals from mirror node
+
+    const tokenDecimals = parseInt((await mirrorNode.getTokenDetails(params.tokenId)).decimals, 10);
+
+    const normalisedRecipients = params.recipients.map(recipient => ({
+      accountId: recipient.accountId,
+      amount: Number(recipient.amount) * 10 ** tokenDecimals,
+    }));
 
     return {
       ...params,
       sourceAccountId,
+      recipients: normalisedRecipients,
     };
   }
 
@@ -148,7 +157,7 @@ export default class HederaParameterNormaliser {
     params: z.infer<ReturnType<typeof createTopicParameters>>,
     context: Context,
     client: Client,
-    mirrorNode: HederaMirrornodeService,
+    mirrorNode: IHederaMirrornodeService,
   ) {
     const accountId = context.accountId || client.operatorAccountId?.toString();
     if (!accountId) throw new Error('Account ID must be defined');
