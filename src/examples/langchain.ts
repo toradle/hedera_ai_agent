@@ -3,7 +3,7 @@ import { ChatOpenAI } from '@langchain/openai';
 import type { ChatPromptTemplate } from '@langchain/core/prompts';
 import { pull } from 'langchain/hub';
 import { AgentExecutor, createStructuredChatAgent } from 'langchain/agents';
-import { Client, PrivateKey } from '@hashgraph/sdk';
+import { Client, PrivateKey, LedgerId } from '@hashgraph/sdk';
 import { AgentMode } from '@/shared/configuration';
 import * as dotenv from 'dotenv';
 
@@ -37,11 +37,20 @@ const hederaAgentToolkit = new HederaAgentLangchainToolkit({
         createTopic: true,
         submitTopicMessage: true,
       },
+      accountQuery: {
+        getAccountBalanceQuery: true,
+        getAccountQuery: true,
+        getAccountTokenBalancesQuery: true,
+        getTopicMessagesQuery: true,
+      },
     },
     context: {
       mode: AgentMode.AUTONOMOUS,
       accountId: process.env.ACCOUNT_ID!,
       accountPublicKey: '0x8fe9a72e98255a9b62811aecc2ccc0ac3625f58a2d527f6872f6a9dcb60ac35a',
+      mirrornodeConfig: {
+        ledgerId: LedgerId.TESTNET,
+      },
     },
   },
 });
@@ -112,6 +121,45 @@ const hederaAgentToolkit = new HederaAgentLangchainToolkit({
   //     Submit a message "hello, HCS!" to topic 0.0.6361367.
   //   `,
   // });
+  // const response0 = await agentExecutor.invoke({
+  //   input: `
+  //    Which tools do you support?
+  //   `,
+  // });
+
+  // console.log(response0);
+
+  // const response = await agentExecutor.invoke({
+  //   input: `
+  //    Query the token balances for the hedera account 0.0.3038269.
+  //   `,
+  // });
+
+  // console.log(response);
+
+  // const response2 = await agentExecutor.invoke({
+  //   input: `
+  //    Query the token balances for the Hedera account 0.0.3038269 and token 0.0.3989799.
+  //   `,
+  // });
+
+  // console.log(response2);
+
+  // const response3 = await agentExecutor.invoke({
+  //   input: `
+  //    Query the account information for the hedera account 0.0.3038269.
+  //   `,
+  // });
+
+  //console.log(response3);
+
+  const response0 = await agentExecutor.invoke({
+    input: `
+      Get the topic messages for the topic 0.0.6363003. 
+    `,
+  });
+
+  console.log(response0);
 
   console.log(response);
 })();

@@ -1,3 +1,5 @@
+import { MirrornodeConfig } from './hedera-utils/mirrornode/types';
+
 export type Object = 'fungibleToken' | 'nonFungibleToken' | 'account' | 'consensus';
 
 export type Permission =
@@ -17,6 +19,12 @@ export type Actions = {
   balance?: {
     read?: boolean;
   };
+  accountQuery?: {
+    getAccountBalanceQuery?: boolean;
+    getAccountQuery?: boolean;
+    getAccountTokenBalancesQuery?: boolean;
+    getTopicMessagesQuery?: boolean;
+  };
 };
 
 export enum AgentMode {
@@ -34,6 +42,9 @@ export type Context = {
 
   // defines if the agent executes the transactions or returns the raw transaction bytes
   mode?: AgentMode;
+
+  // Mirrornode config
+  mirrornodeConfig?: MirrornodeConfig;
 };
 
 export type Configuration = {

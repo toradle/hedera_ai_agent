@@ -8,6 +8,10 @@ import transferFungibleToken from './tools/fungible-token/transfer-token';
 import createTopicTool from './tools/consensus/create-topic';
 import submitTopicMessageTool from './tools/consensus/submit-topic-message';
 import { Client } from '@hashgraph/sdk';
+import getHbarBalanceQuery from './tools/queries/get-hbar-balance-query';
+import getAccountTokenBalancesQuery from './tools/queries/get-account-token-balances-query';
+import getAccountQuery from './tools/queries/get-account-query';
+import getTopicMessagesQuery from './tools/queries/get-topic-messages-query';
 
 export type Tool = {
   method: string;
@@ -30,6 +34,10 @@ const tools = (context: Context): Tool[] => [
   transferFungibleToken(context),
   createTopicTool(context),
   submitTopicMessageTool(context),
+  getHbarBalanceQuery(context),
+  getAccountQuery(context),
+  getAccountTokenBalancesQuery(context),
+  getTopicMessagesQuery(context),
 ];
 
 export default tools;
