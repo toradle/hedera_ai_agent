@@ -38,6 +38,9 @@ HEDERA_PRIVATE_KEY=302e020100300506032b6570...
 HEDERA_NETWORK=testnet
 ```
 
+**About the Operator Account**
+Users must either set up 
+
 ### 3 – Minimal "Hello-Hedera"
 ```ts
 import { ? } from 'hedera-agent-kit';
