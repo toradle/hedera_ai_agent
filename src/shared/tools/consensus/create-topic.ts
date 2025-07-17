@@ -44,16 +44,13 @@ const createTopic = async (
   }
 };
 
+export const CREATE_TOPIC_TOOL = 'create_topic_tool';
+
 const tool = (context: Context): Tool => ({
-  method: 'create_topic_tool',
+  method: CREATE_TOPIC_TOOL,
   name: 'Create Topic',
   description: createTopicPrompt(context),
   parameters: createTopicParameters(context),
-  actions: {
-    consensus: {
-      createTopic: true,
-    },
-  },
   execute: createTopic,
 });
 

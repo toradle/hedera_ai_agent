@@ -39,16 +39,13 @@ const submitTopicMessage = async (
   }
 };
 
+export const SUBMIT_TOPIC_MESSAGE_TOOL = 'submit_topic_message';
+
 const tool = (context: Context): Tool => ({
-  method: 'submit_topic_message_tool',
+  method: SUBMIT_TOPIC_MESSAGE_TOOL,
   name: 'Submit Topic Message',
   description: submitTopicMessagePrompt(context),
   parameters: submitTopicMessageParameters(context),
-  actions: {
-    consensus: {
-      submitTopicMessage: true,
-    },
-  },
   execute: submitTopicMessage,
 });
 

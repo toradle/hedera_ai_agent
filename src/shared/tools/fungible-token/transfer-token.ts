@@ -41,16 +41,13 @@ const transferToken = async (
   }
 };
 
+export const TRANSFER_TOKEN_TOOL = 'transfer_token';
+
 const tool = (context: Context): Tool => ({
-  method: 'transfer_token',
+  method: TRANSFER_TOKEN_TOOL,
   name: 'Transfer Token',
   description: transferTokenPrompt(context),
   parameters: transferTokenParameters(context),
-  actions: {
-    fungibleToken: {
-      transfer: true,
-    },
-  },
   execute: transferToken,
 });
 

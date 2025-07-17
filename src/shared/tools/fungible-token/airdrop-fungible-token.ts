@@ -48,16 +48,13 @@ const airdropFungibleToken = async (
   }
 };
 
+export const AIRDROP_FUNGIBLE_TOKEN_TOOL = 'airdrop_fungible_token';
+
 const tool = (context: Context): Tool => ({
-  method: 'airdrop_fungible_token',
+  method: AIRDROP_FUNGIBLE_TOKEN_TOOL,
   name: 'Airdrop Fungible Token',
   description: airdropFungibleTokenPrompt(context),
   parameters: airdropFungibleTokenParameters(context),
-  actions: {
-    fungibleToken: {
-      airdrop: true,
-    },
-  },
   execute: airdropFungibleToken,
 });
 

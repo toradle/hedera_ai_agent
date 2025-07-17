@@ -54,16 +54,13 @@ const createNonFungibleToken = async (
   }
 };
 
+export const CREATE_NON_FUNGIBLE_TOKEN_TOOL = 'create_non_fungible_token';
+
 const tool = (context: Context): Tool => ({
-  method: 'create_non_fungible_token',
+  method: CREATE_NON_FUNGIBLE_TOKEN_TOOL,
   name: 'Create Non-Fungible Token',
   description: createNonFungibleTokenPrompt(context),
   parameters: createNonFungibleTokenParameters(context),
-  actions: {
-    nonFungibleToken: {
-      create: true,
-    },
-  },
   execute: createNonFungibleToken,
 });
 

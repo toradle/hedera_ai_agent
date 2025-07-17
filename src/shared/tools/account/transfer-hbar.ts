@@ -39,16 +39,13 @@ const transferHbar = async (
   }
 };
 
+export const TRANSFER_HBAR_TOOL = 'transfer_hbar';
+
 const tool = (context: Context): Tool => ({
-  method: 'transfer_hbar_tool',
+  method: TRANSFER_HBAR_TOOL,
   name: 'Transfer HBAR',
   description: transferHbarPrompt(context),
   parameters: transferHbarParameters(context),
-  actions: {
-    account: {
-      transferHbar: true,
-    },
-  },
   execute: transferHbar,
 });
 
