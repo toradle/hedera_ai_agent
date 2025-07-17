@@ -1,14 +1,15 @@
 import { LedgerId } from '@hashgraph/sdk';
 import { IHederaMirrornodeService } from './hedera-mirrornode-service.interface';
 import {
-  TopicMessage,
-  TopicMessagesResponse,
-  TopicMessagesQueryParams,
-  TopicMessagesAPIResponse,
-  AccountResponse,
-  TokenBalancesResponse,
-  LedgerIdToBaseUrl,
   AccountAPIResponse,
+  AccountResponse,
+  LedgerIdToBaseUrl,
+  TokenBalancesResponse,
+  TokenDetails,
+  TopicMessage,
+  TopicMessagesAPIResponse,
+  TopicMessagesQueryParams,
+  TopicMessagesResponse,
 } from './types';
 import BigNumber from 'bignumber.js';
 
@@ -28,6 +29,7 @@ export class HederaMirrornodeServiceDefaultImpl implements IHederaMirrornodeServ
     const data: AccountAPIResponse = await response.json();
     return {
       accountId: data.accountId,
+      accountPublicKey: data.key.key,
       balance: data.balance,
     };
   }
@@ -44,8 +46,7 @@ export class HederaMirrornodeServiceDefaultImpl implements IHederaMirrornodeServ
     const tokenIdParam = tokenId ? `&token.id=${tokenId}` : '';
     const url = `${this.baseUrl}/accounts/${accountId}/tokens?${tokenIdParam}`;
     const response = await fetch(url);
-    const data: TokenBalancesResponse = await response.json();
-    return data;
+    return await response.json();
   }
 
   async getTopicMessages(queryParams: TopicMessagesQueryParams): Promise<TopicMessagesResponse> {
@@ -95,5 +96,11 @@ export class HederaMirrornodeServiceDefaultImpl implements IHederaMirrornodeServ
       topicId: queryParams.topicId,
       messages: arrayOfMessages.slice(0, queryParams.limit),
     };
+  }
+
+  async getTokenDetails(tokenId: string): Promise<TokenDetails> {
+    const url = `${this.baseUrl}/tokens/${tokenId}`;
+    const response = await fetch(url);
+    return await response.json();
   }
 }

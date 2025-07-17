@@ -48,11 +48,6 @@ const tool = (context: Context): Tool => ({
   name: 'Get HBAR Balance',
   description: getHbarBalanceQueryPrompt(context),
   parameters: accountBalanceQueryParameters(context),
-  actions: {
-    account: {
-      getAccountBalance: true,
-    },
-  },
   execute: getHbarBalanceQuery,
 });
 

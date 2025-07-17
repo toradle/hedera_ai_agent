@@ -71,11 +71,6 @@ const tool = (context: Context): Tool => ({
   name: 'Get Topic Messages',
   description: getTopicMessagesQueryPrompt(context),
   parameters: topicMessagesQueryParameters(context),
-  actions: {
-    accountQuery: {
-      getTopicMessagesQuery: true,
-    },
-  },
   execute: getTopicMessagesQuery,
 });
 

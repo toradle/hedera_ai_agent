@@ -49,11 +49,6 @@ const tool = (context: Context): Tool => ({
   name: 'Get Account Token Balances',
   description: getAccountTokenBalancesQueryPrompt(context),
   parameters: accountTokenBalancesQueryParameters(context),
-  actions: {
-    accountQuery: {
-      getAccountTokenBalancesQuery: true,
-    },
-  },
   execute: getAccountTokenBalancesQuery,
 });
 

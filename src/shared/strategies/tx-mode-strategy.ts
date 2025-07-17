@@ -34,7 +34,6 @@ class ReturnBytesStrategy implements TxModeStrategy {
 
 const getStrategyFromContext = (context: Context) => {
   if (context.mode === AgentMode.RETURN_BYTES) {
-    // make this in enum
     return new ReturnBytesStrategy();
   }
   return new ExecuteStrategy();

@@ -3,18 +3,23 @@ import { ChatOpenAI } from '@langchain/openai';
 import type { ChatPromptTemplate } from '@langchain/core/prompts';
 import { pull } from 'langchain/hub';
 import { AgentExecutor, createStructuredChatAgent } from 'langchain/agents';
-import { Client } from '@hashgraph/sdk';
+import { Client, LedgerId, PrivateKey } from '@hashgraph/sdk';
+import * as dotenv from 'dotenv';
+
+dotenv.config();
 import { AgentMode } from '../shared/configuration';
-import 'dotenv/config';
 import { GET_ACCOUNT_TOKEN_BALANCES_QUERY_TOOL } from '../shared/tools/queries/get-account-token-balances-query';
 import { GET_HBAR_BALANCE_QUERY_TOOL } from '../shared/tools/queries/get-hbar-balance-query';
+import { HederaMirrornodeServiceDefaultImpl } from '@/shared/hedera-utils/mirrornode/hedera-mirrornode-service-default-impl';
 
 const llm = new ChatOpenAI({
   model: 'gpt-4o-mini',
 });
 
-const client = Client.forTestnet();
-//.setOperator(process.env.ACCOUNT_ID!, PrivateKey.fromStringED25519(process.env.PRIVATE_KEY!))
+const client = Client.forTestnet().setOperator(
+  process.env.ACCOUNT_ID!,
+  PrivateKey.fromStringED25519(process.env.PRIVATE_KEY!),
+);
 
 const hederaAgentToolkit = new HederaAgentLangchainToolkit({
   client,
@@ -23,6 +28,7 @@ const hederaAgentToolkit = new HederaAgentLangchainToolkit({
     context: {
       mode: AgentMode.RETURN_BYTES,
       accountId: '0.0.3038269',
+      mirrornodeService: new HederaMirrornodeServiceDefaultImpl(LedgerId.TESTNET),
     },
   },
 });
@@ -44,6 +50,53 @@ const hederaAgentToolkit = new HederaAgentLangchainToolkit({
     returnIntermediateSteps: true,
   });
 
+  // EXAMPLE PROMPT FOR FT CREATION
+  // const response = await agentExecutor.invoke({
+  //   input: `
+  //     Create a token called Hello World with symbol HELLO. Set decimals to 3, initial supply to 1234 and supply type to infinite. Set supply key.
+  //   `,
+  // });
+
+  // EXAMPLE PROMPT FOR NFT CREATION
+  // const response = await agentExecutor.invoke({
+  //   input: `
+  //     Create a nft token called Hello World with symbol HELLO. Set supply key.
+  //   `,
+  // });
+
+  // const response = await agentExecutor.invoke({
+  //   input: `
+  //     Transfer 0.1 HBAR to account 0.0.123123. Add memo to transaction 'testing the tx'
+  //   `,
+  // });
+
+  // EXAMPLE PROMPT FOR FT AIRDROP
+  // const response = await agentExecutor.invoke({
+  //   input: `
+  //       Airdrop 100 tokens 0.0.5465304 to account 0.0.4515756 and 12 tokens to account 0.0.5393196. Add memo 'Happy New Year!'
+  //   `,
+  // });
+
+  // EXAMPLE PROMPT FOR TOKEN TRANSFER
+  // const response = await agentExecutor.invoke({
+  //   input: `
+  //     Transfer 10 tokens of token ID 0.0.5445171 to account 0.0.6360769. Add memo 'Happy Birthday!'
+  //   `,
+  // });
+
+  // EXAMPLE PROMPT FOR TOPIC CREATION
+  // const response = await agentExecutor.invoke({
+  //   input: `
+  //     Create topic with memo 'Hello World'. Set the admin key. Set submit key..
+  //   `,
+  // });
+
+  // EXAMPLE PROMPT FOR TOPIC MESSAGE SUBMISSION
+  // const response = await agentExecutor.invoke({
+  //   input: `
+  //     Submit a message "hello, HCS!" to topic 0.0.6361367.
+  //   `,
+  // });
   // const response0 = await agentExecutor.invoke({
   //   input: `
   //    Which tools do you support?

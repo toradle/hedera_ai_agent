@@ -7,12 +7,13 @@ export enum AgentMode {
 
 // Context are settings that are applied to all requests made by the integration.
 export type Context = {
-  // Account is a Stripe Connected Account ID. If set, the integration will
+  // Account is a Connected Account ID. If set, the integration will
   // make requests for this Account.
   accountId?: string;
+  // Account Public Key is either passed in configuration or fetched based on the passed accountId
+  accountPublicKey?: string;
 
-  // If set to 'modelcontextprotocol', the Stripe API calls will use a special
-  // header
+  // defines if the agent executes the transactions or returns the raw transaction bytes
   mode?: AgentMode;
 
   // Mirrornode config

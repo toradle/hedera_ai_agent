@@ -1,4 +1,4 @@
-import { LedgerId } from '@hashgraph/sdk';
+import { LedgerId, TokenType } from '@hashgraph/sdk';
 import BigNumber from 'bignumber.js';
 
 export const LedgerIdToBaseUrl: Map<LedgerId, string> = new Map([
@@ -39,11 +39,16 @@ export type TokenBalancesResponse = {
 };
 export type AccountResponse = {
   accountId: string;
+  accountPublicKey: string;
   balance: AccountBalanceResponse;
 };
 
 export type AccountAPIResponse = {
   accountId: string;
+  key: {
+    key: string;
+    _type: KeyEncryptionType;
+  };
   balance: AccountBalanceResponse;
 };
 
@@ -58,4 +63,14 @@ export type TopicMessagesAPIResponse = {
   links: {
     next: string | null;
   };
+};
+
+export type KeyEncryptionType = 'ED25519' | 'ECDSA_SECP256K1';
+
+export type TokenDetails = {
+  decimals: string;
+  name: string;
+  symbol: string;
+  maxSupply: number;
+  type: TokenType;
 };

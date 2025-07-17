@@ -4,7 +4,7 @@ import globals from 'globals';
 import { defineConfig } from 'eslint/config';
 
 export default defineConfig([
-  { ignores: ['dist/**', 'node_modules/**', '.prettierrc.js', 'eslint.config.mjs'] },
+  { ignores: ['dist/**', 'node_modules/**', '.prettierrc.cjs', 'eslint.config.mjs'] },
   {
     files: ['**/*.{js,ts}'],
     languageOptions: {
@@ -21,7 +21,7 @@ export default defineConfig([
       'no-unused-vars': 'off', // Turn off base rule
       'no-undef': 'error',
       'no-console': 'off',
-      
+
       // TypeScript specific rules
       '@typescript-eslint/no-unused-vars': [
         'error',
