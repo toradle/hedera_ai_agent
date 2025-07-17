@@ -1,11 +1,11 @@
 import { z } from 'zod';
 import { StructuredTool } from '@langchain/core/tools';
-import HederaAgentAPI from '../shared/api';
-// import { CallbackManagerForToolRun } from '@langchain/core/callbacks/manager';
-// import { RunnableConfig } from '@langchain/core/runnables';
+import { CallbackManagerForToolRun } from '@langchain/core/callbacks/manager';
+import { RunnableConfig } from '@langchain/core/runnables';
+import HederaAgentKitAPI from '../shared/api';
 
-class HederaTransactionTool extends StructuredTool {
-  hederaAgentAPI: HederaAgentAPI;
+class HederaAgentKitTool extends StructuredTool {
+  stripeAPI: HederaAgentKitAPI;
 
   method: string;
 
@@ -16,14 +16,14 @@ class HederaTransactionTool extends StructuredTool {
   schema: z.ZodObject<any, any>;
 
   constructor(
-    hederaAgentAPI: HederaAgentAPI,
+    HederaAgentKitAPI: HederaAgentKitAPI,
     method: string,
     description: string,
     schema: z.ZodObject<any, any>,
   ) {
     super();
 
-    this.hederaAgentAPI = hederaAgentAPI;
+    this.stripeAPI = HederaAgentKitAPI;
     this.method = method;
     this.name = method;
     this.description = description;
@@ -32,12 +32,11 @@ class HederaTransactionTool extends StructuredTool {
 
   _call(
     arg: z.output<typeof this.schema>,
-    // commenting out for time being as it's not used
-    // _runManager?: CallbackManagerForToolRun,
-    // _parentConfig?: RunnableConfig
+    _runManager?: CallbackManagerForToolRun,
+    _parentConfig?: RunnableConfig,
   ): Promise<any> {
-    return this.hederaAgentAPI.run(this.method, arg);
+    return this.stripeAPI.run(this.method, arg);
   }
 }
 
-export default HederaTransactionTool;
+export default HederaAgentKitTool;
