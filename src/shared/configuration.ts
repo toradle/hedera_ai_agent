@@ -1,3 +1,5 @@
+import { MirrornodeConfig } from './hedera-utils/mirrornode/types';
+
 export type Object = 'fungibleToken';
 
 export type Permission = 'create' | 'update' | 'read';
@@ -9,6 +11,12 @@ export type Actions = {
 } & {
   balance?: {
     read?: boolean;
+  };
+  accountQuery?: {
+    getAccountBalanceQuery?: boolean;
+    getAccountQuery?: boolean;
+    getAccountTokenBalancesQuery?: boolean;
+    getTopicMessagesQuery?: boolean;
   };
 };
 
@@ -26,6 +34,9 @@ export type Context = {
   // If set to 'modelcontextprotocol', the Stripe API calls will use a special
   // header
   mode?: AgentMode;
+
+  // Mirrornode config
+  mirrornodeConfig?: MirrornodeConfig;
 };
 
 export type Configuration = {

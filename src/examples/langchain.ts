@@ -3,10 +3,9 @@ import { ChatOpenAI } from '@langchain/openai';
 import type { ChatPromptTemplate } from '@langchain/core/prompts';
 import { pull } from 'langchain/hub';
 import { AgentExecutor, createStructuredChatAgent } from 'langchain/agents';
-import { Client } from '@hashgraph/sdk';
+import { Client, LedgerId } from '@hashgraph/sdk';
 import { AgentMode } from '../shared/configuration';
-import * as dotenv from 'dotenv';
-dotenv.config();
+import 'dotenv/config';
 
 const llm = new ChatOpenAI({
   model: 'gpt-4o-mini',
@@ -22,10 +21,19 @@ const hederaAgentToolkit = new HederaAgentLangchainToolkit({
       fungibleToken: {
         create: true,
       },
+      accountQuery: {
+        getAccountBalanceQuery: true,
+        getAccountQuery: true,
+        getAccountTokenBalancesQuery: true,
+        getTopicMessagesQuery: true,
+      },
     },
     context: {
       mode: AgentMode.RETURN_BYTES,
       accountId: '0.0.123123',
+      mirrornodeConfig: {
+        ledgerId: LedgerId.TESTNET,
+      },
     },
   },
 });
@@ -47,11 +55,43 @@ const hederaAgentToolkit = new HederaAgentLangchainToolkit({
     returnIntermediateSteps: true,
   });
 
-  const response = await agentExecutor.invoke({
+  // const response0 = await agentExecutor.invoke({
+  //   input: `
+  //    Which tools do you support?
+  //   `,
+  // });
+
+  // console.log(response0);
+
+  // const response = await agentExecutor.invoke({
+  //   input: `
+  //    Query the token balances for the hedera account 0.0.3038269.
+  //   `,
+  // });
+
+  // console.log(response);
+
+  // const response2 = await agentExecutor.invoke({
+  //   input: `
+  //    Query the token balances for the Hedera account 0.0.3038269 and token 0.0.3989799.
+  //   `,
+  // });
+
+  // console.log(response2);
+
+  // const response3 = await agentExecutor.invoke({
+  //   input: `
+  //    Query the account information for the hedera account 0.0.3038269.
+  //   `,
+  // });
+
+  //console.log(response3);
+
+  const response0 = await agentExecutor.invoke({
     input: `
-      Create a token called Hello World with symbol HELLO with treasury account 0.0.123123. 
+      Get the topic messages for the topic 0.0.6363003. 
     `,
   });
 
-  console.log(response);
+  console.log(response0);
 })();
