@@ -24,8 +24,11 @@ export const getAccountQuery = async (
     return { accountId: params.accountId, account: account };
   } catch (error) {
     console.error('Error getting account query', error);
+    if (error instanceof Error) {
+      return error.message;
+    }
+    return 'Failed to get account query';
   }
-  return 'Failed to get account query';
 };
 
 const tool = (context: Context): Tool => ({
