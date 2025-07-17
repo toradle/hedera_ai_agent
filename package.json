@@ -4,7 +4,6 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\"",
-    "test:langchain": "ts-node src/examples/langchain/langchain.ts",
     "cli": "ts-node src/examples/langchain/cli-chat.ts",
     "build": "tsc",
     "format": "prettier \"src/**/*.{ts,tsx,js,mjs,jsx,json,md}\" --write",
