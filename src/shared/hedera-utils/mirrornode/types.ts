@@ -1,16 +1,10 @@
 import { LedgerId, TokenType } from '@hashgraph/sdk';
-import { IHederaMirrornodeService } from './hedera-mirrornode-service.interface';
 import BigNumber from 'bignumber.js';
 
 export const LedgerIdToBaseUrl: Map<LedgerId, string> = new Map([
   [LedgerId.MAINNET, 'https://mainnet-public.mirrornode.hedera.com/api/v1'],
   [LedgerId.TESTNET, 'https://testnet.mirrornode.hedera.com/api/v1'],
 ]);
-
-export type MirrornodeConfig = {
-  ledgerId: LedgerId;
-  mirrornodeService?: IHederaMirrornodeService;
-};
 
 export type AccountTokenBalancesQueryParams = {
   accountId: string;

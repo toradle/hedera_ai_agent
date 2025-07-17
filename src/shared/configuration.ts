@@ -1,31 +1,4 @@
-import { MirrornodeConfig } from './hedera-utils/mirrornode/types';
-
-export type Object = 'fungibleToken' | 'nonFungibleToken' | 'account' | 'consensus';
-
-export type Permission =
-  | 'create'
-  | 'update'
-  | 'read'
-  | 'transfer'
-  | 'airdrop'
-  | 'createTopic'
-  | 'submitTopicMessage';
-
-export type Actions = {
-  [K in Object]?: {
-    [K in Permission]?: boolean;
-  };
-} & {
-  balance?: {
-    read?: boolean;
-  };
-  accountQuery?: {
-    getAccountBalanceQuery?: boolean;
-    getAccountQuery?: boolean;
-    getAccountTokenBalancesQuery?: boolean;
-    getTopicMessagesQuery?: boolean;
-  };
-};
+import { IHederaMirrornodeService } from './hedera-utils/mirrornode/hedera-mirrornode-service.interface';
 
 export enum AgentMode {
   AUTONOMOUS = 'autonomous',
@@ -44,10 +17,11 @@ export type Context = {
   mode?: AgentMode;
 
   // Mirrornode config
-  mirrornodeConfig?: MirrornodeConfig;
+  mirrornodeService?: IHederaMirrornodeService;
 };
 
 export type Configuration = {
-  actions?: Actions;
+  //if empty, all tools will be used.
+  tools?: string[];
   context?: Context;
 };

@@ -19,7 +19,7 @@ export const getAccountQuery = async (
 ) => {
   console.log('Getting account query for account', params.accountId);
   try {
-    const mirrornodeService = getMirrornodeService(context.mirrornodeConfig!);
+    const mirrornodeService = getMirrornodeService(context.mirrornodeService!, client.ledgerId!);
     const account = await mirrornodeService.getAccount(params.accountId);
     return { accountId: params.accountId, account: account };
   } catch (error) {
@@ -31,8 +31,10 @@ export const getAccountQuery = async (
   }
 };
 
-const tool = (context: Context): Tool => ({
-  method: 'get_account_query',
+export const GET_ACCOUNT_QUERY_TOOL = 'get_account_query';
+
+const getAccountQueryTool = (context: Context): Tool => ({
+  method: GET_ACCOUNT_QUERY_TOOL,
   name: 'Get Account Query',
   description: getAccountQueryPrompt(context),
   parameters: accountQueryParameters(context),
@@ -44,4 +46,4 @@ const tool = (context: Context): Tool => ({
   execute: getAccountQuery,
 });
 
-export default tool;
+export default getAccountQueryTool;

@@ -16,7 +16,10 @@ export const accountBalanceQueryParameters = (_context: Context = {}) =>
 //add a description to the parameters
 export const accountTokenBalancesQueryParameters = (_context: Context = {}) =>
   z.object({
-    accountId: z.string().optional().describe('The account ID to query.'),
+    accountId: z
+      .string()
+      .optional()
+      .describe('The account ID to query. If not provided, this accountId will be used.'),
     tokenId: z.string().optional().describe('The token ID to query.'),
   });
 

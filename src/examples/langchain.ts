@@ -3,11 +3,13 @@ import { ChatOpenAI } from '@langchain/openai';
 import type { ChatPromptTemplate } from '@langchain/core/prompts';
 import { pull } from 'langchain/hub';
 import { AgentExecutor, createStructuredChatAgent } from 'langchain/agents';
-import { Client, PrivateKey, LedgerId } from '@hashgraph/sdk';
-import { AgentMode } from '@/shared/configuration';
+import { Client, PrivateKey } from '@hashgraph/sdk';
 import * as dotenv from 'dotenv';
 
 dotenv.config();
+import { AgentMode } from '../shared/configuration';
+import { GET_ACCOUNT_TOKEN_BALANCES_QUERY_TOOL } from '../shared/tools/queries/get-account-token-balances-query';
+import { GET_HBAR_BALANCE_QUERY_TOOL } from '../shared/tools/queries/get-hbar-balance-query';
 
 const llm = new ChatOpenAI({
   model: 'gpt-4o-mini',
@@ -21,35 +23,10 @@ const client = Client.forTestnet().setOperator(
 const hederaAgentToolkit = new HederaAgentLangchainToolkit({
   client,
   configuration: {
-    actions: {
-      fungibleToken: {
-        create: true,
-        airdrop: true,
-        transfer: true,
-      },
-      nonFungibleToken: {
-        create: true,
-      },
-      account: {
-        transfer: true,
-      },
-      consensus: {
-        createTopic: true,
-        submitTopicMessage: true,
-      },
-      accountQuery: {
-        getAccountBalanceQuery: true,
-        getAccountQuery: true,
-        getAccountTokenBalancesQuery: true,
-        getTopicMessagesQuery: true,
-      },
-    },
+    tools: [GET_ACCOUNT_TOKEN_BALANCES_QUERY_TOOL, GET_HBAR_BALANCE_QUERY_TOOL],
     context: {
-      mode: AgentMode.AUTONOMOUS,
-      accountId: process.env.ACCOUNT_ID!,
-      mirrornodeConfig: {
-        ledgerId: LedgerId.TESTNET,
-      },
+      mode: AgentMode.RETURN_BYTES,
+      accountId: '0.0.3038269',
     },
   },
 });
@@ -92,11 +69,11 @@ const hederaAgentToolkit = new HederaAgentLangchainToolkit({
   // });
 
   // EXAMPLE PROMPT FOR FT AIRDROP
-  const response = await agentExecutor.invoke({
-    input: `
-        Airdrop 100 tokens 0.0.5465304 to account 0.0.4515756 and 12 tokens to account 0.0.5393196. Add memo 'Happy New Year!'
-    `,
-  });
+  // const response = await agentExecutor.invoke({
+  //   input: `
+  //       Airdrop 100 tokens 0.0.5465304 to account 0.0.4515756 and 12 tokens to account 0.0.5393196. Add memo 'Happy New Year!'
+  //   `,
+  // });
 
   // EXAMPLE PROMPT FOR TOKEN TRANSFER
   // const response = await agentExecutor.invoke({
@@ -174,29 +151,11 @@ const hederaAgentToolkit = new HederaAgentLangchainToolkit({
 
   // console.log(JSON.stringify(response2, null, 2));
 
-  // const response3 = await agentExecutor.invoke({
-  //   input: `
-  //     Get my HBAR balance.
-  //   `,
-  // });
-  //
-  // console.log(JSON.stringify(response3, null, 2));
-  //
-  // const response4 = await agentExecutor.invoke({
-  //   input: `
-  //     Get my token balances.
-  //   `,
-  // });
-  //
-  // console.log(JSON.stringify(response4, null, 2));
+  const response4 = await agentExecutor.invoke({
+    input: `
+      Get my token balances.
+    `,
+  });
 
-  // const response0 = await agentExecutor.invoke({
-  //   input: `
-  //     Get the topic messages for the topic 0.0.6363003.
-  //   `,
-  // });
-  //
-  // console.log(response0);
-
-  console.log(response);
+  console.log(JSON.stringify(response4, null, 2));
 })();

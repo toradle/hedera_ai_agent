@@ -14,10 +14,10 @@ class HederaLangchainToolkit implements BaseToolkit {
     this._hederaAgentKit = new HederaAgentKitAPI(client, configuration.context);
 
     const context = configuration.context || {};
-    const filteredTools = tools(context);
-    // .filter((tool) =>
-    //   isToolAllowed(tool, configuration)
-    // );
+    const filteredTools =
+      !configuration.tools || configuration.tools.length === 0
+        ? tools(context)
+        : tools(context).filter(tool => (configuration.tools ?? []).includes(tool.method));
 
     this.tools = filteredTools.map(
       tool =>
