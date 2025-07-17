@@ -10,30 +10,30 @@ export const accountQueryParameters = (_context: Context = {}) =>
 //add a description to the parameters
 export const accountBalanceQueryParameters = (_context: Context = {}) =>
   z.object({
-    accountId: z.string().describe('The account ID to query.'),
+    accountId: z.string().optional().describe('The account ID to query.'),
   });
 
 //add a description to the parameters
 export const accountTokenBalancesQueryParameters = (_context: Context = {}) =>
   z.object({
-    accountId: z.string().describe('The account ID to query.'),
+    accountId: z.string().optional().describe('The account ID to query.'),
     tokenId: z.string().optional().describe('The token ID to query.'),
   });
 
 export const topicMessagesQueryParameters = (_context: Context = {}) =>
   z.object({
     topicId: z.string().describe('The topic ID to query.'),
-    lowerTimestamp: z
-      .string()
+    startTime: z.iso
+      .datetime()
       .optional()
       .describe(
-        'The lower timestamp to query. If set, the messages will be returned after this timestamp.',
+        'The start time to query. If set, the messages will be returned after this timestamp.',
       ),
-    upperTimestamp: z
-      .string()
+    endTime: z.iso
+      .datetime()
       .optional()
       .describe(
-        'The upper timestamp to query. If set, the messages will be returned before this timestamp.',
+        'The end time to query. If set, the messages will be returned before this timestamp.',
       ),
     limit: z
       .number()

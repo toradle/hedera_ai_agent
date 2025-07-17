@@ -18,6 +18,10 @@ import { Client } from '@hashgraph/sdk';
 import { Context } from '../configuration';
 import z from 'zod';
 import { HederaMirrornodeService } from '@/shared/hedera-utils/mirrornode/hedera-mirrornode-service';
+import {
+  accountBalanceQueryParameters,
+  accountTokenBalancesQueryParameters,
+} from '../parameter-schemas/account-query.zod';
 
 export default class HederaParameterNormaliser {
   static async normaliseCreateFungibleTokenParams(
@@ -175,6 +179,36 @@ export default class HederaParameterNormaliser {
     return {
       ...params,
       sender,
+    };
+  }
+
+  static normaliseHbarBalanceParams(
+    params: z.infer<ReturnType<typeof accountBalanceQueryParameters>>,
+    context: Context,
+    client: Client,
+  ) {
+    const accountId = params.accountId || context.accountId || client.operatorAccountId?.toString();
+    if (!accountId) {
+      throw new Error('Account ID is required');
+    }
+    return {
+      ...params,
+      accountId,
+    };
+  }
+
+  static normaliseAccountTokenBalancesParams(
+    params: z.infer<ReturnType<typeof accountTokenBalancesQueryParameters>>,
+    context: Context,
+    client: Client,
+  ) {
+    const accountId = params.accountId || context.accountId || client.operatorAccountId?.toString();
+    if (!accountId) {
+      throw new Error('Account ID is required');
+    }
+    return {
+      ...params,
+      accountId,
     };
   }
 }

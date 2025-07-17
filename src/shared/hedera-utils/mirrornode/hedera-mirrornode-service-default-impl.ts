@@ -1,5 +1,5 @@
 import { LedgerId } from '@hashgraph/sdk';
-import { HederaMirrornodeService } from './hedera-mirrornode-service';
+import { IHederaMirrornodeService } from './hedera-mirrornode-service.interface';
 import {
   AccountAPIResponse,
   AccountResponse,
@@ -12,7 +12,7 @@ import {
 } from './types';
 import BigNumber from 'bignumber.js';
 
-export class HederaMirrornodeServiceDefaultImpl implements HederaMirrornodeService {
+export class HederaMirrornodeServiceDefaultImpl implements IHederaMirrornodeService {
   private readonly baseUrl: string;
 
   constructor(private readonly ledgerId: LedgerId) {
@@ -55,9 +55,11 @@ export class HederaMirrornodeServiceDefaultImpl implements HederaMirrornodeServi
     const upperThreshold = queryParams.upperTimestamp
       ? `&timestamp=lte:${queryParams.upperTimestamp}`
       : '';
-    const limit = `&limit=100`;
+    const baseParams = `&order=desc&limit=100`;
     let url: string | null =
-      `${this.baseUrl}/topics/${queryParams.topicId}/messages?${lowerThreshold}${upperThreshold}${limit}`;
+      `${this.baseUrl}/topics/${queryParams.topicId}/messages?${lowerThreshold}${upperThreshold}${baseParams}`;
+
+    console.log('url', url);
 
     const arrayOfMessages: TopicMessage[] = [];
     let fetchedMessages = 0;
