@@ -48,7 +48,7 @@ export const getTopicMessagesQuery = async (
   console.log('Getting topic messages for topic', params.topicId);
   console.log('Params', JSON.stringify(params, null, 2));
   try {
-    const mirrornodeService = getMirrornodeService(context.mirrornodeConfig!);
+    const mirrornodeService = getMirrornodeService(context.mirrornodeService!, client.ledgerId!);
     const messages = await mirrornodeService.getTopicMessages(getTopicMessagesQueryParams(params));
 
     return {
@@ -64,8 +64,10 @@ export const getTopicMessagesQuery = async (
   }
 };
 
+export const GET_TOPIC_MESSAGES_QUERY_TOOL = 'get_topic_messages_query';
+
 const tool = (context: Context): Tool => ({
-  method: 'get_topic_messages_query',
+  method: GET_TOPIC_MESSAGES_QUERY_TOOL,
   name: 'Get Topic Messages',
   description: getTopicMessagesQueryPrompt(context),
   parameters: topicMessagesQueryParameters(context),

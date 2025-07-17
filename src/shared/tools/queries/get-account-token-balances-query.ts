@@ -8,7 +8,7 @@ import HederaParameterNormaliser from '../../hedera-utils/hedera-parameter-norma
 
 export const getAccountTokenBalancesQueryPrompt = (_context: Context = {}) => `
 This tool will return the token balances for a given Hedera account.
-${_context.accountId ? '\nIf accountId is not provided, this accountId will be used.' : ''}
+${_context.accountId ? '\n If accountId is not provided, this accountId will be used.' : ''}
 
 It takes two arguments:
 - accountId (str): The account ID to query.
@@ -27,7 +27,7 @@ export const getAccountTokenBalancesQuery = async (
       client,
     );
     console.log('Getting account token balances for account', normalisedParams.accountId);
-    const mirrornodeService = getMirrornodeService(context.mirrornodeConfig!);
+    const mirrornodeService = getMirrornodeService(context.mirrornodeService!, client.ledgerId!);
     const tokenBalances = await mirrornodeService.getAccountTokenBalances(
       normalisedParams.accountId,
       normalisedParams.tokenId,
@@ -42,8 +42,10 @@ export const getAccountTokenBalancesQuery = async (
   }
 };
 
+export const GET_ACCOUNT_TOKEN_BALANCES_QUERY_TOOL = 'get_account_token_balances_query';
+
 const tool = (context: Context): Tool => ({
-  method: 'get_account_token_balances_query',
+  method: GET_ACCOUNT_TOKEN_BALANCES_QUERY_TOOL,
   name: 'Get Account Token Balances',
   description: getAccountTokenBalancesQueryPrompt(context),
   parameters: accountTokenBalancesQueryParameters(context),

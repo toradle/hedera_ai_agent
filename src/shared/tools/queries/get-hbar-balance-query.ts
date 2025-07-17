@@ -27,7 +27,7 @@ export const getHbarBalanceQuery = async (
       client,
     );
     console.log('Getting HBAR balance for account', normalisedParams.accountId);
-    const mirrornodeService = getMirrornodeService(context.mirrornodeConfig!);
+    const mirrornodeService = getMirrornodeService(context.mirrornodeService!, client.ledgerId!);
     const balance: BigNumber = await mirrornodeService.getAccountHBarBalance(
       normalisedParams.accountId,
     );
@@ -41,8 +41,10 @@ export const getHbarBalanceQuery = async (
   }
 };
 
+export const GET_HBAR_BALANCE_QUERY_TOOL = 'get_hbar_balance_query';
+
 const tool = (context: Context): Tool => ({
-  method: 'get_hbar_balance_query',
+  method: GET_HBAR_BALANCE_QUERY_TOOL,
   name: 'Get HBAR Balance',
   description: getHbarBalanceQueryPrompt(context),
   parameters: accountBalanceQueryParameters(context),
