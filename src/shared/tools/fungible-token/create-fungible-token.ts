@@ -40,8 +40,10 @@ export const createFungibleToken = async (
   }
 };
 
+export const CREATE_FUNGIBLE_TOKEN_TOOL = 'create_fungible_token';
+
 const tool = (context: Context): Tool => ({
-  method: 'create_fungible_token',
+  method: CREATE_FUNGIBLE_TOKEN_TOOL,
   name: 'Create Fungible Token',
   description: createFungibleTokenPrompt(context),
   parameters: createFungibleTokenParameters(context),

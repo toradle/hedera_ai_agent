@@ -3,9 +3,11 @@ import { ChatOpenAI } from '@langchain/openai';
 import type { ChatPromptTemplate } from '@langchain/core/prompts';
 import { pull } from 'langchain/hub';
 import { AgentExecutor, createStructuredChatAgent } from 'langchain/agents';
-import { Client, LedgerId } from '@hashgraph/sdk';
+import { Client } from '@hashgraph/sdk';
 import { AgentMode } from '../shared/configuration';
 import 'dotenv/config';
+import { GET_ACCOUNT_TOKEN_BALANCES_QUERY_TOOL } from '../shared/tools/queries/get-account-token-balances-query';
+import { GET_HBAR_BALANCE_QUERY_TOOL } from '../shared/tools/queries/get-hbar-balance-query';
 
 const llm = new ChatOpenAI({
   model: 'gpt-4o-mini',
@@ -17,23 +19,10 @@ const client = Client.forTestnet();
 const hederaAgentToolkit = new HederaAgentLangchainToolkit({
   client,
   configuration: {
-    actions: {
-      fungibleToken: {
-        create: true,
-      },
-      accountQuery: {
-        getAccountBalanceQuery: true,
-        getAccountQuery: true,
-        getAccountTokenBalancesQuery: true,
-        getTopicMessagesQuery: true,
-      },
-    },
+    tools: [GET_ACCOUNT_TOKEN_BALANCES_QUERY_TOOL, GET_HBAR_BALANCE_QUERY_TOOL],
     context: {
       mode: AgentMode.RETURN_BYTES,
       accountId: '0.0.3038269',
-      mirrornodeConfig: {
-        ledgerId: LedgerId.TESTNET,
-      },
     },
   },
 });
@@ -52,7 +41,7 @@ const hederaAgentToolkit = new HederaAgentLangchainToolkit({
   const agentExecutor = new AgentExecutor({
     agent,
     tools,
-    returnIntermediateSteps: false,
+    returnIntermediateSteps: true,
   });
 
   // const response0 = await agentExecutor.invoke({
@@ -110,14 +99,6 @@ const hederaAgentToolkit = new HederaAgentLangchainToolkit({
   // });
 
   // console.log(JSON.stringify(response2, null, 2));
-
-  const response3 = await agentExecutor.invoke({
-    input: `
-      Get my HBAR balance.
-    `,
-  });
-
-  console.log(JSON.stringify(response3, null, 2));
 
   const response4 = await agentExecutor.invoke({
     input: `
