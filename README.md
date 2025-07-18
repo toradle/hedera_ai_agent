@@ -22,7 +22,7 @@
 
 ### 1 – Install
 ```bash
-npm install hedera-agent-kit           # or yarn / pnpm
+npm i hedera-agent-kit           # or yarn / pnpm
 ```
 
 **Requirements** 
@@ -70,6 +70,8 @@ This tool has two execution modes with AI agents;  autonomous excution and retur
 
 #### Hedera Mirror Node Query Tools
 The Hedera network is made up of two types of nodes: consensus nodes and mirror nodes. Mirror nodes are free to query, and maintain a copy of the state of the network for users to query. This toolkit provides a set of tools to query the state of the network, including accounts, tokens, and transactions.
+
+#### Conversational Agent
 
 ---
 
