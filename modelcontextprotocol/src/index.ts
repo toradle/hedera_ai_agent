@@ -1,12 +1,11 @@
 #!/usr/bin/env node
 
-import { HederaMCPToolkit } from 'hkav3/modelcontextprotocol';
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
 import colors from 'colors';
 const { green, red, yellow } = colors;
-import { AgentMode, Configuration, Context } from 'hkav3/modelcontextprotocol';
-import { ALL_TOOLS, GET_ACCOUNT_TOKEN_BALANCES_QUERY_TOOL, GET_HBAR_BALANCE_QUERY_TOOL } from 'hkav3/modelcontextprotocol';
+
 import { LedgerId, Client } from '@hashgraph/sdk';
+import { AgentMode, ALL_TOOLS, Configuration, Context, HederaMCPToolkit } from 'hkav3';
 
 type Options = {
   tools?: string[];
@@ -79,14 +78,7 @@ function handleError(error: any) {
 
 export async function main() {
   const options = parseArgs(process.argv.slice(2));
-  const client = new Client({
-    network: options.ledgerId?.toString(),
-    // set the operator to the account id and public key if they are provided
-    operator: options.context!.accountId && options.context!.accountPublicKey ? {
-      accountId: options.context!.accountId!,
-      privateKey: options.context!.accountPublicKey!,
-    } : undefined,
-  })
+  const client = Client.forTestnet();
 
   const configuration: Configuration = {
     tools: options.tools,
