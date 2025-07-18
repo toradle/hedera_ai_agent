@@ -66,8 +66,10 @@ This tool has two execution modes with AI agents;  autonomous excution and retur
  * `mode: AgentMode.RETURN_BYTE` the transaction will be executed, and the bytes to execute the Hedera transaction will be returned. 
  * `mode: AgentMode.AUTONOMOUS` the transaction will be executed autonomously, using the accountID set (the operator account can be set in the client with `.setOperator(process.env.ACCOUNT_ID!`)
 
- #### Hedera Mirror Node Queries
- 
+#### Hedera Transaction Tools
+
+#### Hedera Mirror Node Query Tools
+The Hedera network is made up of two types of nodes: consensus nodes and mirror nodes. Mirror nodes are free to query, and maintain a copy of the state of the network for users to query. This toolkit provides a set of tools to query the state of the network, including accounts, tokens, and transactions.
 
 ---
 

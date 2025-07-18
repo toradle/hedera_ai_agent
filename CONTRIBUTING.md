@@ -10,13 +10,13 @@ We are thrilled that you’re interested in contributing to the **Hedera Agent K
 2. **Clone** your fork:
 
 ```bash
-  git clone https://github.com/hedera-dev/hedera-agent-kit.git
+  git clone https://github.com/<your-github-username>/hedera-agent-kit.git
 ```
 
 3. Create a new branch for your work:
 
 ```bash
-  git checkout -b feature/your-feature-name
+  git checkout -b feat/your-feature-name
 ```
 
 4. Make your changes, write or update tests as needed, and commit with a DCO sign-off (details below).
