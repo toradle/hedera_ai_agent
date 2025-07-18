@@ -2,41 +2,20 @@
     "$schema": "https://json.schemastore.org/tsconfig",
     "display": "Default",
     "compilerOptions": {
-        "target": "ES2020",
-        "module": "ESNext",
-        "lib": ["ES2020", "DOM", "DOM.Iterable"],
-        "strict": true,
-        "noImplicitAny": true,
-        "strictBindCallApply": true,
-        "strictPropertyInitialization": false,
-        "noImplicitThis": true,
-        "useUnknownInCatchVariables": true,
-        "alwaysStrict": true,
-        "exactOptionalPropertyTypes": true,
-        "noImplicitReturns": true,
-        "noFallthroughCasesInSwitch": true,
-        "noImplicitOverride": true,
-        "moduleResolution": "bundler",
+        "outDir": "./dist",
+        "target": "es2022",
+        "moduleDetection": "force",
         "esModuleInterop": true,
-        "allowSyntheticDefaultImports": true,
-        "forceConsistentCasingInFileNames": true,
         "skipLibCheck": true,
-        "resolveJsonModule": true,
-        "isolatedModules": true,
-        "noEmit": true,
-        "baseUrl": ".",
-        "paths": {
-            "@/*": [
-                "src/*"
-            ]
-        }
+        "strict": true,
+        "module": "NodeNext",
+        "baseUrl": "."
     },
     "include": [
         "**/*.ts"
     ],
     "exclude": [
         "node_modules",
-        "examples",
-        "dist"
+        "examples"
     ]
 }

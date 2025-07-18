@@ -9,10 +9,10 @@ import HederaParameterNormaliser from '../../hedera-utils/hedera-parameter-norma
 
 export const getHbarBalanceQueryPrompt = (_context: Context = {}) => `
 This tool will return the HBAR balance in tinybar for a given Hedera account.
-${_context.accountId ? '\nIf accountId is not provided, this accountId will be used.' : ''}
+${_context.accountId ? '\nIf accountId is not provided, use empty string.' : ''}
 
 It takes one argument:
-- accountId (str): The account ID to query.
+- accountId (str, optional): The account ID to query.
 `;
 
 export const getHbarBalanceQuery = async (
@@ -31,6 +31,7 @@ export const getHbarBalanceQuery = async (
     const balance: BigNumber = await mirrornodeService.getAccountHBarBalance(
       normalisedParams.accountId,
     );
+    console.log('HBAR balance', balance.toString());
     return { accountId: normalisedParams.accountId, hbarBalance: balance.toString() };
   } catch (error) {
     console.error('Error getting HBAR balance', error);

@@ -7,12 +7,12 @@ import {
   createNonFungibleTokenParameters,
   createNonFungibleTokenParametersNormalised,
 } from '../parameter-schemas/hts.zod';
-import { transferHbarParameters } from '@/shared/parameter-schemas/has.zod';
+import { transferHbarParameters } from '../parameter-schemas/has.zod';
 import {
   createTopicParameters,
   createTopicParametersNormalised,
   submitTopicMessageParameters,
-} from '@/shared/parameter-schemas/hcs.zod';
+} from '../parameter-schemas/hcs.zod';
 import { Client } from '@hashgraph/sdk';
 import { Context } from '../configuration';
 import z from 'zod';
@@ -20,7 +20,7 @@ import {
   accountBalanceQueryParameters,
   accountTokenBalancesQueryParameters,
 } from '../parameter-schemas/account-query.zod';
-import { IHederaMirrornodeService } from '@/shared/hedera-utils/mirrornode/hedera-mirrornode-service.interface';
+import { IHederaMirrornodeService } from './mirrornode/hedera-mirrornode-service.interface';
 
 export default class HederaParameterNormaliser {
   static async normaliseCreateFungibleTokenParams(

@@ -4,8 +4,8 @@ import type { Tool } from '../../tools';
 import { Client } from '@hashgraph/sdk';
 import { handleTransaction } from '../../strategies/tx-mode-strategy';
 import HederaBuilder from '../../hedera-utils/hedera-builder';
-import { transferHbarParameters } from '@/shared/parameter-schemas/has.zod';
-import HederaParameterNormaliser from '@/shared/hedera-utils/hedera-parameter-normaliser';
+import { transferHbarParameters } from '../../parameter-schemas/has.zod';
+import HederaParameterNormaliser from '../../hedera-utils/hedera-parameter-normaliser';
 
 const transferHbarPrompt = (_context: Context = {}) => `
 This tool will transfer HBAR to an account.
