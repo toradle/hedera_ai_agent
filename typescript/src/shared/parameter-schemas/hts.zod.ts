@@ -1,24 +1,30 @@
 import { Context } from '@/shared/configuration.js';
 import { z } from 'zod';
+import { PublicKey, TokenSupplyType } from '@hashgraph/sdk';
+import { TokenTransferMinimalParams } from '../hedera-utils/types';
 
 export const createFungibleTokenParameters = (_context: Context = {}) =>
   z.object({
     tokenName: z.string().describe('The name of the token.'),
     tokenSymbol: z.string().describe('The symbol of the token.'),
-    initialSupply: z.number().int().optional().describe('The initial supply of the token.'),
+    initialSupply: z.number().int().default(0).describe('The initial supply of the token.'),
     supplyType: z.enum(['finite', 'infinite']).optional().describe('Supply type of the token.'),
     maxSupply: z.number().int().optional().describe('The maximum supply of the token.'),
     decimals: z.number().int().optional().default(0).describe('The number of decimals.'),
     treasuryAccountId: z.string().optional().describe('The treasury account of the token.'),
-    isSupplyKey: z.string().optional().describe('The supply key.'),
+    isSupplyKey: z
+      .boolean()
+      .optional()
+      .describe('Determines if the token supply key should be set.'),
   });
 
 export const createFungibleTokenParametersNormalised = (_context: Context = {}) =>
   createFungibleTokenParameters(_context).extend({
     supplyKey: z
-      .string()
+      .custom<PublicKey>()
       .optional()
       .describe('The supply key. If not provided, defaults to the operator’s public key.'),
+    supplyType: z.custom<TokenSupplyType>().describe('Supply type of the token.'),
   });
 
 export const createNonFungibleTokenParameters = (_context: Context = {}) =>
@@ -37,8 +43,12 @@ export const createNonFungibleTokenParameters = (_context: Context = {}) =>
 export const createNonFungibleTokenParametersNormalised = (_context: Context = {}) =>
   createNonFungibleTokenParameters(_context).extend({
     supplyKey: z
-      .string()
+      .custom<PublicKey>()
       .describe('The supply key. If not provided, defaults to the operator’s public key.'),
+    supplyType: z
+      .custom<TokenSupplyType>()
+      .default(TokenSupplyType.Finite)
+      .describe('Supply type of the token - must be finite for NFT.'),
   });
 
 const AirdropRecipientSchema = z.object({
@@ -55,5 +65,11 @@ export const airdropFungibleTokenParameters = (_context: Context = {}) =>
       .array(AirdropRecipientSchema)
       .min(1)
       .describe('Array of recipient objects, each with accountId and amount.'),
-    transactionMemo: z.string().optional().describe('memo to include with transaction'),
+  });
+
+export const airdropFungibleTokenParametersNormalised = () =>
+  z.object({
+    tokenTransfers: z
+      .custom<TokenTransferMinimalParams[]>()
+      .describe('Array of TokenTransfer objects constructed from the original recipients.'),
   });

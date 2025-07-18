@@ -8,12 +8,25 @@ import { transferHbarParameters } from '@/shared/parameter-schemas/has.zod.js';
 import HederaParameterNormaliser from '@/shared/hedera-utils/hedera-parameter-normaliser.js';
 
 const transferHbarPrompt = (_context: Context = {}) => `
-This tool will transfer HBAR to an account.
+Transfers HBAR to one or more recipient accounts.
 
-It takes three arguments:
-- hbarAmount (number): amount of hbar to transfer.
-- destinationAccountId (str): account to transfer hbar to.
-- transactionMemo (str, optional): optional memo for the transaction.
+Arguments:
+- transfers (array of objects): List of HBAR transfers.
+  Each transfer must include:
+    - accountId (string): recipient account ID.
+    - amount (number): amount of HBAR to send to that account.
+- sourceAccountId (optional string): sender's account ID. Defaults to the connected wallet.
+- transactionMemo (optional string): optional memo for the transaction.
+
+Example:
+{
+  "transfers": [
+    { "accountId": "0.0.1234", "amount": 5 },
+    { "accountId": "0.0.5678", "amount": 10.5 }
+  ],
+  "sourceAccountId": "0.0.9999",
+  "transactionMemo": "Payroll batch"
+}
 `;
 
 const transferHbar = async (
@@ -28,9 +41,7 @@ const transferHbar = async (
       client,
     );
     const tx = HederaBuilder.transferHbar(normalisedParams);
-    const result = await handleTransaction(tx, client, context);
-    console.log('Result from transfer HBAR', result);
-    return result;
+    return await handleTransaction(tx, client, context);
   } catch (error) {
     if (error instanceof Error) {
       return error.message;
