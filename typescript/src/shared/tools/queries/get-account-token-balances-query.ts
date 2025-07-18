@@ -5,15 +5,24 @@ import { accountTokenBalancesQueryParameters } from '@/shared/parameter-schemas/
 import { Client } from '@hashgraph/sdk';
 import { Tool } from '@/shared/tools.js';
 import HederaParameterNormaliser from '@/shared/hedera-utils/hedera-parameter-normaliser.js';
+import { PromptGenerator } from '@/shared/utils/prompt-generator.js';
 
-export const getAccountTokenBalancesQueryPrompt = (_context: Context = {}) => `
+export const getAccountTokenBalancesQueryPrompt = (context: Context = {}) => {
+  const contextSnippet = PromptGenerator.getContextSnippet(context);
+  const accountDesc = PromptGenerator.getAccountParameterDescription('accountId', context);
+  const usageInstructions = PromptGenerator.getParameterUsageInstructions();
+
+  return `
+${contextSnippet}
+
 This tool will return the token balances for a given Hedera account.
-${_context.accountId ? '\n If accountId is not provided, this accountId will be used.' : ''}
 
-It takes two arguments:
-- accountId (str): The account ID to query.
-- tokenId (str, optional): The token ID to query for. If not provided, all token balances will be returned.
+Parameters:
+- ${accountDesc}
+- tokenId (str, optional): The token ID to query for. If not provided, all token balances will be returned
+${usageInstructions}
 `;
+};
 
 export const getAccountTokenBalancesQuery = async (
   client: Client,

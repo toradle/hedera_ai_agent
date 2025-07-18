@@ -4,9 +4,9 @@
   "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\"",
-    "cli": "ts-node src/examples/langchain/cli-chat.ts",
+    "langchain:structured-chat-agent": "ts-node src/examples/langchain/structured-chat-agent.ts",
+    "langchain:tool-calling-agent": "ts-node src/examples/langchain/tool-calling-agent.ts",
     "build": "tsup",
-    "clean": "rm -rf langchain modelcontextprotocol",
     "format": "prettier \"src/**/*.{ts,tsx,js,mjs,jsx,json,md}\" --write",
     "format:check": "prettier \"src/**/*.{ts,tsx,js,mjs,jsx,json,md}\" --check",
     "lint": "eslint . --ext .ts,.tsx",

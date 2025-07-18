@@ -1,7 +1,7 @@
 import { Context } from '@/shared/configuration.js';
 import { z } from 'zod';
 import { PublicKey, TokenSupplyType } from '@hashgraph/sdk';
-import { TokenTransferMinimalParams } from '../hedera-utils/types';
+import { TokenTransferMinimalParams } from '@/shared/hedera-utils/types.js';
 
 export const createFungibleTokenParameters = (_context: Context = {}) =>
   z.object({

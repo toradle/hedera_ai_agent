@@ -7,25 +7,27 @@ import { handleTransaction } from '@/shared/strategies/tx-mode-strategy.js';
 import { createNonFungibleTokenParameters } from '@/shared/parameter-schemas/hts.zod.js';
 import HederaBuilder from '@/shared/hedera-utils/hedera-builder.js';
 import { getMirrornodeService } from '@/shared/hedera-utils/mirrornode/hedera-mirrornode-utils.js';
+import { PromptGenerator } from '@/shared/utils/prompt-generator.js';
 
 const createNonFungibleTokenPrompt = (context: Context = {}) => {
-  const contextInfo = context.accountId
-    ? `context:
-  - operator Account: ${context.accountId}. This is the user's account and will be referred to as "my account".`
-    : `context:
-  - operator Account: not defined.
-`;
+  const contextSnippet = PromptGenerator.getContextSnippet(context);
+  const treasuryAccountDesc = PromptGenerator.getAccountParameterDescription(
+    'treasuryAccountId',
+    context,
+  );
+  const usageInstructions = PromptGenerator.getParameterUsageInstructions();
 
   return `
-${contextInfo}
+${contextSnippet}
 
 This tool creates a non-fungible token (NFT) on Hedera.
 
-Arguments:
-- tokenName (str): Name of the token.
-- tokenSymbol (str): Symbol of the token.
-- maxSupply (int, optional): Maximum NFT supply. Defaults to 100 if not provided.
-- treasuryAccountId (str, optional): Token treasury account. Defaults to operator account if not specified. If operator account is not specified, then treasury account is not passed.
+Parameters:
+- tokenName (str, required): Name of the token
+- tokenSymbol (str, required): Symbol of the token
+- maxSupply (int, optional): Maximum NFT supply. Defaults to 100 if not provided
+- ${treasuryAccountDesc}
+${usageInstructions}
 `;
 };
 

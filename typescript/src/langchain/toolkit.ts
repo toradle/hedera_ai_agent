@@ -15,9 +15,11 @@ class HederaLangchainToolkit implements BaseToolkit {
 
     const context = configuration.context || {};
     const filteredTools =
+      // if no tools are provided, use all tools
       !configuration.tools || configuration.tools.length === 0
         ? tools(context)
-        : tools(context).filter(tool => (configuration.tools ?? []).includes(tool.method));
+        : // else use only the tools provided
+          tools(context).filter(tool => (configuration.tools ?? []).includes(tool.method));
 
     this.tools = filteredTools.map(
       tool =>

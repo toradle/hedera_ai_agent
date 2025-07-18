@@ -6,15 +6,25 @@ import { handleTransaction } from '@/shared/strategies/tx-mode-strategy.js';
 import HederaBuilder from '@/shared/hedera-utils/hedera-builder.js';
 import { submitTopicMessageParameters } from '@/shared/parameter-schemas/hcs.zod.js';
 import HederaParameterNormaliser from '@/shared/hedera-utils/hedera-parameter-normaliser.js';
+import { PromptGenerator } from '@/shared/utils/prompt-generator.js';
 
-const submitTopicMessagePrompt = (_context: Context = {}) => `
+const submitTopicMessagePrompt = (context: Context = {}) => {
+  const contextSnippet = PromptGenerator.getContextSnippet(context);
+  const senderDesc = PromptGenerator.getAccountParameterDescription('sender', context);
+  const usageInstructions = PromptGenerator.getParameterUsageInstructions();
+
+  return `
+${contextSnippet}
+
 This tool will submit a message to a topic on the Hedera network.
 
-It takes the following arguments:
-- topicId (str): The ID of the topic to submit the message to.
-- message (str): The message to submit to the topic.
-- sender (str, optional): The account ID of the sender. If not provided, the current operator account or account from context is used.
+Parameters:
+- topicId (str, required): The ID of the topic to submit the message to
+- message (str, required): The message to submit to the topic
+- ${senderDesc}
+${usageInstructions}
 `;
+};
 
 const submitTopicMessage = async (
   client: Client,
