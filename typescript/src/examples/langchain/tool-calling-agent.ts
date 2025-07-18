@@ -1,8 +1,7 @@
 import HederaAgentLangchainToolkit from '@/langchain/toolkit.js';
 import { ChatOpenAI } from '@langchain/openai';
-import type { ChatPromptTemplate } from '@langchain/core/prompts';
-import { pull } from 'langchain/hub';
-import { AgentExecutor, createStructuredChatAgent } from 'langchain/agents';
+import { ChatPromptTemplate } from '@langchain/core/prompts';
+import { AgentExecutor, createToolCallingAgent } from 'langchain/agents';
 import { BufferMemory } from 'langchain/memory';
 import { Client, PrivateKey } from '@hashgraph/sdk';
 import { AgentMode } from '@/shared/configuration.js';
@@ -34,12 +33,18 @@ async function bootstrap(): Promise<void> {
   });
 
   // Load the structured chat prompt template
-  const prompt = await pull<ChatPromptTemplate>('hwchase17/structured-chat-agent');
+  const prompt = ChatPromptTemplate.fromMessages([
+    ['system', 'You are a helpful assistant'],
+    ['placeholder', '{chat_history}'],
+    ['human', '{input}'],
+    ['placeholder', '{agent_scratchpad}'],
+  ]);
 
   // Fetch tools from toolkit
   const tools = hederaAgentToolkit.getTools();
 
-  const agent = await createStructuredChatAgent({
+  // Create the underlying agent
+  const agent = createToolCallingAgent({
     llm,
     tools,
     prompt,
