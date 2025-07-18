@@ -184,7 +184,7 @@ export default class HederaParameterNormaliser {
         throw new Error(`Invalid recipient amount: ${recipient.amount}`);
       }
 
-      const amount = Long.fromString((amountRaw * 10 ** tokenDecimals).toString());
+      const amount = Long.fromString(toBaseUnit(amountRaw, tokenDecimals).toString());
 
       totalAmount = totalAmount.add(amount);
 

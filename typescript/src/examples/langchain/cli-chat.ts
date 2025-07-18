@@ -19,7 +19,7 @@ async function bootstrap(): Promise<void> {
   // Hedera client setup (Testnet by default)
   const client = Client.forTestnet().setOperator(
     process.env.ACCOUNT_ID!,
-    PrivateKey.fromStringECDSA(process.env.PRIVATE_KEY!),
+    PrivateKey.fromStringED25519(process.env.PRIVATE_KEY!),
   );
 
   // Prepare Hedera toolkit (load all tools by default)
@@ -60,6 +60,7 @@ async function bootstrap(): Promise<void> {
     tools,
     memory,
     returnIntermediateSteps: false,
+    verbose: true,
   });
 
   console.log('Hedera Agent CLI Chatbot — type "exit" to quit');

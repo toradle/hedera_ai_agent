@@ -14,7 +14,7 @@ import z from 'zod';
 import { transferHbarParametersNormalised } from '@/shared/parameter-schemas/has.zod.js';
 import {
   createTopicParametersNormalised,
-  submitTopicMessageParameters,
+  submitTopicMessageParametersNormalised,
 } from '@/shared/parameter-schemas/hcs.zod.js';
 
 export default class HederaBuilder {
@@ -44,7 +44,9 @@ export default class HederaBuilder {
     return new TopicCreateTransaction(params);
   }
 
-  static submitTopicMessage(params: z.infer<ReturnType<typeof submitTopicMessageParameters>>) {
+  static submitTopicMessage(
+    params: z.infer<ReturnType<typeof submitTopicMessageParametersNormalised>>,
+  ) {
     return new TopicMessageSubmitTransaction(params);
   }
 }
