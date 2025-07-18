@@ -26,7 +26,6 @@ export const getAccountQuery = async (
   context: Context,
   params: z.infer<ReturnType<typeof accountQueryParameters>>,
 ) => {
-  console.log('Getting account query for account', params.accountId);
   try {
     const mirrornodeService = getMirrornodeService(context.mirrornodeService!, client.ledgerId!);
     const account = await mirrornodeService.getAccount(params.accountId);

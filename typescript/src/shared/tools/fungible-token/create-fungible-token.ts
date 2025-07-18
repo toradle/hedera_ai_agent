@@ -50,7 +50,6 @@ const createFungibleToken = async (
     );
     const tx = HederaBuilder.createFungibleToken(normalisedParams);
     const result = await handleTransaction(tx, client, context);
-    console.log('Result from create fungible token', result);
     return result;
   } catch (error) {
     if (error instanceof Error) {

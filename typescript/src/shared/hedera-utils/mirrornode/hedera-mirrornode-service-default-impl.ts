@@ -17,10 +17,10 @@ export class HederaMirrornodeServiceDefaultImpl implements IHederaMirrornodeServ
   private readonly baseUrl: string;
 
   constructor(private readonly ledgerId: LedgerId) {
-    if (!LedgerIdToBaseUrl.has(ledgerId)) {
+    if (!LedgerIdToBaseUrl.has(ledgerId.toString())) {
       throw new Error(`Network type ${ledgerId} not supported`);
     }
-    this.baseUrl = LedgerIdToBaseUrl.get(ledgerId)!;
+    this.baseUrl = LedgerIdToBaseUrl.get(ledgerId.toString())!;
   }
 
   async getAccount(accountId: string): Promise<AccountResponse> {
@@ -59,9 +59,6 @@ export class HederaMirrornodeServiceDefaultImpl implements IHederaMirrornodeServ
     const baseParams = `&order=desc&limit=100`;
     let url: string | null =
       `${this.baseUrl}/topics/${queryParams.topicId}/messages?${lowerThreshold}${upperThreshold}${baseParams}`;
-
-    console.log('url', url);
-
     const arrayOfMessages: TopicMessage[] = [];
     let fetchedMessages = 0;
     try {

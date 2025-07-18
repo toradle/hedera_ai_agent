@@ -35,15 +35,12 @@ export const getHbarBalanceQuery = async (
       context,
       client,
     );
-    console.log('Getting HBAR balance for account', normalisedParams.accountId);
     const mirrornodeService = getMirrornodeService(context.mirrornodeService!, client.ledgerId!);
     const balance: BigNumber = await mirrornodeService.getAccountHBarBalance(
       normalisedParams.accountId,
     );
-    console.log('HBAR balance', balance.toString());
     return { accountId: normalisedParams.accountId, hbarBalance: balance.toString() };
   } catch (error) {
-    console.error('Error getting HBAR balance', error);
     if (error instanceof Error) {
       return error.message;
     }

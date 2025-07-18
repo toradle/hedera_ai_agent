@@ -54,8 +54,6 @@ export const getTopicMessagesQuery = async (
   context: Context,
   params: z.infer<ReturnType<typeof topicMessagesQueryParameters>>,
 ) => {
-  console.log('Getting topic messages for topic', params.topicId);
-  console.log('Params', JSON.stringify(params, null, 2));
   try {
     const mirrornodeService = getMirrornodeService(context.mirrornodeService!, client.ledgerId!);
     const messages = await mirrornodeService.getTopicMessages(getTopicMessagesQueryParams(params));

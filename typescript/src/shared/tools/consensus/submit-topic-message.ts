@@ -39,7 +39,6 @@ const submitTopicMessage = async (
     );
     const tx = HederaBuilder.submitTopicMessage(normalisedParams);
     const result = await handleTransaction(tx, client, context);
-    console.log('Result from submit topic message', result);
     return result;
   } catch (error) {
     if (error instanceof Error) {

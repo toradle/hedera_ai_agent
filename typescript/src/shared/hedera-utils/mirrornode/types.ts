@@ -1,9 +1,9 @@
 import { LedgerId, TokenType } from '@hashgraph/sdk';
 import BigNumber from 'bignumber.js';
 
-export const LedgerIdToBaseUrl: Map<LedgerId, string> = new Map([
-  [LedgerId.MAINNET, 'https://mainnet-public.mirrornode.hedera.com/api/v1'],
-  [LedgerId.TESTNET, 'https://testnet.mirrornode.hedera.com/api/v1'],
+export const LedgerIdToBaseUrl: Map<string, string> = new Map([
+  [LedgerId.MAINNET.toString(), 'https://mainnet-public.mirrornode.hedera.com/api/v1'],
+  [LedgerId.TESTNET.toString(), 'https://testnet.mirrornode.hedera.com/api/v1'],
 ]);
 
 export type AccountTokenBalancesQueryParams = {

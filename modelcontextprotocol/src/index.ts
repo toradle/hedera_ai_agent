@@ -78,7 +78,12 @@ function handleError(error: any) {
 
 export async function main() {
   const options = parseArgs(process.argv.slice(2));
-  const client = Client.forTestnet();
+  let client: Client;
+  if(options.ledgerId == LedgerId.TESTNET) {
+    client = Client.forTestnet();
+  } else {
+    client = Client.forMainnet();
+  }
 
   const configuration: Configuration = {
     tools: options.tools,
