@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import { Context } from '@/shared/configuration.js';
+import { PublicKey } from '@hashgraph/sdk';
 
 export const createTopicParameters = (_context: Context = {}) => {
   return z.object({
@@ -14,7 +15,7 @@ export const createTopicParameters = (_context: Context = {}) => {
 
 export const createTopicParametersNormalised = (_context: Context = {}) =>
   createTopicParameters(_context).extend({
-    submitKey: z.string().optional().describe('The submit key of topic'),
+    submitKey: z.custom<PublicKey>().optional().describe('The submit key of topic'),
   });
 
 export const submitTopicMessageParameters = (_context: Context = {}) => {
@@ -24,3 +25,6 @@ export const submitTopicMessageParameters = (_context: Context = {}) => {
     sender: z.string().optional().describe('The account ID of the sender (optional)'),
   });
 };
+
+export const submitTopicMessageParametersNormalised = (_context: Context = {}) =>
+  submitTopicMessageParameters(_context).extend({}); // currently no additional fields are needed

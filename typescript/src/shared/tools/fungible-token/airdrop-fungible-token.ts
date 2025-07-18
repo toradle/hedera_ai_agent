@@ -18,7 +18,6 @@ It takes five arguments:
 -  recipients (array): A list of recipient objects, each containing:
   - accountId (string): The recipient's account ID (e.g., "0.0.1234").
   - amount (number or string): The amount of tokens to send to that recipient (in base units).
-- transactionMemo (str, optional): optional memo for the transaction.
 `;
 
 const airdropFungibleToken = async (
@@ -28,14 +27,12 @@ const airdropFungibleToken = async (
 ) => {
   try {
     const mirrornodeService = getMirrornodeService(context.mirrornodeService!, client.ledgerId!);
-    console.log('Raw params', params);
     const normalisedParams = await HederaParameterNormaliser.normaliseAirdropFungibleTokenParams(
       params,
       context,
       client,
       mirrornodeService,
     );
-    console.log('Normalised params', normalisedParams);
     const tx = HederaBuilder.airdropFungibleToken(normalisedParams);
     const result = await handleTransaction(tx, client, context);
     console.log('Result from airdrop fungible token', result);

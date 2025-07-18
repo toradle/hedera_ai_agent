@@ -25,7 +25,7 @@ Arguments:
 - tokenName (str): Name of the token.
 - tokenSymbol (str): Symbol of the token.
 - maxSupply (int, optional): Maximum NFT supply. Defaults to 100 if not provided.
-- treasuryAccountId (str, optional): Token treasury account. Defaults to operator account if not specified.
+- treasuryAccountId (str, optional): Token treasury account. Defaults to operator account if not specified. If operator account is not specified, then treasury account is not passed.
 `;
 };
 
