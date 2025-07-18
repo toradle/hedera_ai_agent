@@ -4,8 +4,6 @@
   "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\"",
-    "langchain:structured-chat-agent": "ts-node src/examples/langchain/structured-chat-agent.ts",
-    "langchain:tool-calling-agent": "ts-node src/examples/langchain/tool-calling-agent.ts",
     "build": "tsup",
     "format": "prettier \"src/**/*.{ts,tsx,js,mjs,jsx,json,md}\" --write",
     "format:check": "prettier \"src/**/*.{ts,tsx,js,mjs,jsx,json,md}\" --check",
