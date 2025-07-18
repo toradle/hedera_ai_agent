@@ -28,6 +28,11 @@ npm install hedera-agent-kit           # or yarn / pnpm
 **Requirements** 
 - Node.js v20 or higher
 
+**Dependencies**
+- @hashgraph/sdk 
+- @langchain/core 
+- zod 
+- dotenv
 
 ### 2 – Configure: Add Environment Variables
 Create a `.env` next to your script:
@@ -39,7 +44,8 @@ HEDERA_NETWORK=testnet
 ```
 
 ### 3 – Minimal "Hello-Hedera"
-
+```typescript
+```
 
 ### 4 – Conversational Agent Demo
 
@@ -48,15 +54,17 @@ HEDERA_NETWORK=testnet
 ---
 
 ## Key Features
-This version of the Hedera Agent Kit, known as v3, is a complete rewrite of the original version. It is designed to be more flexible and easier to use, with a focus on developer experience. It enables direct API execution through a simple HederaAgentAPI class
+This version of the Hedera Agent Kit, known as v3, is a complete rewrite of the original version. It is designed to be more flexible and easier to use, with a focus on developer experience. It enables direct API execution through a simple HederaAgentAPI class, with an individual LangChain tools calls
+
 
 ---
 
 ## Core Concepts
-| Concept | Purpose |
-|---------|---------|
-| **`HederaAgentKit`** | Core engine bundling tools & network clients |
-| **Operational Modes** | `autonomous` (execute)<br>`returnBytes` (return bytes).
+
+#### Agent Execution Modes
+This tool has two execution modes with AI agents;  autonomous excution and return bytes. If you set:
+ * `mode: AgentMode.RETURN_BYTE` the transaction will be executed, and the bytes to execute the Hedera transaction will be returned. 
+ * `mode: AgentMode.AUTONOMOUS` the transaction will be executed autonomously, using the accountID set (the operator account can be set in the client with `.setOperator(process.env.ACCOUNT_ID!`)
 
 ---
 
