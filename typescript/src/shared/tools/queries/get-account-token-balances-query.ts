@@ -35,7 +35,6 @@ export const getAccountTokenBalancesQuery = async (
       context,
       client,
     );
-    console.log('Getting account token balances for account', normalisedParams.accountId);
     const mirrornodeService = getMirrornodeService(context.mirrornodeService!, client.ledgerId!);
     const tokenBalances = await mirrornodeService.getAccountTokenBalances(
       normalisedParams.accountId,

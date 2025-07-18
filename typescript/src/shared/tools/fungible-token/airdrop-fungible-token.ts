@@ -48,7 +48,6 @@ const airdropFungibleToken = async (
     );
     const tx = HederaBuilder.airdropFungibleToken(normalisedParams);
     const result = await handleTransaction(tx, client, context);
-    console.log('Result from airdrop fungible token', result);
     return result;
   } catch (error) {
     if (error instanceof Error) {

@@ -26,13 +26,15 @@ export const accountTokenBalancesQueryParameters = (_context: Context = {}) =>
 export const topicMessagesQueryParameters = (_context: Context = {}) =>
   z.object({
     topicId: z.string().describe('The topic ID to query.'),
-    startTime: z.iso
+    startTime: z
+      .string()
       .datetime()
       .optional()
       .describe(
         'The start time to query. If set, the messages will be returned after this timestamp.',
       ),
-    endTime: z.iso
+    endTime: z
+      .string()
       .datetime()
       .optional()
       .describe(

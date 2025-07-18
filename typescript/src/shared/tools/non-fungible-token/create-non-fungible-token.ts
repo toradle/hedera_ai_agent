@@ -46,7 +46,6 @@ const createNonFungibleToken = async (
     );
     const tx = HederaBuilder.createNonFungibleToken(normalisedParams);
     const result = await handleTransaction(tx, client, context);
-    console.log('Result from create non-fungible token', result);
     return result;
   } catch (error) {
     if (error instanceof Error) {

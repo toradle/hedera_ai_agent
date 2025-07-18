@@ -44,7 +44,6 @@ const createTopic = async (
     );
     const tx = HederaBuilder.createTopic(normalisedParams);
     const result = await handleTransaction(tx, client, context);
-    console.log('Result from create topic', result);
     return result;
   } catch (error) {
     if (error instanceof Error) {
