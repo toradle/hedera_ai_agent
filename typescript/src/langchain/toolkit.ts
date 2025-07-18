@@ -1,5 +1,5 @@
 import { BaseToolkit } from '@langchain/core/tools';
-import HederaAgentKitTool from './tool.js';
+import HederaAgentKitTool from '@/langchain/tool.js';
 import HederaAgentKitAPI from '@/shared/api.js';
 import tools from '@/shared/tools.js';
 import { type Configuration } from '@/shared/configuration.js';
