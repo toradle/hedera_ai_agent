@@ -1,8 +1,8 @@
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { Client } from '@hashgraph/sdk';
-import { Configuration } from '../shared/configuration';
-import HederaAgentKitAPI from '../shared/api';
-import tools from 'src/shared/tools';
+import { Configuration } from '@/shared/configuration.js';
+import HederaAgentKitAPI from '@/shared/api.js';
+import tools from '@/shared/tools.js';
 import { RequestHandlerExtra } from '@modelcontextprotocol/sdk/shared/protocol.js';
 
 class HederaMCPToolkit extends McpServer {

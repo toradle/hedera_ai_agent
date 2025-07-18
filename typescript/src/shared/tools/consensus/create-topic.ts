@@ -1,13 +1,13 @@
 import { z } from 'zod';
-import type { Context } from '../../configuration';
-import type { Tool } from '../../tools';
+import type { Context } from '@/shared/configuration.js';
+import type { Tool } from '@/shared/tools.js';
 import { Client } from '@hashgraph/sdk';
-import { handleTransaction } from '../../strategies/tx-mode-strategy';
-import HederaBuilder from '../../hedera-utils/hedera-builder';
-import { createTopicParameters } from 'typescript/src/shared/parameter-schemas/hcs.zod';
-import HederaParameterNormaliser from 'typescript/src/shared/hedera-utils/hedera-parameter-normaliser';
-import { getMirrornodeService } from 'typescript/src/shared/hedera-utils/mirrornode/hedera-mirrornode-utils';
-import { IHederaMirrornodeService } from 'typescript/src/shared/hedera-utils/mirrornode/hedera-mirrornode-service.interface';
+import { handleTransaction } from '@/shared/strategies/tx-mode-strategy.js';
+import HederaBuilder from '@/shared/hedera-utils/hedera-builder.js';
+import { createTopicParameters } from '@/shared/parameter-schemas/hcs.zod.js';
+import HederaParameterNormaliser from '@/shared/hedera-utils/hedera-parameter-normaliser.js';
+import { getMirrornodeService } from '@/shared/hedera-utils/mirrornode/hedera-mirrornode-utils.js';
+import { IHederaMirrornodeService } from '@/shared/hedera-utils/mirrornode/hedera-mirrornode-service.interface.js';
 
 const createTopicPrompt = (_context: Context = {}) => `
 This tool will create a new topic on the Hedera network.

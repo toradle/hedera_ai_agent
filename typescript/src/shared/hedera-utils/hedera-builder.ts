@@ -13,13 +13,13 @@ import {
   airdropFungibleTokenParameters,
   createFungibleTokenParametersNormalised,
   createNonFungibleTokenParametersNormalised,
-} from '../parameter-schemas/hts.zod';
+} from '@/shared/parameter-schemas/hts.zod.js';
 import z from 'zod';
-import { transferHbarParameters } from 'typescript/src/shared/parameter-schemas/has.zod';
+import { transferHbarParameters } from '@/shared/parameter-schemas/has.zod.js';
 import {
   createTopicParametersNormalised,
   submitTopicMessageParameters,
-} from 'typescript/src/shared/parameter-schemas/hcs.zod';
+} from '@/shared/parameter-schemas/hcs.zod.js';
 
 export default class HederaBuilder {
   static createFungibleToken(

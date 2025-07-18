@@ -4,13 +4,14 @@ import globals from 'globals';
 import { defineConfig } from 'eslint/config';
 
 export default defineConfig([
-  { ignores: ['dist/**', 'node_modules/**', '.prettierrc.cjs', 'eslint.config.mjs'] },
+  { ignores: ['dist/**', 'node_modules/**', '.prettierrc.cjs', 'eslint.config.mjs', '**/*.d.ts'] },
   {
     files: ['**/*.{js,ts}'],
     languageOptions: {
       globals: {
         ...globals.node,
         ...globals.browser,
+        BigNumber: 'readonly',
       },
       parser: typescriptParser,
       parserOptions: { ecmaVersion: 'latest', sourceType: 'module' },

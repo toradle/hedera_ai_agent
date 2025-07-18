@@ -1,10 +1,10 @@
 import { z } from 'zod';
-import { Context } from 'typescript/src/shared/configuration';
-import { getMirrornodeService } from '../../hedera-utils/mirrornode/hedera-mirrornode-utils';
-import { accountTokenBalancesQueryParameters } from '../../parameter-schemas/account-query.zod';
+import { Context } from '@/shared/configuration.js';
+import { getMirrornodeService } from '@/shared/hedera-utils/mirrornode/hedera-mirrornode-utils.js';
+import { accountTokenBalancesQueryParameters } from '@/shared/parameter-schemas/account-query.zod.js';
 import { Client } from '@hashgraph/sdk';
-import { Tool } from 'typescript/src/shared/tools';
-import HederaParameterNormaliser from '../../hedera-utils/hedera-parameter-normaliser';
+import { Tool } from '@/shared/tools.js';
+import HederaParameterNormaliser from '@/shared/hedera-utils/hedera-parameter-normaliser.js';
 
 export const getAccountTokenBalancesQueryPrompt = (_context: Context = {}) => `
 This tool will return the token balances for a given Hedera account.

@@ -1,11 +1,11 @@
 import { z } from 'zod';
-import type { Context } from '../../configuration';
-import type { Tool } from '../../tools';
+import type { Context } from '@/shared/configuration.js';
+import type { Tool } from '@/shared/tools.js';
 import { Client } from '@hashgraph/sdk';
-import { handleTransaction } from '../../strategies/tx-mode-strategy';
-import HederaBuilder from '../../hedera-utils/hedera-builder';
-import { submitTopicMessageParameters } from 'typescript/src/shared/parameter-schemas/hcs.zod';
-import HederaParameterNormaliser from 'typescript/src/shared/hedera-utils/hedera-parameter-normaliser';
+import { handleTransaction } from '@/shared/strategies/tx-mode-strategy.js';
+import HederaBuilder from '@/shared/hedera-utils/hedera-builder.js';
+import { submitTopicMessageParameters } from '@/shared/parameter-schemas/hcs.zod.js';
+import HederaParameterNormaliser from '@/shared/hedera-utils/hedera-parameter-normaliser.js';
 
 const submitTopicMessagePrompt = (_context: Context = {}) => `
 This tool will submit a message to a topic on the Hedera network.

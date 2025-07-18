@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { Context } from '../configuration';
+import { Context } from '@/shared/configuration.js';
 
 // add a description to the parameters
 export const accountQueryParameters = (_context: Context = {}) =>

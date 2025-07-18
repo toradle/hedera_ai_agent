@@ -1,4 +1,4 @@
-import { Context } from '../configuration';
+import { Context } from '@/shared/configuration.js';
 import { z } from 'zod';
 
 export const createFungibleTokenParameters = (_context: Context = {}) =>

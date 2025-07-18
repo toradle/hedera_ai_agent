@@ -5,7 +5,7 @@ import {
   TokenBalancesResponse,
   TopicMessagesResponse,
   TokenDetails,
-} from './types';
+} from './types.js';
 
 export interface IHederaMirrornodeService {
   getAccount(accountId: string): Promise<AccountResponse>;

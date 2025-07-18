@@ -1,11 +1,11 @@
 import { z } from 'zod';
-import type { Context } from '../../configuration';
-import type { Tool } from '../../tools';
+import type { Context } from '@/shared/configuration.js';
+import type { Tool } from '@/shared/tools.js';
 import { Client } from '@hashgraph/sdk';
-import { accountBalanceQueryParameters } from '../../parameter-schemas/account-query.zod';
+import { accountBalanceQueryParameters } from '@/shared/parameter-schemas/account-query.zod.js';
 import BigNumber from 'bignumber.js';
-import { getMirrornodeService } from '../../hedera-utils/mirrornode/hedera-mirrornode-utils';
-import HederaParameterNormaliser from '../../hedera-utils/hedera-parameter-normaliser';
+import { getMirrornodeService } from '@/shared/hedera-utils/mirrornode/hedera-mirrornode-utils.js';
+import HederaParameterNormaliser from '@/shared/hedera-utils/hedera-parameter-normaliser.js';
 
 export const getHbarBalanceQueryPrompt = (_context: Context = {}) => `
 This tool will return the HBAR balance in tinybar for a given Hedera account.

@@ -1,7 +1,7 @@
 import { Client } from '@hashgraph/sdk';
 
-import type { Context } from './configuration';
-import tools, { Tool } from './tools';
+import type { Context } from './configuration.js';
+import tools, { Tool } from './tools.js';
 
 class HederaAgentAPI {
   client: Client;

@@ -1,9 +1,9 @@
 import { z } from 'zod';
 import { Client } from '@hashgraph/sdk';
-import { Context } from '../../configuration';
-import { getMirrornodeService } from '../../hedera-utils/mirrornode/hedera-mirrornode-utils';
-import { accountQueryParameters } from '../../parameter-schemas/account-query.zod';
-import { Tool } from '../../tools';
+import { Context } from '@/shared/configuration.js';
+import { getMirrornodeService } from '@/shared/hedera-utils/mirrornode/hedera-mirrornode-utils.js';
+import { accountQueryParameters } from '@/shared/parameter-schemas/account-query.zod.js';
+import { Tool } from '@/shared/tools.js';
 
 export const getAccountQueryPrompt = (_context: Context = {}) => `
 This tool will return the account information for a given Hedera account.

@@ -1,5 +1,5 @@
 import { LedgerId } from '@hashgraph/sdk';
-import { IHederaMirrornodeService } from './hedera-mirrornode-service.interface';
+import { IHederaMirrornodeService } from './hedera-mirrornode-service.interface.js';
 import {
   AccountAPIResponse,
   AccountResponse,
@@ -10,7 +10,7 @@ import {
   TopicMessagesAPIResponse,
   TopicMessagesQueryParams,
   TopicMessagesResponse,
-} from './types';
+} from './types.js';
 import BigNumber from 'bignumber.js';
 
 export class HederaMirrornodeServiceDefaultImpl implements IHederaMirrornodeService {

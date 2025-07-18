@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { Context } from '../configuration';
+import { Context } from '@/shared/configuration.js';
 
 export const createTopicParameters = (_context: Context = {}) => {
   return z.object({

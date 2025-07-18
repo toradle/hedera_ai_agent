@@ -1,4 +1,4 @@
-import HederaAgentLangchainToolkit from '../langchain/toolkit';
+import HederaAgentLangchainToolkit from '@/langchain/toolkit.js';
 import { ChatOpenAI } from '@langchain/openai';
 import type { ChatPromptTemplate } from '@langchain/core/prompts';
 import { pull } from 'langchain/hub';
@@ -7,10 +7,10 @@ import { Client, LedgerId, PrivateKey } from '@hashgraph/sdk';
 import * as dotenv from 'dotenv';
 
 dotenv.config();
-import { AgentMode } from '../shared/configuration';
-import { GET_ACCOUNT_TOKEN_BALANCES_QUERY_TOOL } from '../shared/tools/queries/get-account-token-balances-query';
-import { GET_HBAR_BALANCE_QUERY_TOOL } from '../shared/tools/queries/get-hbar-balance-query';
-import { HederaMirrornodeServiceDefaultImpl } from 'typescript/src/shared/hedera-utils/mirrornode/hedera-mirrornode-service-default-impl';
+import { AgentMode } from '@/shared/configuration.js';
+import { GET_ACCOUNT_TOKEN_BALANCES_QUERY_TOOL } from '@/shared/tools/queries/get-account-token-balances-query.js';
+import { GET_HBAR_BALANCE_QUERY_TOOL } from '@/shared/tools/queries/get-hbar-balance-query.js';
+import { HederaMirrornodeServiceDefaultImpl } from '@/shared/hedera-utils/mirrornode/hedera-mirrornode-service-default-impl.js';
 
 const llm = new ChatOpenAI({
   model: 'gpt-4o-mini',

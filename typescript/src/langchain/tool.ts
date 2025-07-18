@@ -2,7 +2,7 @@ import { z } from 'zod';
 import { StructuredTool } from '@langchain/core/tools';
 import { CallbackManagerForToolRun } from '@langchain/core/callbacks/manager';
 import { RunnableConfig } from '@langchain/core/runnables';
-import HederaAgentKitAPI from '../shared/api';
+import HederaAgentKitAPI from '@/shared/api.js';
 
 class HederaAgentKitTool extends StructuredTool {
   stripeAPI: HederaAgentKitAPI;
