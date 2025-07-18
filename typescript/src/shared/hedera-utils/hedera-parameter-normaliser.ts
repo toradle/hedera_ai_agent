@@ -2,16 +2,12 @@
 
 import {
   airdropFungibleTokenParameters,
-  airdropFungibleTokenParametersNormalised,
   createFungibleTokenParameters,
   createFungibleTokenParametersNormalised,
   createNonFungibleTokenParameters,
   createNonFungibleTokenParametersNormalised,
 } from '@/shared/parameter-schemas/hts.zod.js';
-import {
-  transferHbarParameters,
-  transferHbarParametersNormalised,
-} from '@/shared/parameter-schemas/has.zod.js';
+import { transferHbarParameters } from '@/shared/parameter-schemas/has.zod.js';
 import {
   createTopicParameters,
   createTopicParametersNormalised,
@@ -28,6 +24,7 @@ import { IHederaMirrornodeService } from '@/shared/hedera-utils/mirrornode/heder
 import { toBaseUnit } from '@/shared/hedera-utils/decimals-utils.js';
 import Long from 'long';
 import { TokenTransferMinimalParams, TransferHbarInput } from '@/shared/hedera-utils/types.js';
+import { AccountResolver } from '@/shared/utils/account-resolver.js';
 
 export default class HederaParameterNormaliser {
   static async normaliseCreateFungibleTokenParams(
@@ -36,15 +33,14 @@ export default class HederaParameterNormaliser {
     client: Client,
     mirrorNode: IHederaMirrornodeService,
   ) {
-    const accountId = context.accountId || client.operatorAccountId?.toString();
-    if (!accountId) throw new Error('Account ID must be defined');
+    const defaultAccountId = AccountResolver.getDefaultAccount(context, client);
 
     const normalized: z.infer<ReturnType<typeof createFungibleTokenParametersNormalised>> = {
       ...params,
       supplyType: TokenSupplyType.Finite, // defaults to finite supply
     };
 
-    const treasuryAccountId = params.treasuryAccountId ?? accountId;
+    const treasuryAccountId = params.treasuryAccountId ?? defaultAccountId;
 
     if (!treasuryAccountId) {
       throw new Error('Must include treasury account ID');
@@ -69,12 +65,11 @@ export default class HederaParameterNormaliser {
     }
 
     const publicKey =
-      (await mirrorNode
-        .getAccount(accountId)
-        .then(r => PublicKey.fromString(r.accountPublicKey))) ?? client.operatorPublicKey;
+      (await mirrorNode.getAccount(defaultAccountId).then(r => r.accountPublicKey)) ??
+      client.operatorPublicKey?.toStringDer();
 
     if (params.isSupplyKey === true) {
-      normalized.supplyKey = publicKey;
+      normalized.supplyKey = PublicKey.fromString(publicKey);
     }
 
     return {
@@ -93,24 +88,21 @@ export default class HederaParameterNormaliser {
     client: Client,
     mirrorNode: IHederaMirrornodeService,
   ) {
-    const accountId = context.accountId || client.operatorAccountId?.toString();
-    if (!accountId) throw new Error('Account ID must be defined');
+    const defaultAccountId = AccountResolver.getDefaultAccount(context, client);
 
-    const treasuryAccountId = params.treasuryAccountId || accountId;
+    const treasuryAccountId = params.treasuryAccountId || defaultAccountId;
     if (!treasuryAccountId) throw new Error('Must include treasury account ID');
 
     const publicKey =
-      (await mirrorNode
-        .getAccount(accountId)
-        .then(r => PublicKey.fromString(r.accountPublicKey))) ?? client.operatorPublicKey;
+      (await mirrorNode.getAccount(defaultAccountId).then(r => r.accountPublicKey)) ??
+      client.operatorPublicKey?.toStringDer();
 
     const maxSupply = params.maxSupply ?? 100;
-
     const normalized: z.infer<ReturnType<typeof createNonFungibleTokenParametersNormalised>> = {
       ...params,
       treasuryAccountId,
       maxSupply,
-      supplyKey: publicKey, // the supply key is mandatory in the case of NFT
+      supplyKey: PublicKey.fromString(publicKey), // the supply key is mandatory in the case of NFT
       supplyType: TokenSupplyType.Finite, // NFTs supply must be finite
     };
 
@@ -121,12 +113,8 @@ export default class HederaParameterNormaliser {
     params: z.infer<ReturnType<typeof transferHbarParameters>>,
     context: Context,
     client: Client,
-  ): z.infer<ReturnType<typeof transferHbarParametersNormalised>> {
-    const sourceAccountId =
-      params.sourceAccountId ?? context.accountId ?? client.operatorAccountId?.toString();
-    if (!sourceAccountId) {
-      throw new Error('Must include source account ID');
-    }
+  ) {
+    const sourceAccountId = AccountResolver.resolveAccount(params.sourceAccountId, context, client);
 
     const hbarTransfers: TransferHbarInput[] = [];
 
@@ -163,13 +151,8 @@ export default class HederaParameterNormaliser {
     context: Context,
     client: Client,
     mirrorNode: IHederaMirrornodeService,
-  ): Promise<z.infer<ReturnType<typeof airdropFungibleTokenParametersNormalised>>> {
-    const sourceAccountId =
-      params.sourceAccountId ?? context.accountId ?? client.operatorAccountId?.toString();
-
-    if (!sourceAccountId) {
-      throw new Error('Must include source account ID');
-    }
+  ) {
+    const sourceAccountId = AccountResolver.resolveAccount(params.sourceAccountId, context, client);
 
     const tokenDetails = await mirrorNode.getTokenDetails(params.tokenId);
     const tokenDecimals = parseInt(tokenDetails.decimals, 10);
@@ -213,13 +196,11 @@ export default class HederaParameterNormaliser {
     client: Client,
     mirrorNode: IHederaMirrornodeService,
   ) {
-    const accountId = context.accountId || client.operatorAccountId?.toString();
-    if (!accountId) throw new Error('Account ID must be defined');
+    const defaultAccountId = AccountResolver.getDefaultAccount(context, client);
 
     const publicKey =
-      (await mirrorNode
-        .getAccount(accountId)
-        .then(r => PublicKey.fromString(r.accountPublicKey))) ?? client.operatorPublicKey;
+      (await mirrorNode.getAccount(defaultAccountId).then(r => r.accountPublicKey)) ??
+      client.operatorPublicKey?.toStringDer();
 
     const normalised: z.infer<ReturnType<typeof createTopicParametersNormalised>> = { ...params };
 
@@ -227,7 +208,7 @@ export default class HederaParameterNormaliser {
       if (!publicKey) {
         throw new Error('Could not determine default account ID for submit key');
       }
-      normalised.submitKey = publicKey;
+      normalised.submitKey = PublicKey.fromString(publicKey);
     }
 
     return normalised;
@@ -235,13 +216,12 @@ export default class HederaParameterNormaliser {
 
   static normaliseSubmitTopicMessageParams(
     params: z.infer<ReturnType<typeof submitTopicMessageParametersNormalised>>,
-    _context: Context,
-    _client: Client,
+    context: Context,
+    client: Client,
   ) {
-    // currently no normalisation is needed
-    return {
-      ...params,
-    };
+    const sender = AccountResolver.resolveAccount(params.sender, context, client);
+    params.sender = sender;
+    return params;
   }
 
   static normaliseHbarBalanceParams(
@@ -249,10 +229,7 @@ export default class HederaParameterNormaliser {
     context: Context,
     client: Client,
   ) {
-    const accountId = params.accountId || context.accountId || client.operatorAccountId?.toString();
-    if (!accountId) {
-      throw new Error('Account ID is required');
-    }
+    const accountId = AccountResolver.resolveAccount(params.accountId, context, client);
     return {
       ...params,
       accountId,
@@ -264,10 +241,7 @@ export default class HederaParameterNormaliser {
     context: Context,
     client: Client,
   ) {
-    const accountId = params.accountId || context.accountId || client.operatorAccountId?.toString();
-    if (!accountId) {
-      throw new Error('Account ID is required');
-    }
+    const accountId = AccountResolver.resolveAccount(params.accountId, context, client);
     return {
       ...params,
       accountId,

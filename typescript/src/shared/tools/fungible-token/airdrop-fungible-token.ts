@@ -7,18 +7,31 @@ import { handleTransaction } from '@/shared/strategies/tx-mode-strategy.js';
 import { airdropFungibleTokenParameters } from '@/shared/parameter-schemas/hts.zod.js';
 import HederaBuilder from '@/shared/hedera-utils/hedera-builder.js';
 import { getMirrornodeService } from '@/shared/hedera-utils/mirrornode/hedera-mirrornode-utils.js';
+import { PromptGenerator } from '@/shared/utils/prompt-generator.js';
 
-const airdropFungibleTokenPrompt = (_context: Context = {}) => `
+const airdropFungibleTokenPrompt = (context: Context = {}) => {
+  const contextSnippet = PromptGenerator.getContextSnippet(context);
+  const sourceAccountDesc = PromptGenerator.getAccountParameterDescription(
+    'sourceAccountId',
+    context,
+  );
+  const usageInstructions = PromptGenerator.getParameterUsageInstructions();
+
+  return `
+${contextSnippet}
+
 This tool will airdrop a fungible token on Hedera.
 
-It takes five arguments:
-- tokenId (str): The id of the token.
-- amount (int): The amount of tokens to airdrop - given by user in display units.
-- sourceAccountId (str, optional): The account to airdrop the token from. If the user does not explicitly provide a value for this field, do not include it at all in the request — leave it undefined. Do not set it to null or any placeholder string.
--  recipients (array): A list of recipient objects, each containing:
-  - accountId (string): The recipient's account ID (e.g., "0.0.1234").
-  - amount (number or string): The amount of tokens to send to that recipient (in base units).
+Parameters:
+- tokenId (str, required): The id of the token
+- ${sourceAccountDesc}
+- recipients (array, required): A list of recipient objects, each containing:
+  - accountId (string): The recipient's account ID (e.g., "0.0.1234")
+  - amount (number or string): The amount of tokens to send to that recipient (in base units)
+- transactionMemo (str, optional): Optional memo for the transaction
+${usageInstructions}
 `;
+};
 
 const airdropFungibleToken = async (
   client: Client,

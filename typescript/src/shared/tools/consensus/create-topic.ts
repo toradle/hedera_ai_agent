@@ -8,14 +8,23 @@ import { createTopicParameters } from '@/shared/parameter-schemas/hcs.zod.js';
 import HederaParameterNormaliser from '@/shared/hedera-utils/hedera-parameter-normaliser.js';
 import { getMirrornodeService } from '@/shared/hedera-utils/mirrornode/hedera-mirrornode-utils.js';
 import { IHederaMirrornodeService } from '@/shared/hedera-utils/mirrornode/hedera-mirrornode-service.interface.js';
+import { PromptGenerator } from '@/shared/utils/prompt-generator.js';
 
-const createTopicPrompt = (_context: Context = {}) => `
+const createTopicPrompt = (context: Context = {}) => {
+  const contextSnippet = PromptGenerator.getContextSnippet(context);
+  const usageInstructions = PromptGenerator.getParameterUsageInstructions();
+
+  return `
+${contextSnippet}
+
 This tool will create a new topic on the Hedera network.
 
-It takes the following optional arguments:
-- topicMemo (str, optional): A memo for the topic.
-- isSubmitKey (bool, optional): Whether to set a submit key for the topic. Set to true is user wants to set a submit key, otherwise false.
+Parameters:
+- topicMemo (str, optional): A memo for the topic
+- isSubmitKey (bool, optional): Whether to set a submit key for the topic. Set to true if user wants to set a submit key, otherwise false
+${usageInstructions}
 `;
+};
 
 const createTopic = async (
   client: Client,

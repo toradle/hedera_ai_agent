@@ -4,13 +4,22 @@ import { Context } from '@/shared/configuration.js';
 import { getMirrornodeService } from '@/shared/hedera-utils/mirrornode/hedera-mirrornode-utils.js';
 import { accountQueryParameters } from '@/shared/parameter-schemas/account-query.zod.js';
 import { Tool } from '@/shared/tools.js';
+import { PromptGenerator } from '@/shared/utils/prompt-generator.js';
 
-export const getAccountQueryPrompt = (_context: Context = {}) => `
+export const getAccountQueryPrompt = (context: Context = {}) => {
+  const contextSnippet = PromptGenerator.getContextSnippet(context);
+  const usageInstructions = PromptGenerator.getParameterUsageInstructions();
+
+  return `
+${contextSnippet}
+
 This tool will return the account information for a given Hedera account.
 
-It takes one argument:
-- accountId (str): The account ID to query.
+Parameters:
+- accountId (str, required): The account ID to query
+${usageInstructions}
 `;
+};
 
 export const getAccountQuery = async (
   client: Client,

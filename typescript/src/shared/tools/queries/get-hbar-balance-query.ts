@@ -6,14 +6,23 @@ import { accountBalanceQueryParameters } from '@/shared/parameter-schemas/accoun
 import BigNumber from 'bignumber.js';
 import { getMirrornodeService } from '@/shared/hedera-utils/mirrornode/hedera-mirrornode-utils.js';
 import HederaParameterNormaliser from '@/shared/hedera-utils/hedera-parameter-normaliser.js';
+import { PromptGenerator } from '@/shared/utils/prompt-generator.js';
 
-export const getHbarBalanceQueryPrompt = (_context: Context = {}) => `
+export const getHbarBalanceQueryPrompt = (context: Context = {}) => {
+  const contextSnippet = PromptGenerator.getContextSnippet(context);
+  const accountDesc = PromptGenerator.getAccountParameterDescription('accountId', context);
+  const usageInstructions = PromptGenerator.getParameterUsageInstructions();
+
+  return `
+${contextSnippet}
+
 This tool will return the HBAR balance in tinybar for a given Hedera account.
-${_context.accountId ? '\nIf accountId is not provided, use empty string.' : ''}
 
-It takes one argument:
-- accountId (str, optional): The account ID to query.
+Parameters:
+- ${accountDesc}
+${usageInstructions}
 `;
+};
 
 export const getHbarBalanceQuery = async (
   client: Client,
