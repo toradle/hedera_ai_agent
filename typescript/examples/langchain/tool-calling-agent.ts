@@ -1,11 +1,9 @@
-import HederaAgentLangchainToolkit from '@/langchain/toolkit.js';
+import { HederaLangchainToolkit, AgentMode } from 'hkav3';
 import { ChatOpenAI } from '@langchain/openai';
-import type { ChatPromptTemplate } from '@langchain/core/prompts';
-import { pull } from 'langchain/hub';
-import { AgentExecutor, createStructuredChatAgent } from 'langchain/agents';
+import { ChatPromptTemplate } from '@langchain/core/prompts';
+import { AgentExecutor, createToolCallingAgent } from 'langchain/agents';
 import { BufferMemory } from 'langchain/memory';
 import { Client, PrivateKey } from '@hashgraph/sdk';
-import { AgentMode } from '@/shared/configuration.js';
 import prompts from 'prompts';
 import * as dotenv from 'dotenv';
 dotenv.config();
@@ -23,7 +21,7 @@ async function bootstrap(): Promise<void> {
   );
 
   // Prepare Hedera toolkit (load all tools by default)
-  const hederaAgentToolkit = new HederaAgentLangchainToolkit({
+  const hederaAgentToolkit = new HederaLangchainToolkit({
     client,
     configuration: {
       tools: [], // load every available tool
@@ -34,16 +32,22 @@ async function bootstrap(): Promise<void> {
   });
 
   // Load the structured chat prompt template
-  const prompt = await pull<ChatPromptTemplate>('hwchase17/structured-chat-agent');
+  const prompt = ChatPromptTemplate.fromMessages([
+    ['system', 'You are a helpful assistant'],
+    ['placeholder', '{chat_history}'],
+    ['human', '{input}'],
+    ['placeholder', '{agent_scratchpad}'],
+  ]);
 
   // Fetch tools from toolkit
   const tools = hederaAgentToolkit.getTools();
 
-  const agent = await createStructuredChatAgent({
+  // Create the underlying agent
+  const agent = createToolCallingAgent({
     llm,
     tools,
     prompt,
-  });
+  } as any);
 
   // In-memory conversation history
   const memory = new BufferMemory({
@@ -59,7 +63,7 @@ async function bootstrap(): Promise<void> {
     tools,
     memory,
     returnIntermediateSteps: false,
-  });
+  } as any);
 
   console.log('Hedera Agent CLI Chatbot — type "exit" to quit');
 

@@ -1,13 +1,12 @@
-import HederaAgentLangchainToolkit from '@/langchain/toolkit.js';
-import { ChatOpenAI } from '@langchain/openai';
-import type { ChatPromptTemplate } from '@langchain/core/prompts';
-import { pull } from 'langchain/hub';
-import { AgentExecutor, createStructuredChatAgent } from 'langchain/agents';
-import { BufferMemory } from 'langchain/memory';
 import { Client, PrivateKey } from '@hashgraph/sdk';
-import { AgentMode } from '@/shared/configuration.js';
-import prompts from 'prompts';
+import { ChatPromptTemplate } from '@langchain/core/prompts';
+import { ChatOpenAI } from '@langchain/openai';
 import * as dotenv from 'dotenv';
+import { AgentMode, HederaLangchainToolkit } from 'hkav3';
+import { AgentExecutor, createStructuredChatAgent } from 'langchain/agents';
+import { pull } from 'langchain/hub';
+import { BufferMemory } from 'langchain/memory';
+import prompts from 'prompts';
 dotenv.config();
 
 async function bootstrap(): Promise<void> {
@@ -23,7 +22,7 @@ async function bootstrap(): Promise<void> {
   );
 
   // Prepare Hedera toolkit (load all tools by default)
-  const hederaAgentToolkit = new HederaAgentLangchainToolkit({
+  const hederaAgentToolkit = new HederaLangchainToolkit({
     client,
     configuration: {
       tools: [], // load every available tool
@@ -43,7 +42,7 @@ async function bootstrap(): Promise<void> {
     llm,
     tools,
     prompt,
-  });
+  } as any);
 
   // In-memory conversation history
   const memory = new BufferMemory({
@@ -59,7 +58,7 @@ async function bootstrap(): Promise<void> {
     tools,
     memory,
     returnIntermediateSteps: false,
-  });
+  } as any);
 
   console.log('Hedera Agent CLI Chatbot — type "exit" to quit');
 
