@@ -66,6 +66,9 @@ This tool has two execution modes with AI agents;  autonomous excution and retur
  * `mode: AgentMode.RETURN_BYTE` the transaction will be executed, and the bytes to execute the Hedera transaction will be returned. 
  * `mode: AgentMode.AUTONOMOUS` the transaction will be executed autonomously, using the accountID set (the operator account can be set in the client with `.setOperator(process.env.ACCOUNT_ID!`)
 
+ #### Hedera Mirror Node Queries
+ 
+
 ---
 
 ## Available Hedera Tools
