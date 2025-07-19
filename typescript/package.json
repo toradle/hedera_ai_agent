@@ -2,6 +2,13 @@
   "name": "hedera-agent-kit",
   "version": "1.0.0",
   "main": "dist/index.js",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js"
+    }
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\"",
     "build": "tsup",
