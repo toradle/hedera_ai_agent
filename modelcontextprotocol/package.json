@@ -30,7 +30,7 @@
     "@stripe/agent-toolkit": "^0.7.9",
     "@types/bn.js": "^5.2.0",
     "colors": "^1.4.0",
-    "hkav3": "file:../typescript/dist"
+    "hedera-agent-kit": "file:../typescript/dist"
   },
   "keywords": [
     "mcp",
