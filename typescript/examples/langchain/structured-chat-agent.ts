@@ -40,7 +40,7 @@ async function bootstrap(): Promise<void> {
 
   const agent = await createStructuredChatAgent({
     llm,
-    tools: tools as any,
+    tools: tools,
     prompt,
   });
 
