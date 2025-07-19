@@ -1,4 +1,4 @@
-import { Context } from '@/shared/configuration.js';
+import { Context } from '@/shared/configuration';
 import { z } from 'zod';
 import { AccountId, Hbar } from '@hashgraph/sdk';
 import BigNumber from 'bignumber.js';

@@ -6,25 +6,25 @@ import {
   createFungibleTokenParametersNormalised,
   createNonFungibleTokenParameters,
   createNonFungibleTokenParametersNormalised,
-} from '@/shared/parameter-schemas/hts.zod.js';
-import { transferHbarParameters } from '@/shared/parameter-schemas/has.zod.js';
+} from '@/shared/parameter-schemas/hts.zod';
+import { transferHbarParameters } from '@/shared/parameter-schemas/has.zod';
 import {
   createTopicParameters,
   createTopicParametersNormalised,
   submitTopicMessageParametersNormalised,
-} from '@/shared/parameter-schemas/hcs.zod.js';
+} from '@/shared/parameter-schemas/hcs.zod';
 import { Client, Hbar, PublicKey, TokenSupplyType } from '@hashgraph/sdk';
-import { Context } from '@/shared/configuration.js';
+import { Context } from '@/shared/configuration';
 import z from 'zod';
 import {
   accountBalanceQueryParameters,
   accountTokenBalancesQueryParameters,
-} from '@/shared/parameter-schemas/account-query.zod.js';
-import { IHederaMirrornodeService } from '@/shared/hedera-utils/mirrornode/hedera-mirrornode-service.interface.js';
-import { toBaseUnit } from '@/shared/hedera-utils/decimals-utils.js';
+} from '@/shared/parameter-schemas/account-query.zod';
+import { IHederaMirrornodeService } from '@/shared/hedera-utils/mirrornode/hedera-mirrornode-service.interface';
+import { toBaseUnit } from '@/shared/hedera-utils/decimals-utils';
 import Long from 'long';
-import { TokenTransferMinimalParams, TransferHbarInput } from '@/shared/hedera-utils/types.js';
-import { AccountResolver } from '@/shared/utils/account-resolver.js';
+import { TokenTransferMinimalParams, TransferHbarInput } from '@/shared/hedera-utils/types';
+import { AccountResolver } from '@/shared/utils/account-resolver';
 
 export default class HederaParameterNormaliser {
   static async normaliseCreateFungibleTokenParams(

@@ -4,40 +4,22 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "langchain:structured-chat-agent": "ts-node structured-chat-agent.ts",
-    "langchain:tool-calling-agent": "ts-node tool-calling-agent.ts",
-    "langchain:cli-chat": "ts-node cli-chat.ts"
+    "langchain:tool-calling-agent": "ts-node tool-calling-agent.ts"
   },
   "dependencies": {
     "@hashgraph/sdk": "^2.68.0",
     "@langchain/core": "^0.3.62",
-    "@modelcontextprotocol/sdk": "^1.16.0",
-    "bignumber.js": "^9.3.1",
     "dotenv": "^17.2.0",
-    "hedera-agent-kit": "file:../../dist"
+    "hedera-agent-kit": "file:../../dist",
+    "@langchain/openai": "^0.5.18",
+    "langchain": "0.3.29",
+    "prompts": "^2.4.2"
   },
   "author": "",
   "license": "ISC",
   "description": "",
   "devDependencies": {
-    "@eslint/js": "^9.31.0",
-    "@langchain/openai": "^0.5.18",
     "@types/prompts": "^2.4.9",
-    "@typescript-eslint/eslint-plugin": "^8.37.0",
-    "@typescript-eslint/parser": "^8.37.0",
-    "esbuild-plugin-alias": "^0.2.1",
-    "eslint": "^9.31.0",
-    "eslint-config-prettier": "^10.1.5",
-    "eslint-plugin-prettier": "^5.5.1",
-    "langchain": "0.3.29",
-    "prettier": "^3.6.2",
-    "prompts": "^2.4.2",
-    "ts-node": "^10.9.2",
-    "tsconfig-paths": "^4.2.0",
-    "typescript": "^5.8.3",
-    "typescript-eslint": "^8.37.0"
-  },
-  "resolutions": {
-    "@langchain/core": "0.3.29",
-    "langchain": "0.3.29"
+    "ts-node": "^10.9.2"
   }
 }

@@ -1,6 +1,6 @@
 import { LedgerId } from '@hashgraph/sdk';
-import { HederaMirrornodeServiceDefaultImpl } from './hedera-mirrornode-service-default-impl.js';
-import { IHederaMirrornodeService } from './hedera-mirrornode-service.interface.js';
+import { HederaMirrornodeServiceDefaultImpl } from './hedera-mirrornode-service-default-impl';
+import { IHederaMirrornodeService } from './hedera-mirrornode-service.interface';
 
 export const getMirrornodeService = (
   mirrornodeService: IHederaMirrornodeService | undefined,

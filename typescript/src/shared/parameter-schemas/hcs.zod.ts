@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { Context } from '@/shared/configuration.js';
+import { Context } from '@/shared/configuration';
 import { PublicKey } from '@hashgraph/sdk';
 
 export const createTopicParameters = (_context: Context = {}) => {

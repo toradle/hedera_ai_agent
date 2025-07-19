@@ -1,30 +1,30 @@
 import { z } from 'zod';
 import { Client } from '@hashgraph/sdk';
-import { Context } from './configuration.js';
+import { Context } from './configuration';
 import createNonFungibleTokenTool, {
   CREATE_NON_FUNGIBLE_TOKEN_TOOL,
-} from './tools/non-fungible-token/create-non-fungible-token.js';
+} from './tools/non-fungible-token/create-non-fungible-token';
 import createFungibleTokenTool, {
   CREATE_FUNGIBLE_TOKEN_TOOL,
-} from './tools/fungible-token/create-fungible-token.js';
-import transferHbarTool, { TRANSFER_HBAR_TOOL } from './tools/account/transfer-hbar.js';
+} from './tools/fungible-token/create-fungible-token';
+import transferHbarTool, { TRANSFER_HBAR_TOOL } from './tools/account/transfer-hbar';
 import airdropFungibleToken, {
   AIRDROP_FUNGIBLE_TOKEN_TOOL,
-} from './tools/fungible-token/airdrop-fungible-token.js';
+} from './tools/fungible-token/airdrop-fungible-token';
 import submitTopicMessageTool, {
   SUBMIT_TOPIC_MESSAGE_TOOL,
-} from './tools/consensus/submit-topic-message.js';
+} from './tools/consensus/submit-topic-message';
 import getHbarBalanceQuery, {
   GET_HBAR_BALANCE_QUERY_TOOL,
-} from './tools/queries/get-hbar-balance-query.js';
+} from './tools/queries/get-hbar-balance-query';
 import getAccountTokenBalancesQuery, {
   GET_ACCOUNT_TOKEN_BALANCES_QUERY_TOOL,
-} from './tools/queries/get-account-token-balances-query.js';
-import getAccountQuery, { GET_ACCOUNT_QUERY_TOOL } from './tools/queries/get-account-query.js';
+} from './tools/queries/get-account-token-balances-query';
+import getAccountQuery, { GET_ACCOUNT_QUERY_TOOL } from './tools/queries/get-account-query';
 import getTopicMessagesQuery, {
   GET_TOPIC_MESSAGES_QUERY_TOOL,
-} from './tools/queries/get-topic-messages-query.js';
-import createTopicTool, { CREATE_TOPIC_TOOL } from './tools/consensus/create-topic.js';
+} from './tools/queries/get-topic-messages-query';
+import createTopicTool, { CREATE_TOPIC_TOOL } from './tools/consensus/create-topic';
 
 export type Tool = {
   method: string;

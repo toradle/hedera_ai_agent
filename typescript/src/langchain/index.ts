@@ -1,3 +1,3 @@
-import HederaLangchainToolkit from './toolkit.js';
+import HederaLangchainToolkit from './toolkit';
 
 export { HederaLangchainToolkit };

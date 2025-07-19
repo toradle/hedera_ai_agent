@@ -1,2 +1,2 @@
-import HederaMCPToolkit from './toolkit.js';
+import HederaMCPToolkit from './toolkit';
 export { HederaMCPToolkit };

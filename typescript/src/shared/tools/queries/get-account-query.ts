@@ -1,10 +1,10 @@
 import { z } from 'zod';
 import { Client } from '@hashgraph/sdk';
-import { Context } from '@/shared/configuration.js';
-import { getMirrornodeService } from '@/shared/hedera-utils/mirrornode/hedera-mirrornode-utils.js';
-import { accountQueryParameters } from '@/shared/parameter-schemas/account-query.zod.js';
-import { Tool } from '@/shared/tools.js';
-import { PromptGenerator } from '@/shared/utils/prompt-generator.js';
+import { Context } from '@/shared/configuration';
+import { getMirrornodeService } from '@/shared/hedera-utils/mirrornode/hedera-mirrornode-utils';
+import { accountQueryParameters } from '@/shared/parameter-schemas/account-query.zod';
+import { Tool } from '@/shared/tools';
+import { PromptGenerator } from '@/shared/utils/prompt-generator';
 
 export const getAccountQueryPrompt = (context: Context = {}) => {
   const contextSnippet = PromptGenerator.getContextSnippet(context);

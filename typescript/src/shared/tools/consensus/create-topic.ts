@@ -1,14 +1,14 @@
 import { z } from 'zod';
-import type { Context } from '@/shared/configuration.js';
-import type { Tool } from '@/shared/tools.js';
+import type { Context } from '@/shared/configuration';
+import type { Tool } from '@/shared/tools';
 import { Client } from '@hashgraph/sdk';
-import { handleTransaction } from '@/shared/strategies/tx-mode-strategy.js';
-import HederaBuilder from '@/shared/hedera-utils/hedera-builder.js';
-import { createTopicParameters } from '@/shared/parameter-schemas/hcs.zod.js';
-import HederaParameterNormaliser from '@/shared/hedera-utils/hedera-parameter-normaliser.js';
-import { getMirrornodeService } from '@/shared/hedera-utils/mirrornode/hedera-mirrornode-utils.js';
-import { IHederaMirrornodeService } from '@/shared/hedera-utils/mirrornode/hedera-mirrornode-service.interface.js';
-import { PromptGenerator } from '@/shared/utils/prompt-generator.js';
+import { handleTransaction } from '@/shared/strategies/tx-mode-strategy';
+import HederaBuilder from '@/shared/hedera-utils/hedera-builder';
+import { createTopicParameters } from '@/shared/parameter-schemas/hcs.zod';
+import HederaParameterNormaliser from '@/shared/hedera-utils/hedera-parameter-normaliser';
+import { getMirrornodeService } from '@/shared/hedera-utils/mirrornode/hedera-mirrornode-utils';
+import { IHederaMirrornodeService } from '@/shared/hedera-utils/mirrornode/hedera-mirrornode-service.interface';
+import { PromptGenerator } from '@/shared/utils/prompt-generator';
 
 const createTopicPrompt = (context: Context = {}) => {
   const contextSnippet = PromptGenerator.getContextSnippet(context);

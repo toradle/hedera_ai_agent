@@ -1,5 +1,5 @@
-import { Context, AgentMode } from '@/shared/configuration.js';
-import { AccountResolver } from './account-resolver.js';
+import { Context, AgentMode } from '@/shared/configuration';
+import { AccountResolver } from './account-resolver';
 
 export class PromptGenerator {
   /**
