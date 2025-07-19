@@ -1,6 +1,7 @@
 {
   "name": "hedera-agent-kit",
   "version": "1.0.0",
+  "main": "dist/index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\"",
     "build": "tsup",
