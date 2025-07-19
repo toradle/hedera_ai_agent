@@ -1,4 +1,4 @@
-import { HederaLangchainToolkit, AgentMode } from 'hkav3';
+import { HederaLangchainToolkit, AgentMode } from 'hedera-agent-kit';
 import { ChatOpenAI } from '@langchain/openai';
 import { ChatPromptTemplate } from '@langchain/core/prompts';
 import { AgentExecutor, createToolCallingAgent } from 'langchain/agents';
@@ -7,6 +7,7 @@ import { Client, PrivateKey } from '@hashgraph/sdk';
 import prompts from 'prompts';
 import * as dotenv from 'dotenv';
 dotenv.config();
+
 
 async function bootstrap(): Promise<void> {
   // Initialise OpenAI LLM
@@ -47,7 +48,7 @@ async function bootstrap(): Promise<void> {
     llm,
     tools,
     prompt,
-  } as any);
+  });
 
   // In-memory conversation history
   const memory = new BufferMemory({
@@ -63,7 +64,7 @@ async function bootstrap(): Promise<void> {
     tools,
     memory,
     returnIntermediateSteps: false,
-  } as any);
+  });
 
   console.log('Hedera Agent CLI Chatbot — type "exit" to quit');
 

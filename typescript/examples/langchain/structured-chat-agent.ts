@@ -1,4 +1,4 @@
-import { HederaLangchainToolkit, AgentMode } from 'hkav3';
+import { HederaLangchainToolkit, AgentMode } from 'hedera-agent-kit';
 import { ChatOpenAI } from '@langchain/openai';
 import type { ChatPromptTemplate } from '@langchain/core/prompts';
 import { pull } from 'langchain/hub';
@@ -40,9 +40,9 @@ async function bootstrap(): Promise<void> {
 
   const agent = await createStructuredChatAgent({
     llm,
-    tools,
+    tools: tools as any,
     prompt,
-  } as any);
+  });
 
   // In-memory conversation history
   const memory = new BufferMemory({
