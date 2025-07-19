@@ -59,10 +59,7 @@
     "examples/*"
   ],
   "files": [
-    "langchain/**/*",
-    "modelcontextprotocol/**/*",
-    "LICENSE",
-    "README.md",
-    "package.json"
+    "dist/**/*",
+    "README.md"
   ]
 }
