@@ -15,7 +15,6 @@ class HederaAgentAPI {
     if (!this.client.ledgerId) {
       throw new Error('Client must be connected to a network');
     }
-    console.log('Client connected to network', this.client.ledgerId);
     this.context = context || {};
     this.tools = tools(this.context);
   }

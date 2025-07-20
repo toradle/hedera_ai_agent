@@ -40,21 +40,16 @@ const createFungibleToken = async (
   context: Context,
   params: z.infer<ReturnType<typeof createFungibleTokenParameters>>,
 ) => {
-  console.log('[CreateFungibleToken] Raw params:', params);
   try {
     const mirrornodeService = getMirrornodeService(context.mirrornodeService!, client.ledgerId!);
-    console.log('[CreateFungibleToken] Mirrornode service initialised');
     const normalisedParams = await HederaParameterNormaliser.normaliseCreateFungibleTokenParams(
       params,
       context,
       client,
       mirrornodeService,
     );
-    console.log('[CreateFungibleToken] Normalised params:', normalisedParams);
     const tx = HederaBuilder.createFungibleToken(normalisedParams);
-    console.log('[CreateFungibleToken] Built transaction:', tx.toString ? tx.toString() : tx);
     const result = await handleTransaction(tx, client, context);
-    console.log('[CreateFungibleToken] Transaction result:', result);
     return result;
   } catch (error) {
     console.error('[CreateFungibleToken] Error creating fungible token:', error);

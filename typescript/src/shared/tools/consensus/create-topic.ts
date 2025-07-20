@@ -28,24 +28,19 @@ const createTopic = async (
   context: Context,
   params: z.infer<ReturnType<typeof createTopicParameters>>,
 ) => {
-  console.log('[CreateTopic] Raw params:', params);
   try {
     const mirrornodeService: IHederaMirrornodeService = getMirrornodeService(
       context.mirrornodeService!,
       client.ledgerId!,
     );
-    console.log('[CreateTopic] Mirrornode service initialised');
     const normalisedParams = await HederaParameterNormaliser.normaliseCreateTopicParams(
       params,
       context,
       client,
       mirrornodeService,
     );
-    console.log('[CreateTopic] Normalised params:', normalisedParams);
     const tx = HederaBuilder.createTopic(normalisedParams);
-    console.log('[CreateTopic] Built transaction:', tx.toString ? tx.toString() : tx);
     const result = await handleTransaction(tx, client, context);
-    console.log('[CreateTopic] Transaction result:', result);
     return result;
   } catch (error) {
     console.error('[CreateTopic] Error creating topic:', error);
