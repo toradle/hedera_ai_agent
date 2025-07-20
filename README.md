@@ -51,21 +51,33 @@ OPENAI_API_KEY= sk-proj-...
 ```
 
 ### 3 – Run the Example Tool Calling Agent 
-With the tool-calling-agent, you can experiment with and call the [available tools](docs/TOOLS.md) in the Hedera Agent Kit for the operator account (the account you are using in the .env file)
-First, go into the directory where the example is and run `npm install`
+With the tool-calling-agent, you can experiment with and call the [available tools](docs/TOOLS.md) in the Hedera Agent Kit for the operator account (the account you are using in the .env file). This example tool-calling-agent uses GPT 4-o-mini that is a simple template you can use with other LLMs.
+
+
+1. First, go into the directory where the example is and run `npm install`
 
 ```bash
 cd typescript/examples/langchain
 npm install
 ```
-Then, run the example
+2. Then, run the example
 
 ```bash
 cd ../..
 npm run langchain:tool-calling-agent
 ```
-!TIP]
+
 > You may want to install `ts-node` globally to run the examples using: `npm install -g ts-node`
+
+3. interact with the agent. First, tell the agent who you are (your name) and try out some of the interactions by asking questions: 
+  *  _What can you help me do with Hedera?_ 
+  * _What's my current HBAR balance?_ 
+  * _Create a new topic called 'Daily Updates_ 
+  * _Submit the message 'Hello World' to topic 0.0.12345_ 
+  * _Create a fungible token called 'MyToken' with symbol 'MTK'_ 
+  * _Check my balance and then create a topic for announcements_ 
+  * _Create a token with 1000 initial supply and then submit a message about it to topic 0.0.67890_ 
+  
 
 ### 4 – Run the Structured Chat Agent 
 
@@ -73,7 +85,7 @@ npm run langchain:tool-calling-agent
 ---
 
 ## Key Features
-This version of the Hedera Agent Kit, known as v3, is a complete rewrite of the original version. It is designed to be more flexible and easier to use, with a focus on developer experience. It enables direct API execution through a simple HederaAgentAPI class, with an individual LangChain tools calls
+This version of the Hedera Agent Kit, known as v3, is a complete rewrite of the original version. It is designed to be more flexible and easier to use, with a focus on developer experience. It enables direct API execution through a simple HederaAgentAPI class, with an individual LangChain tools call for each example.
 
 
 ---
@@ -86,39 +98,47 @@ This tool has two execution modes with AI agents;  autonomous excution and retur
  * `mode: AgentMode.AUTONOMOUS` the transaction will be executed autonomously, using the accountID set (the operator account can be set in the client with `.setOperator(process.env.ACCOUNT_ID!`)
 
 #### Hedera Transaction Tools
+The Hedera Agent Kit provides a set of tools to execute transactions on the Hedera network, which we will be expanding in the future. To requset more fundtionality, please [open an issue]().
+
+**Available Tools**
+* Transfer HBAR
+* Create a Topic
+* Submit a message to a Topic
+* Create a Fungible Token
+* Create a Non-Fungible Token
+* Airdrop Fungible Tokens
+* Transfer Fungible Tokens
+
+See the implementation details in [docs/TOOLS.md](docs/TOOLS.md)
 
 #### Hedera Mirror Node Query Tools
-The Hedera network is made up of two types of nodes: consensus nodes and mirror nodes. Mirror nodes are free to query, and maintain a copy of the state of the network for users to query. This toolkit provides a set of tools to query the state of the network, including accounts, tokens, and transactions.
+The Hedera network is made up of two types of nodes: consensus nodes and mirror nodes. Mirror nodes are free to query, and maintain a copy of the state of the network for users to query. 
 
+This toolkit provides a set of tools to query the state of the network, including accounts, tokens, and transactions. To requset more fundtionality, please [open an issue]().
+
+The Hedera Agent Kit provides a set of tools to execute query these nodes:
+
+* Get Account Query
+* Get HBAR Balance Query
+* Get Account Token Balances Query
+* Get Topic Messages Query
+
+See the implementation details in [docs/TOOLS.md](docs/TOOLS.md)
 #### Conversational Agent
 
----
 
-## Available Hedera Tools
-- create_fungible_token
-- create_non_fungible_token
-- transfer_hbar_tool
-- airdrop_fungible_token
-- transfer_fungible_token
-
-### Hedera Transaction Tools
-
-
-### Query Tools
-Query tools are for (free) interactions with Hedera mirror nodes
-
+## Agent Kit Tools
 👉 See [docs/TOOLS.md](docs/TOOLS.md) for the full catalogue & usage examples.
 
 ---
 ## Creating Tools
----
 
 ## Local Development & Contributing
 ```bash
 git clone https://github.com/hedera-dev/hedera-agent-kit.git
 cd hedera-agent-kit
 npm install
-cp .env.example .env   # add your keys
+cp typescript/examples/langchain/.env.example your/file/path/.env   # add your keys
 ```
 Please read [CONTRIBUTING.md](./CONTRIBUTING.md) and sign your commits under the DCO.
 
