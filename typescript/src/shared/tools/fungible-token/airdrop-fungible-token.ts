@@ -1,13 +1,13 @@
 import { z } from 'zod';
-import type { Context } from '@/shared/configuration.js';
-import type { Tool } from '@/shared/tools.js';
-import HederaParameterNormaliser from '@/shared/hedera-utils/hedera-parameter-normaliser.js';
+import type { Context } from '@/shared/configuration';
+import type { Tool } from '@/shared/tools';
+import HederaParameterNormaliser from '@/shared/hedera-utils/hedera-parameter-normaliser';
 import { Client } from '@hashgraph/sdk';
-import { handleTransaction } from '@/shared/strategies/tx-mode-strategy.js';
-import { airdropFungibleTokenParameters } from '@/shared/parameter-schemas/hts.zod.js';
-import HederaBuilder from '@/shared/hedera-utils/hedera-builder.js';
-import { getMirrornodeService } from '@/shared/hedera-utils/mirrornode/hedera-mirrornode-utils.js';
-import { PromptGenerator } from '@/shared/utils/prompt-generator.js';
+import { handleTransaction } from '@/shared/strategies/tx-mode-strategy';
+import { airdropFungibleTokenParameters } from '@/shared/parameter-schemas/hts.zod';
+import HederaBuilder from '@/shared/hedera-utils/hedera-builder';
+import { getMirrornodeService } from '@/shared/hedera-utils/mirrornode/hedera-mirrornode-utils';
+import { PromptGenerator } from '@/shared/utils/prompt-generator';
 
 const airdropFungibleTokenPrompt = (context: Context = {}) => {
   const contextSnippet = PromptGenerator.getContextSnippet(context);
@@ -57,7 +57,7 @@ const airdropFungibleToken = async (
   }
 };
 
-export const AIRDROP_FUNGIBLE_TOKEN_TOOL = 'airdrop_fungible_token';
+export const AIRDROP_FUNGIBLE_TOKEN_TOOL = 'airdrop_fungible_token_tool';
 
 const tool = (context: Context): Tool => ({
   method: AIRDROP_FUNGIBLE_TOKEN_TOOL,

@@ -1,12 +1,12 @@
 import { z } from 'zod';
-import type { Context } from '@/shared/configuration.js';
-import type { Tool } from '@/shared/tools.js';
+import type { Context } from '@/shared/configuration';
+import type { Tool } from '@/shared/tools';
 import { Client } from '@hashgraph/sdk';
-import { handleTransaction } from '@/shared/strategies/tx-mode-strategy.js';
-import HederaBuilder from '@/shared/hedera-utils/hedera-builder.js';
-import { transferHbarParameters } from '@/shared/parameter-schemas/has.zod.js';
-import HederaParameterNormaliser from '@/shared/hedera-utils/hedera-parameter-normaliser.js';
-import { PromptGenerator } from '@/shared/utils/prompt-generator.js';
+import { handleTransaction } from '@/shared/strategies/tx-mode-strategy';
+import HederaBuilder from '@/shared/hedera-utils/hedera-builder';
+import { transferHbarParameters } from '@/shared/parameter-schemas/has.zod';
+import HederaParameterNormaliser from '@/shared/hedera-utils/hedera-parameter-normaliser';
+import { PromptGenerator } from '@/shared/utils/prompt-generator';
 
 const transferHbarPrompt = (context: Context = {}) => {
   const contextSnippet = PromptGenerator.getContextSnippet(context);
@@ -42,7 +42,8 @@ const transferHbar = async (
       client,
     );
     const tx = HederaBuilder.transferHbar(normalisedParams);
-    return await handleTransaction(tx, client, context);
+    const result = await handleTransaction(tx, client, context);
+    return result;
   } catch (error) {
     if (error instanceof Error) {
       return error.message;
@@ -51,7 +52,7 @@ const transferHbar = async (
   }
 };
 
-export const TRANSFER_HBAR_TOOL = 'transfer_hbar';
+export const TRANSFER_HBAR_TOOL = 'transfer_hbar_tool';
 
 const tool = (context: Context): Tool => ({
   method: TRANSFER_HBAR_TOOL,

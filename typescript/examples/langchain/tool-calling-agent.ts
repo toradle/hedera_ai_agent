@@ -1,4 +1,4 @@
-import { HederaLangchainToolkit, AgentMode } from 'hkav3';
+import { HederaLangchainToolkit, AgentMode, hederaTools } from 'hedera-agent-kit';
 import { ChatOpenAI } from '@langchain/openai';
 import { ChatPromptTemplate } from '@langchain/core/prompts';
 import { AgentExecutor, createToolCallingAgent } from 'langchain/agents';
@@ -7,6 +7,7 @@ import { Client, PrivateKey } from '@hashgraph/sdk';
 import prompts from 'prompts';
 import * as dotenv from 'dotenv';
 dotenv.config();
+
 
 async function bootstrap(): Promise<void> {
   // Initialise OpenAI LLM
@@ -20,11 +21,30 @@ async function bootstrap(): Promise<void> {
     PrivateKey.fromStringECDSA(process.env.PRIVATE_KEY!),
   );
 
+  // all the available tools
+  const {
+    CREATE_FUNGIBLE_TOKEN_TOOL,
+    CREATE_TOPIC_TOOL,
+    SUBMIT_TOPIC_MESSAGE_TOOL,
+    GET_HBAR_BALANCE_QUERY_TOOL,
+    // CREATE_NON_FUNGIBLE_TOKEN_TOOL,
+    // TRANSFER_HBAR_TOOL,
+    // AIRDROP_FUNGIBLE_TOKEN_TOOL,
+    // GET_ACCOUNT_QUERY_TOOL,
+    // GET_ACCOUNT_TOKEN_BALANCES_QUERY_TOOL,
+    // GET_TOPIC_MESSAGES_QUERY_TOOL,
+  } = hederaTools;
+
   // Prepare Hedera toolkit (load all tools by default)
   const hederaAgentToolkit = new HederaLangchainToolkit({
     client,
     configuration: {
-      tools: [], // load every available tool
+      tools: [
+        CREATE_TOPIC_TOOL,
+        SUBMIT_TOPIC_MESSAGE_TOOL,
+        CREATE_FUNGIBLE_TOKEN_TOOL,
+        GET_HBAR_BALANCE_QUERY_TOOL,
+      ], // use an empty array if you wantto load all tools
       context: {
         mode: AgentMode.AUTONOMOUS,
       },
@@ -40,6 +60,7 @@ async function bootstrap(): Promise<void> {
   ]);
 
   // Fetch tools from toolkit
+  // cast to any to avoid excessively deep type instantiation caused by zod@3.25
   const tools = hederaAgentToolkit.getTools();
 
   // Create the underlying agent
@@ -47,7 +68,7 @@ async function bootstrap(): Promise<void> {
     llm,
     tools,
     prompt,
-  } as any);
+  });
 
   // In-memory conversation history
   const memory = new BufferMemory({
@@ -63,7 +84,7 @@ async function bootstrap(): Promise<void> {
     tools,
     memory,
     returnIntermediateSteps: false,
-  } as any);
+  });
 
   console.log('Hedera Agent CLI Chatbot — type "exit" to quit');
 

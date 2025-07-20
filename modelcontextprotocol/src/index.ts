@@ -5,7 +5,7 @@ import colors from 'colors';
 const { green, red, yellow } = colors;
 
 import { LedgerId, Client } from '@hashgraph/sdk';
-import { AgentMode, ALL_TOOLS, Configuration, Context, HederaMCPToolkit } from 'hkav3';
+import { AgentMode, ALL_TOOLS, Configuration, Context, HederaMCPToolkit } from 'hedera-agent-kit';
 
 type Options = {
   tools?: string[];
@@ -40,7 +40,7 @@ export function parseArgs(args: string[]): Options {
           options.ledgerId = LedgerId.TESTNET;
         } else if (value == 'mainnet') {
           options.ledgerId = LedgerId.MAINNET;
-        } 
+        }
         else {
           throw new Error(`Invalid ledger id: ${value}. Accepted values are: testnet, mainnet`);
         }
@@ -72,17 +72,33 @@ export function parseArgs(args: string[]): Options {
 }
 
 function handleError(error: any) {
-  console.error(red('\n🚨  Error initializing Stripe MCP server:\n'));
+  console.error(red('\n🚨  Error initializing Hedera MCP server:\n'));
   console.error(yellow(`   ${error.message}\n`));
 }
 
 export async function main() {
   const options = parseArgs(process.argv.slice(2));
   let client: Client;
-  if(options.ledgerId == LedgerId.TESTNET) {
+  if (options.ledgerId == LedgerId.TESTNET) {
     client = Client.forTestnet();
   } else {
     client = Client.forMainnet();
+  }
+
+  // Set operator from environment variables if they exist
+  const operatorId = process.env.HEDERA_OPERATOR_ID;
+  const operatorKey = process.env.HEDERA_OPERATOR_KEY;
+
+  if (operatorId && operatorKey) {
+    try {
+      client.setOperator(operatorId, operatorKey);
+      console.error(green(`✅ Operator set: ${operatorId}`));
+    } catch (error) {
+      console.error(red(`❌ Failed to set operator: ${error}`));
+      throw error;
+    }
+  } else {
+    console.error(yellow('⚠️  No operator credentials found in environment variables (HEDERA_OPERATOR_ID, HEDERA_OPERATOR_KEY)'));
   }
 
   const configuration: Configuration = {

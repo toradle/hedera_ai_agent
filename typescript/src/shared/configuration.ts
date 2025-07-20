@@ -1,4 +1,4 @@
-import { IHederaMirrornodeService } from './hedera-utils/mirrornode/hedera-mirrornode-service.interface.js';
+import { IHederaMirrornodeService } from './hedera-utils/mirrornode/hedera-mirrornode-service.interface';
 
 export enum AgentMode {
   AUTONOMOUS = 'autonomous',

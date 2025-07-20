@@ -1,7 +1,7 @@
 import { Client } from '@hashgraph/sdk';
 
-import type { Context } from './configuration.js';
-import tools, { Tool } from './tools.js';
+import type { Context } from './configuration';
+import tools, { Tool } from './tools';
 
 class HederaAgentAPI {
   client: Client;
@@ -15,7 +15,6 @@ class HederaAgentAPI {
     if (!this.client.ledgerId) {
       throw new Error('Client must be connected to a network');
     }
-    console.log('Client connected to network', this.client.ledgerId);
     this.context = context || {};
     this.tools = tools(this.context);
   }

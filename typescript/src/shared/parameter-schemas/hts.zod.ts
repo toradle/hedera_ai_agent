@@ -1,7 +1,7 @@
-import { Context } from '@/shared/configuration.js';
+import { Context } from '@/shared/configuration';
 import { z } from 'zod';
 import { PublicKey, TokenSupplyType } from '@hashgraph/sdk';
-import { TokenTransferMinimalParams } from '@/shared/hedera-utils/types.js';
+import { TokenTransferMinimalParams } from '@/shared/hedera-utils/types';
 
 export const createFungibleTokenParameters = (_context: Context = {}) =>
   z.object({
@@ -20,6 +20,11 @@ export const createFungibleTokenParameters = (_context: Context = {}) =>
 
 export const createFungibleTokenParametersNormalised = (_context: Context = {}) =>
   createFungibleTokenParameters(_context).extend({
+    autoRenewAccountId: z
+      .string()
+      .describe(
+        'The auto renew account for the token. If not provided, defaults to the operator account.',
+      ),
     supplyKey: z
       .custom<PublicKey>()
       .optional()
@@ -42,6 +47,11 @@ export const createNonFungibleTokenParameters = (_context: Context = {}) =>
 
 export const createNonFungibleTokenParametersNormalised = (_context: Context = {}) =>
   createNonFungibleTokenParameters(_context).extend({
+    autoRenewAccountId: z
+      .string()
+      .describe(
+        'The auto renew account for the token. If not provided, defaults to the operator account.',
+      ),
     supplyKey: z
       .custom<PublicKey>()
       .describe('The supply key. If not provided, defaults to the operator’s public key.'),

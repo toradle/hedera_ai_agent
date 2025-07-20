@@ -1,8 +1,8 @@
 import { BaseToolkit } from '@langchain/core/tools';
-import HederaAgentKitTool from '@/langchain/tool.js';
-import HederaAgentKitAPI from '@/shared/api.js';
-import tools from '@/shared/tools.js';
-import { type Configuration } from '@/shared/configuration.js';
+import HederaAgentKitTool from '@/langchain/tool';
+import HederaAgentKitAPI from '@/shared/api';
+import tools from '@/shared/tools';
+import { type Configuration } from '@/shared/configuration';
 import { Client } from '@hashgraph/sdk';
 
 class HederaLangchainToolkit implements BaseToolkit {

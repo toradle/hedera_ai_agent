@@ -1,5 +1,5 @@
 import { AccountId, Client, Transaction, TransactionId } from '@hashgraph/sdk';
-import { AgentMode, Context } from '@/shared/configuration.js';
+import { AgentMode, Context } from '@/shared/configuration';
 
 interface TxModeStrategy {
   handle<T extends Transaction>(tx: T, client: Client, context: Context): Promise<unknown>;

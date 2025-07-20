@@ -1,7 +1,14 @@
 {
-  "name": "hkav3",
-  "version": "1.0.0",
-  "type": "module",
+  "name": "hedera-agent-kit",
+  "version": "3.0.1",
+  "description": "Use the Hedera Agent Kit to build agents that can interact with the Hedera network in any framework you like.",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "require": "./dist/index.js",
+      "import": "./dist/index.mjs"
+    }
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\"",
     "build": "tsup",
@@ -10,39 +17,22 @@
     "lint": "eslint . --ext .ts,.tsx",
     "prepare": "husky"
   },
-  "exports": {
-    "./langchain": {
-      "types": "./langchain/index.d.ts",
-      "require": "./langchain/index.cjs",
-      "import": "./langchain/index.js"
-    },
-    "./modelcontextprotocol": {
-      "types": "./modelcontextprotocol/index.d.ts",
-      "require": "./modelcontextprotocol/index.cjs",
-      "import": "./modelcontextprotocol/index.js"
-    }
-  },
   "engines": {
     "node": ">=18"
   },
   "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "description": "",
+  "author": "Hashgraph",
+  "license": "Apache-2.0",
   "dependencies": {
     "@hashgraph/sdk": "^2.68.0",
-    "@langchain/core": "^0.3.62",
+    "@langchain/core": "^0.3.66",
     "@modelcontextprotocol/sdk": "^1.16.0",
     "bignumber.js": "^9.3.1",
-    "dotenv": "^17.2.0",
-    "tsup": "^8.3.5",
     "long": "^5.3.2",
-    "zod": "^3.24.1"
+    "zod": "^3.25.76"
   },
   "devDependencies": {
     "@eslint/js": "^9.31.0",
-    "@langchain/openai": "^0.5.18",
-    "@types/prompts": "^2.4.9",
     "@typescript-eslint/eslint-plugin": "^8.37.0",
     "@typescript-eslint/parser": "^8.37.0",
     "esbuild-plugin-alias": "^0.2.1",
@@ -51,23 +41,17 @@
     "eslint-plugin-prettier": "^5.5.1",
     "globals": "^16.3.0",
     "husky": "^9.1.7",
-    "langchain": "^0.3.29",
     "prettier": "^3.6.2",
-    "prompts": "^2.4.2",
-    "ts-node": "^10.9.2",
     "tsconfig-paths": "^4.2.0",
+    "tsup": "^8.5.0",
     "typescript": "^5.8.3",
     "typescript-eslint": "^8.37.0"
   },
-  "workspaces": [
-    ".",
-    "examples/*"
-  ],
   "files": [
-    "langchain/**/*",
-    "modelcontextprotocol/**/*",
-    "LICENSE",
-    "README.md",
-    "package.json"
-  ]
+    "dist/**/*"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/hedera-dev/hedera-agent-kit.git"
+  }
 }

@@ -1,11 +1,11 @@
 import { z } from 'zod';
-import { Context } from '@/shared/configuration.js';
-import { getMirrornodeService } from '@/shared/hedera-utils/mirrornode/hedera-mirrornode-utils.js';
-import { accountTokenBalancesQueryParameters } from '@/shared/parameter-schemas/account-query.zod.js';
+import { Context } from '@/shared/configuration';
+import { getMirrornodeService } from '@/shared/hedera-utils/mirrornode/hedera-mirrornode-utils';
+import { accountTokenBalancesQueryParameters } from '@/shared/parameter-schemas/account-query.zod';
 import { Client } from '@hashgraph/sdk';
-import { Tool } from '@/shared/tools.js';
-import HederaParameterNormaliser from '@/shared/hedera-utils/hedera-parameter-normaliser.js';
-import { PromptGenerator } from '@/shared/utils/prompt-generator.js';
+import { Tool } from '@/shared/tools';
+import HederaParameterNormaliser from '@/shared/hedera-utils/hedera-parameter-normaliser';
+import { PromptGenerator } from '@/shared/utils/prompt-generator';
 
 export const getAccountTokenBalancesQueryPrompt = (context: Context = {}) => {
   const contextSnippet = PromptGenerator.getContextSnippet(context);
@@ -50,7 +50,7 @@ export const getAccountTokenBalancesQuery = async (
   }
 };
 
-export const GET_ACCOUNT_TOKEN_BALANCES_QUERY_TOOL = 'get_account_token_balances_query';
+export const GET_ACCOUNT_TOKEN_BALANCES_QUERY_TOOL = 'get_account_token_balances_query_tool';
 
 const tool = (context: Context): Tool => ({
   method: GET_ACCOUNT_TOKEN_BALANCES_QUERY_TOOL,

@@ -6,25 +6,24 @@ import {
   createFungibleTokenParametersNormalised,
   createNonFungibleTokenParameters,
   createNonFungibleTokenParametersNormalised,
-} from '@/shared/parameter-schemas/hts.zod.js';
-import { transferHbarParameters } from '@/shared/parameter-schemas/has.zod.js';
+} from '@/shared/parameter-schemas/hts.zod';
+import { transferHbarParameters } from '@/shared/parameter-schemas/has.zod';
 import {
   createTopicParameters,
   createTopicParametersNormalised,
-  submitTopicMessageParametersNormalised,
-} from '@/shared/parameter-schemas/hcs.zod.js';
+} from '@/shared/parameter-schemas/hcs.zod';
 import { Client, Hbar, PublicKey, TokenSupplyType } from '@hashgraph/sdk';
-import { Context } from '@/shared/configuration.js';
+import { Context } from '@/shared/configuration';
 import z from 'zod';
 import {
   accountBalanceQueryParameters,
   accountTokenBalancesQueryParameters,
-} from '@/shared/parameter-schemas/account-query.zod.js';
-import { IHederaMirrornodeService } from '@/shared/hedera-utils/mirrornode/hedera-mirrornode-service.interface.js';
-import { toBaseUnit } from '@/shared/hedera-utils/decimals-utils.js';
+} from '@/shared/parameter-schemas/account-query.zod';
+import { IHederaMirrornodeService } from '@/shared/hedera-utils/mirrornode/hedera-mirrornode-service.interface';
+import { toBaseUnit } from '@/shared/hedera-utils/decimals-utils';
 import Long from 'long';
-import { TokenTransferMinimalParams, TransferHbarInput } from '@/shared/hedera-utils/types.js';
-import { AccountResolver } from '@/shared/utils/account-resolver.js';
+import { TokenTransferMinimalParams, TransferHbarInput } from '@/shared/hedera-utils/types';
+import { AccountResolver } from '@/shared/utils/account-resolver';
 
 export default class HederaParameterNormaliser {
   static async normaliseCreateFungibleTokenParams(
@@ -38,6 +37,7 @@ export default class HederaParameterNormaliser {
     const normalized: z.infer<ReturnType<typeof createFungibleTokenParametersNormalised>> = {
       ...params,
       supplyType: TokenSupplyType.Finite, // defaults to finite supply
+      autoRenewAccountId: defaultAccountId,
     };
 
     const treasuryAccountId = params.treasuryAccountId ?? defaultAccountId;
@@ -46,7 +46,7 @@ export default class HederaParameterNormaliser {
       throw new Error('Must include treasury account ID');
     }
 
-    const supplyTypeString = params.supplyType ?? 'finite';
+    const supplyTypeString = params.supplyType ?? 'infinite';
     const supplyType =
       supplyTypeString === 'finite' ? TokenSupplyType.Finite : TokenSupplyType.Infinite;
     const decimals = params.decimals ?? 0;
@@ -54,8 +54,10 @@ export default class HederaParameterNormaliser {
 
     let maxSupply: number | undefined = undefined;
     if (supplyTypeString === 'finite') {
-      const rawMaxSupply = params.maxSupply ?? 1_000_000;
-      maxSupply = toBaseUnit(rawMaxSupply, decimals);
+      if (!params.maxSupply) {
+        throw new Error('Must include max supply for finite supply type');
+      }
+      maxSupply = toBaseUnit(params.maxSupply, decimals);
 
       if (initialSupply > maxSupply) {
         throw new Error(
@@ -72,6 +74,8 @@ export default class HederaParameterNormaliser {
       normalized.supplyKey = PublicKey.fromString(publicKey);
     }
 
+    const autoRenewAccountId = defaultAccountId;
+
     return {
       ...normalized,
       treasuryAccountId,
@@ -79,6 +83,7 @@ export default class HederaParameterNormaliser {
       maxSupply,
       decimals,
       initialSupply,
+      autoRenewAccountId,
     };
   }
 
@@ -104,6 +109,7 @@ export default class HederaParameterNormaliser {
       maxSupply,
       supplyKey: PublicKey.fromString(publicKey), // the supply key is mandatory in the case of NFT
       supplyType: TokenSupplyType.Finite, // NFTs supply must be finite
+      autoRenewAccountId: defaultAccountId,
     };
 
     return normalized;
@@ -197,14 +203,15 @@ export default class HederaParameterNormaliser {
     mirrorNode: IHederaMirrornodeService,
   ) {
     const defaultAccountId = AccountResolver.getDefaultAccount(context, client);
-
-    const publicKey =
-      (await mirrorNode.getAccount(defaultAccountId).then(r => r.accountPublicKey)) ??
-      client.operatorPublicKey?.toStringDer();
-
-    const normalised: z.infer<ReturnType<typeof createTopicParametersNormalised>> = { ...params };
+    const normalised: z.infer<ReturnType<typeof createTopicParametersNormalised>> = {
+      ...params,
+      autoRenewAccountId: defaultAccountId,
+    };
 
     if (params.isSubmitKey) {
+      const publicKey =
+        (await mirrorNode.getAccount(defaultAccountId).then(r => r.accountPublicKey)) ??
+        client.operatorPublicKey?.toStringDer();
       if (!publicKey) {
         throw new Error('Could not determine default account ID for submit key');
       }
@@ -212,16 +219,6 @@ export default class HederaParameterNormaliser {
     }
 
     return normalised;
-  }
-
-  static normaliseSubmitTopicMessageParams(
-    params: z.infer<ReturnType<typeof submitTopicMessageParametersNormalised>>,
-    context: Context,
-    client: Client,
-  ) {
-    const sender = AccountResolver.resolveAccount(params.sender, context, client);
-    params.sender = sender;
-    return params;
   }
 
   static normaliseHbarBalanceParams(

@@ -1,27 +1,21 @@
 import { z } from 'zod';
-import type { Context } from '@/shared/configuration.js';
-import type { Tool } from '@/shared/tools.js';
+import type { Context } from '@/shared/configuration';
+import type { Tool } from '@/shared/tools';
 import { Client } from '@hashgraph/sdk';
-import { handleTransaction } from '@/shared/strategies/tx-mode-strategy.js';
-import HederaBuilder from '@/shared/hedera-utils/hedera-builder.js';
-import { submitTopicMessageParameters } from '@/shared/parameter-schemas/hcs.zod.js';
-import HederaParameterNormaliser from '@/shared/hedera-utils/hedera-parameter-normaliser.js';
-import { PromptGenerator } from '@/shared/utils/prompt-generator.js';
+import { handleTransaction } from '@/shared/strategies/tx-mode-strategy';
+import HederaBuilder from '@/shared/hedera-utils/hedera-builder';
+import { submitTopicMessageParameters } from '@/shared/parameter-schemas/hcs.zod';
+import { PromptGenerator } from '@/shared/utils/prompt-generator';
 
-const submitTopicMessagePrompt = (context: Context = {}) => {
-  const contextSnippet = PromptGenerator.getContextSnippet(context);
-  const senderDesc = PromptGenerator.getAccountParameterDescription('sender', context);
+const submitTopicMessagePrompt = (_context: Context = {}) => {
   const usageInstructions = PromptGenerator.getParameterUsageInstructions();
 
   return `
-${contextSnippet}
-
 This tool will submit a message to a topic on the Hedera network.
 
 Parameters:
 - topicId (str, required): The ID of the topic to submit the message to
 - message (str, required): The message to submit to the topic
-- ${senderDesc}
 ${usageInstructions}
 `;
 };
@@ -32,12 +26,7 @@ const submitTopicMessage = async (
   params: z.infer<ReturnType<typeof submitTopicMessageParameters>>,
 ) => {
   try {
-    const normalisedParams = HederaParameterNormaliser.normaliseSubmitTopicMessageParams(
-      params,
-      context,
-      client,
-    );
-    const tx = HederaBuilder.submitTopicMessage(normalisedParams);
+    const tx = HederaBuilder.submitTopicMessage(params);
     const result = await handleTransaction(tx, client, context);
     return result;
   } catch (error) {
@@ -48,7 +37,7 @@ const submitTopicMessage = async (
   }
 };
 
-export const SUBMIT_TOPIC_MESSAGE_TOOL = 'submit_topic_message';
+export const SUBMIT_TOPIC_MESSAGE_TOOL = 'submit_topic_message_tool';
 
 const tool = (context: Context): Tool => ({
   method: SUBMIT_TOPIC_MESSAGE_TOOL,

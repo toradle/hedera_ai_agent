@@ -1,11 +1,11 @@
-import { Context } from '@/shared/configuration.js';
-import { getMirrornodeService } from '@/shared/hedera-utils/mirrornode/hedera-mirrornode-utils.js';
-import { topicMessagesQueryParameters } from '@/shared/parameter-schemas/account-query.zod.js';
+import { Context } from '@/shared/configuration';
+import { getMirrornodeService } from '@/shared/hedera-utils/mirrornode/hedera-mirrornode-utils';
+import { topicMessagesQueryParameters } from '@/shared/parameter-schemas/account-query.zod';
 import { Client } from '@hashgraph/sdk';
 import { z } from 'zod';
-import { Tool } from '@/shared/tools.js';
-import { TopicMessage, TopicMessagesQueryParams } from '@/shared/hedera-utils/mirrornode/types.js';
-import { PromptGenerator } from '@/shared/utils/prompt-generator.js';
+import { Tool } from '@/shared/tools';
+import { TopicMessage, TopicMessagesQueryParams } from '@/shared/hedera-utils/mirrornode/types';
+import { PromptGenerator } from '@/shared/utils/prompt-generator';
 
 export const getTopicMessagesQueryPrompt = (context: Context = {}) => {
   const contextSnippet = PromptGenerator.getContextSnippet(context);
@@ -71,7 +71,7 @@ export const getTopicMessagesQuery = async (
   }
 };
 
-export const GET_TOPIC_MESSAGES_QUERY_TOOL = 'get_topic_messages_query';
+export const GET_TOPIC_MESSAGES_QUERY_TOOL = 'get_topic_messages_query_tool';
 
 const tool = (context: Context): Tool => ({
   method: GET_TOPIC_MESSAGES_QUERY_TOOL,

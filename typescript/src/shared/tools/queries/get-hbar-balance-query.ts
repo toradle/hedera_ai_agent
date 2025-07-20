@@ -1,12 +1,12 @@
 import { z } from 'zod';
-import type { Context } from '@/shared/configuration.js';
-import type { Tool } from '@/shared/tools.js';
+import type { Context } from '@/shared/configuration';
+import type { Tool } from '@/shared/tools';
 import { Client } from '@hashgraph/sdk';
-import { accountBalanceQueryParameters } from '@/shared/parameter-schemas/account-query.zod.js';
+import { accountBalanceQueryParameters } from '@/shared/parameter-schemas/account-query.zod';
 import BigNumber from 'bignumber.js';
-import { getMirrornodeService } from '@/shared/hedera-utils/mirrornode/hedera-mirrornode-utils.js';
-import HederaParameterNormaliser from '@/shared/hedera-utils/hedera-parameter-normaliser.js';
-import { PromptGenerator } from '@/shared/utils/prompt-generator.js';
+import { getMirrornodeService } from '@/shared/hedera-utils/mirrornode/hedera-mirrornode-utils';
+import HederaParameterNormaliser from '@/shared/hedera-utils/hedera-parameter-normaliser';
+import { PromptGenerator } from '@/shared/utils/prompt-generator';
 
 export const getHbarBalanceQueryPrompt = (context: Context = {}) => {
   const contextSnippet = PromptGenerator.getContextSnippet(context);
@@ -48,7 +48,7 @@ export const getHbarBalanceQuery = async (
   }
 };
 
-export const GET_HBAR_BALANCE_QUERY_TOOL = 'get_hbar_balance_query';
+export const GET_HBAR_BALANCE_QUERY_TOOL = 'get_hbar_balance_query_tool';
 
 const tool = (context: Context): Tool => ({
   method: GET_HBAR_BALANCE_QUERY_TOOL,

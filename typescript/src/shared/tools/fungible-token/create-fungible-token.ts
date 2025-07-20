@@ -1,13 +1,13 @@
 import { z } from 'zod';
-import type { Context } from '@/shared/configuration.js';
-import type { Tool } from '@/shared/tools.js';
-import HederaParameterNormaliser from '@/shared/hedera-utils/hedera-parameter-normaliser.js';
+import type { Context } from '@/shared/configuration';
+import type { Tool } from '@/shared/tools';
+import HederaParameterNormaliser from '@/shared/hedera-utils/hedera-parameter-normaliser';
 import { Client } from '@hashgraph/sdk';
-import { handleTransaction } from '@/shared/strategies/tx-mode-strategy.js';
-import { createFungibleTokenParameters } from '@/shared/parameter-schemas/hts.zod.js';
-import HederaBuilder from '@/shared/hedera-utils/hedera-builder.js';
-import { getMirrornodeService } from '@/shared/hedera-utils/mirrornode/hedera-mirrornode-utils.js';
-import { PromptGenerator } from '@/shared/utils/prompt-generator.js';
+import { handleTransaction } from '@/shared/strategies/tx-mode-strategy';
+import { createFungibleTokenParameters } from '@/shared/parameter-schemas/hts.zod';
+import HederaBuilder from '@/shared/hedera-utils/hedera-builder';
+import { getMirrornodeService } from '@/shared/hedera-utils/mirrornode/hedera-mirrornode-utils';
+import { PromptGenerator } from '@/shared/utils/prompt-generator';
 
 const createFungibleTokenPrompt = (context: Context = {}) => {
   const contextSnippet = PromptGenerator.getContextSnippet(context);
@@ -52,6 +52,7 @@ const createFungibleToken = async (
     const result = await handleTransaction(tx, client, context);
     return result;
   } catch (error) {
+    console.error('[CreateFungibleToken] Error creating fungible token:', error);
     if (error instanceof Error) {
       return error.message;
     }
@@ -59,7 +60,7 @@ const createFungibleToken = async (
   }
 };
 
-export const CREATE_FUNGIBLE_TOKEN_TOOL = 'create_fungible_token';
+export const CREATE_FUNGIBLE_TOKEN_TOOL = 'create_fungible_token_tool';
 
 const tool = (context: Context): Tool => ({
   method: CREATE_FUNGIBLE_TOKEN_TOOL,

@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { Context } from '@/shared/configuration.js';
+import { Context } from '@/shared/configuration';
 import { PublicKey } from '@hashgraph/sdk';
 
 export const createTopicParameters = (_context: Context = {}) => {
@@ -15,6 +15,11 @@ export const createTopicParameters = (_context: Context = {}) => {
 
 export const createTopicParametersNormalised = (_context: Context = {}) =>
   createTopicParameters(_context).extend({
+    autoRenewAccountId: z
+      .string()
+      .describe(
+        'The auto renew account for the topic. If not provided, defaults to the operator account.',
+      ),
     submitKey: z.custom<PublicKey>().optional().describe('The submit key of topic'),
   });
 
@@ -22,7 +27,6 @@ export const submitTopicMessageParameters = (_context: Context = {}) => {
   return z.object({
     topicId: z.string().describe('The ID of the topic to submit the message to'),
     message: z.string().describe('The message to submit to the topic'),
-    sender: z.string().optional().describe('The account ID of the sender (optional)'),
   });
 };
 
