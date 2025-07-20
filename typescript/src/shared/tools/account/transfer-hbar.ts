@@ -35,15 +35,21 @@ const transferHbar = async (
   context: Context,
   params: z.infer<ReturnType<typeof transferHbarParameters>>,
 ) => {
+  console.log('[TransferHbar] Raw params:', params);
   try {
     const normalisedParams = HederaParameterNormaliser.normaliseTransferHbar(
       params,
       context,
       client,
     );
+    console.log('[TransferHbar] Normalised params:', normalisedParams);
     const tx = HederaBuilder.transferHbar(normalisedParams);
-    return await handleTransaction(tx, client, context);
+    console.log('[TransferHbar] Built transaction:', tx.toString ? tx.toString() : tx);
+    const result = await handleTransaction(tx, client, context);
+    console.log('[TransferHbar] Transaction result:', result);
+    return result;
   } catch (error) {
+    console.error('[TransferHbar] Error transferring HBAR:', error);
     if (error instanceof Error) {
       return error.message;
     }
