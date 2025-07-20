@@ -15,6 +15,11 @@ export const createTopicParameters = (_context: Context = {}) => {
 
 export const createTopicParametersNormalised = (_context: Context = {}) =>
   createTopicParameters(_context).extend({
+    autoRenewAccountId: z
+      .string()
+      .describe(
+        'The auto renew account for the topic. If not provided, defaults to the operator account.',
+      ),
     submitKey: z.custom<PublicKey>().optional().describe('The submit key of topic'),
   });
 
