@@ -51,7 +51,7 @@ OPENAI_API_KEY= sk-proj-...
 ```
 
 ### 3 – Run the Example Tool Calling Agent 
-With the tool-calling-agent, you can experiment with and call the [available tools](docs/TOOLS.md) in the Hedera Agent Kit for the operator account (the account you are using in the .env file). This example tool-calling-agent uses GPT 4-o-mini that is a simple template you can use with other LLMs.
+With the tool-calling-agent (found at `typescript/examples/langchain/tool-calling-agent.ts`), you can experiment with and call the [available tools](docs/TOOLS.md) in the Hedera Agent Kit for the operator account (the account you are using in the .env file). This example tool-calling-agent uses GPT 4-o-mini that is a simple template you can use with other LLMs.
 
 
 1. First, go into the directory where the example is and run `npm install`
@@ -80,7 +80,22 @@ npm run langchain:tool-calling-agent
   
 
 ### 4 – Run the Structured Chat Agent 
+The structured chat agent enables you to interact with the Hedera blockchain in the same way as the tool calling agent, using GPT-4.1 as the LLM. You can use tools in autonomous mode using pre-built [prompts from the LangChain Hub](https://github.com/hwchase17/langchain-hub/blob/master/prompts/README.md).
 
+
+1. First, go into the directory where the example is and run `npm install`
+
+```bash
+cd typescript/examples/langchain
+npm install
+```
+2. Then, run the example
+
+```bash
+cd ../..
+npm run langchain:structured-chat-agent
+```
+> You may want to install `ts-node` globally to run the examples using: `npm install -g ts-node`
 
 ---
 
@@ -125,16 +140,12 @@ The Hedera Agent Kit provides a set of tools to execute query these nodes:
 
 See the implementation details in [docs/TOOLS.md](docs/TOOLS.md)
 
-
-### Conversational Agent
-
-
 ## Agent Kit Tools
 👉 See [docs/TOOLS.md](docs/TOOLS.md) for the full catalogue & usage examples.
 
 ---
 ## Creating Tools
-See CONTRIBUTING.md](./CONTRIBUTING.md) for details on how to contribute to the Hedera Agent Kit.
+See [CONTRIBUTING.md](./CONTRIBUTING.md) for details on how to contribute to the Hedera Agent Kit.
 
 ## License
 Apache 2.0
