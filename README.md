@@ -63,7 +63,6 @@ npm install
 2. Then, run the example
 
 ```bash
-cd ../..
 npm run langchain:tool-calling-agent
 ```
 
@@ -92,7 +91,6 @@ npm install
 2. Then, run the example
 
 ```bash
-cd ../..
 npm run langchain:structured-chat-agent
 ```
 > You may want to install `ts-node` globally to run the examples using: `npm install -g ts-node`

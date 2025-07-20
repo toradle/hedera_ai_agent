@@ -52,7 +52,7 @@ Make sure the name and email match the identity you’ve set in Git. GitHub Acti
 
 ### Create an Issue requesting Toolkit Features
 
-[open an issue](https://github.com/hedera-dev/hedera-agent-kit/issues/new?template=toolkit_feature_request.md&title=[FEATURE]%20-%20).
+[Open an issue](https://github.com/hedera-dev/hedera-agent-kit/issues/new?template=toolkit_feature_request.md&title=[FEATURE]%20-%20) in the hedera-agent-kit SDK repository.
 
 ### Find a Task
 
