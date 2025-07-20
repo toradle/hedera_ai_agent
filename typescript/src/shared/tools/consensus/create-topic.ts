@@ -10,13 +10,10 @@ import { getMirrornodeService } from '@/shared/hedera-utils/mirrornode/hedera-mi
 import { IHederaMirrornodeService } from '@/shared/hedera-utils/mirrornode/hedera-mirrornode-service.interface';
 import { PromptGenerator } from '@/shared/utils/prompt-generator';
 
-const createTopicPrompt = (context: Context = {}) => {
-  const contextSnippet = PromptGenerator.getContextSnippet(context);
+const createTopicPrompt = (_context: Context = {}) => {
   const usageInstructions = PromptGenerator.getParameterUsageInstructions();
 
   return `
-${contextSnippet}
-
 This tool will create a new topic on the Hedera network.
 
 Parameters:

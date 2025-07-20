@@ -22,7 +22,6 @@ export const submitTopicMessageParameters = (_context: Context = {}) => {
   return z.object({
     topicId: z.string().describe('The ID of the topic to submit the message to'),
     message: z.string().describe('The message to submit to the topic'),
-    sender: z.string().optional().describe('The account ID of the sender (optional)'),
   });
 };
 

@@ -7,7 +7,7 @@ import HederaBuilder from '@/shared/hedera-utils/hedera-builder';
 import { submitTopicMessageParameters } from '@/shared/parameter-schemas/hcs.zod';
 import { PromptGenerator } from '@/shared/utils/prompt-generator';
 
-const submitTopicMessagePrompt = (_context: Context = {}) => {
+const submitTopicMessagePrompt = (context: Context = {}) => {
   const usageInstructions = PromptGenerator.getParameterUsageInstructions();
 
   return `

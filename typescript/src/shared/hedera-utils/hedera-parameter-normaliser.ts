@@ -11,7 +11,6 @@ import { transferHbarParameters } from '@/shared/parameter-schemas/has.zod';
 import {
   createTopicParameters,
   createTopicParametersNormalised,
-  submitTopicMessageParametersNormalised,
 } from '@/shared/parameter-schemas/hcs.zod';
 import { Client, Hbar, PublicKey, TokenSupplyType } from '@hashgraph/sdk';
 import { Context } from '@/shared/configuration';
@@ -196,15 +195,14 @@ export default class HederaParameterNormaliser {
     client: Client,
     mirrorNode: IHederaMirrornodeService,
   ) {
-    const defaultAccountId = AccountResolver.getDefaultAccount(context, client);
-
-    const publicKey =
-      (await mirrorNode.getAccount(defaultAccountId).then(r => r.accountPublicKey)) ??
-      client.operatorPublicKey?.toStringDer();
-
     const normalised: z.infer<ReturnType<typeof createTopicParametersNormalised>> = { ...params };
 
     if (params.isSubmitKey) {
+      const defaultAccountId = AccountResolver.getDefaultAccount(context, client);
+
+      const publicKey =
+        (await mirrorNode.getAccount(defaultAccountId).then(r => r.accountPublicKey)) ??
+        client.operatorPublicKey?.toStringDer();
       if (!publicKey) {
         throw new Error('Could not determine default account ID for submit key');
       }
@@ -212,16 +210,6 @@ export default class HederaParameterNormaliser {
     }
 
     return normalised;
-  }
-
-  static normaliseSubmitTopicMessageParams(
-    params: z.infer<ReturnType<typeof submitTopicMessageParametersNormalised>>,
-    context: Context,
-    client: Client,
-  ) {
-    const sender = AccountResolver.resolveAccount(params.sender, context, client);
-    params.sender = sender;
-    return params;
   }
 
   static normaliseHbarBalanceParams(
