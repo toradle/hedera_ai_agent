@@ -36,7 +36,7 @@ async function bootstrap(): Promise<void> {
   const prompt = await pull<ChatPromptTemplate>('hwchase17/structured-chat-agent');
 
   // Fetch tools from toolkit
-  const tools: any[] = hederaAgentToolkit.getTools();
+  const tools = hederaAgentToolkit.getTools();
 
   const agent = await createStructuredChatAgent({
     llm,

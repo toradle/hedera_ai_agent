@@ -42,7 +42,7 @@ async function bootstrap(): Promise<void> {
 
   // Fetch tools from toolkit
   // cast to any to avoid excessively deep type instantiation caused by zod@3.25
-  const tools: any[] = hederaAgentToolkit.getTools();
+  const tools = hederaAgentToolkit.getTools();
 
   // Create the underlying agent
   const agent = createToolCallingAgent({
