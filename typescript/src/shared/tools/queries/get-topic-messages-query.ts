@@ -71,7 +71,7 @@ export const getTopicMessagesQuery = async (
   }
 };
 
-export const GET_TOPIC_MESSAGES_QUERY_TOOL = 'get_topic_messages_query';
+export const GET_TOPIC_MESSAGES_QUERY_TOOL = 'get_topic_messages_query_tool';
 
 const tool = (context: Context): Tool => ({
   method: GET_TOPIC_MESSAGES_QUERY_TOOL,

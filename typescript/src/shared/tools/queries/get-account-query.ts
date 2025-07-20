@@ -39,7 +39,7 @@ export const getAccountQuery = async (
   }
 };
 
-export const GET_ACCOUNT_QUERY_TOOL = 'get_account_query';
+export const GET_ACCOUNT_QUERY_TOOL = 'get_account_query_tool';
 
 const getAccountQueryTool = (context: Context): Tool => ({
   method: GET_ACCOUNT_QUERY_TOOL,

@@ -37,7 +37,7 @@ const submitTopicMessage = async (
   }
 };
 
-export const SUBMIT_TOPIC_MESSAGE_TOOL = 'submit_topic_message';
+export const SUBMIT_TOPIC_MESSAGE_TOOL = 'submit_topic_message_tool';
 
 const tool = (context: Context): Tool => ({
   method: SUBMIT_TOPIC_MESSAGE_TOOL,

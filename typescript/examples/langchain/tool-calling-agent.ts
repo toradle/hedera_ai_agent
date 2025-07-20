@@ -21,6 +21,7 @@ async function bootstrap(): Promise<void> {
     PrivateKey.fromStringECDSA(process.env.PRIVATE_KEY!),
   );
 
+
   // Prepare Hedera toolkit (load all tools by default)
   const hederaAgentToolkit = new HederaLangchainToolkit({
     client,

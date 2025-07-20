@@ -50,7 +50,7 @@ export const getAccountTokenBalancesQuery = async (
   }
 };
 
-export const GET_ACCOUNT_TOKEN_BALANCES_QUERY_TOOL = 'get_account_token_balances_query';
+export const GET_ACCOUNT_TOKEN_BALANCES_QUERY_TOOL = 'get_account_token_balances_query_tool';
 
 const tool = (context: Context): Tool => ({
   method: GET_ACCOUNT_TOKEN_BALANCES_QUERY_TOOL,

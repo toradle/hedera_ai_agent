@@ -55,7 +55,7 @@ const createNonFungibleToken = async (
   }
 };
 
-export const CREATE_NON_FUNGIBLE_TOKEN_TOOL = 'create_non_fungible_token';
+export const CREATE_NON_FUNGIBLE_TOKEN_TOOL = 'create_non_fungible_token_tool';
 
 const tool = (context: Context): Tool => ({
   method: CREATE_NON_FUNGIBLE_TOKEN_TOOL,

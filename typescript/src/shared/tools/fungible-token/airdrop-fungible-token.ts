@@ -57,7 +57,7 @@ const airdropFungibleToken = async (
   }
 };
 
-export const AIRDROP_FUNGIBLE_TOKEN_TOOL = 'airdrop_fungible_token';
+export const AIRDROP_FUNGIBLE_TOKEN_TOOL = 'airdrop_fungible_token_tool';
 
 const tool = (context: Context): Tool => ({
   method: AIRDROP_FUNGIBLE_TOKEN_TOOL,

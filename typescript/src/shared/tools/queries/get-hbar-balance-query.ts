@@ -48,7 +48,7 @@ export const getHbarBalanceQuery = async (
   }
 };
 
-export const GET_HBAR_BALANCE_QUERY_TOOL = 'get_hbar_balance_query';
+export const GET_HBAR_BALANCE_QUERY_TOOL = 'get_hbar_balance_query_tool';
 
 const tool = (context: Context): Tool => ({
   method: GET_HBAR_BALANCE_QUERY_TOOL,

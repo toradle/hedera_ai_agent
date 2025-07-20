@@ -52,7 +52,7 @@ const transferHbar = async (
   }
 };
 
-export const TRANSFER_HBAR_TOOL = 'transfer_hbar';
+export const TRANSFER_HBAR_TOOL = 'transfer_hbar_tool';
 
 const tool = (context: Context): Tool => ({
   method: TRANSFER_HBAR_TOOL,
