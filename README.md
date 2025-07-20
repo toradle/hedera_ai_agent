@@ -44,12 +44,13 @@ HEDERA_NETWORK=testnet
 ```
 
 ### 3 – Minimal "Hello-Hedera"
+This example uses a few tools to 
 ```typescript
+
 ```
 
 ### 4 – Conversational Agent Demo
 
-### 5 – Tool Example
 
 ---
 
