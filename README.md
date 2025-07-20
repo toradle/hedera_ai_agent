@@ -92,12 +92,12 @@ This version of the Hedera Agent Kit, known as v3, is a complete rewrite of the 
 
 ## Core Concepts
 
-#### Agent Execution Modes
+### Agent Execution Modes
 This tool has two execution modes with AI agents;  autonomous excution and return bytes. If you set:
  * `mode: AgentMode.RETURN_BYTE` the transaction will be executed, and the bytes to execute the Hedera transaction will be returned. 
  * `mode: AgentMode.AUTONOMOUS` the transaction will be executed autonomously, using the accountID set (the operator account can be set in the client with `.setOperator(process.env.ACCOUNT_ID!`)
 
-#### Hedera Transaction Tools
+### Hedera Transaction Tools
 The Hedera Agent Kit provides a set of tools to execute transactions on the Hedera network, which we will be expanding in the future. To requset more fundtionality, please [open an issue]().
 
 **Available Tools**
@@ -111,7 +111,7 @@ The Hedera Agent Kit provides a set of tools to execute transactions on the Hede
 
 See the implementation details in [docs/TOOLS.md](docs/TOOLS.md)
 
-#### Hedera Mirror Node Query Tools
+### Hedera Mirror Node Query Tools
 The Hedera network is made up of two types of nodes: consensus nodes and mirror nodes. Mirror nodes are free to query, and maintain a copy of the state of the network for users to query. 
 
 This toolkit provides a set of tools to query the state of the network, including accounts, tokens, and transactions. To requset more fundtionality, please [open an issue]().
@@ -124,7 +124,9 @@ The Hedera Agent Kit provides a set of tools to execute query these nodes:
 * Get Topic Messages Query
 
 See the implementation details in [docs/TOOLS.md](docs/TOOLS.md)
-#### Conversational Agent
+
+
+### Conversational Agent
 
 
 ## Agent Kit Tools
@@ -132,15 +134,7 @@ See the implementation details in [docs/TOOLS.md](docs/TOOLS.md)
 
 ---
 ## Creating Tools
-
-## Local Development & Contributing
-```bash
-git clone https://github.com/hedera-dev/hedera-agent-kit.git
-cd hedera-agent-kit
-npm install
-cp typescript/examples/langchain/.env.example your/file/path/.env   # add your keys
-```
-Please read [CONTRIBUTING.md](./CONTRIBUTING.md) and sign your commits under the DCO.
+See CONTRIBUTING.md](./CONTRIBUTING.md) for details on how to contribute to the Hedera Agent Kit.
 
 ## License
 Apache 2.0

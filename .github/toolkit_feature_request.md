@@ -9,7 +9,9 @@ assignees: ''
 
 ## Contact Info
 **GitHub Username:** @  
-**Discord Handle:** [Join the Hedera Discord Server] (https://discord.gg/DNx3r3CW)
+**Discord Handle:**
+
+[Join the Hedera Discord Server] (https://discord.gg/DNx3r3CW)
 
 ## Hedera Service Category
 - [ ] **HTS** - Tokens & NFTs
@@ -34,5 +36,5 @@ How would someone use this with the conversational agent?
 
 ## Additional Context
 Any relevant links, similar tools, or technical details:
-
+*
 ---
