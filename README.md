@@ -117,7 +117,7 @@ The Hedera Agent Kit provides a set of tools to execute transactions on the Hede
 
 To request more functionality in the toolkit for:
 * [Token Service](https://docs.hedera.com/hedera/sdks-and-apis/sdks/token-service)
-* [Consensus Service](https://docs.hedera.com/hedera/sdks-and-apis/sdks/consensus-service
+* [Consensus Service](https://docs.hedera.com/hedera/sdks-and-apis/sdks/consensus-service)
 * [Smart Contract Servce](https://docs.hedera.com/hedera/tutorials/smart-contracts)
 
 Please [open an issue](https://github.com/hedera-dev/hedera-agent-kit/issues/new?template=toolkit_feature_request.md&title=[FEATURE]%20-%20).
@@ -150,7 +150,7 @@ See the implementation details in [docs/TOOLS.md](docs/TOOLS.md)
 ## Agent Kit Tools
 👉 See [docs/TOOLS.md](docs/TOOLS.md) for the full catalogue & usage examples.
 
-Want to add more functionality from Hedera Services? [Open an issue]!
+Want to add more functionality from Hedera Services? [Open an issue](https://github.com/hedera-dev/hedera-agent-kit/issues/new?template=toolkit_feature_request.md&title=[FEATURE]%20-%20)!
 
 ---
 ## Creating Tools

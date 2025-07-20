@@ -105,8 +105,7 @@ Make sure the name and email match the identity you’ve set in Git. GitHub Acti
 
 ## 5. Community & Support
 
-- Use GitHub Discussions to propose ideas [open an issue](https://github.com/hedera-dev/hedera-agent-kit/issues/new?template=toolkit_feature_request.md&title=[FEATURE]%20-%20) or ask questions.
-- For urgent issues, open a dedicated GitHub Issue with the bug or feature request clearly described.
+- Use GitHub to propose ideas and [open an issue](https://github.com/hedera-dev/hedera-agent-kit/issues/new?template=toolkit_feature_request.md&title=[FEATURE]%20-%20) or ask questions.
 - [Join the Hedera Discord Server] (https://discord.gg/DNx3r3CW) and reach out in the approppriate channel.
 
 
