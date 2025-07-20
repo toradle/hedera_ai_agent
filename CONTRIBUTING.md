@@ -50,6 +50,10 @@ Make sure the name and email match the identity you’ve set in Git. GitHub Acti
 
 ## 4. How to Contribute
 
+### Create an Issue requesting Toolkit Features
+
+[open an issue](https://github.com/hedera-dev/hedera-agent-kit/issues/new?template=toolkit_feature_request.md&title=[FEATURE]%20-%20).
+
 ### Find a Task
 
 - Check out our Roadmap or look for open Issues in the repository.

@@ -4,6 +4,8 @@ The Hedera Agent Kit provides a comprehensive set of tools organized by service 
 
 Tools can be found in [typescript/src/shared/tools](../typescript/src/shared/tools)
 
+Want additional Hedera tools? [Open an issue](https://github.com/hedera-dev/hedera-agent-kit/issues/new?assignees=&labels=enhancement&template=toolkit_feature_request.md&title=%5BFEATURE%5D%20-%20).
+
 ## Hedera Transaction Tools
 These tools provided by the toolkit enable you to execute basic transacitons on the Hedera network.
 

@@ -113,7 +113,14 @@ This tool has two execution modes with AI agents;  autonomous excution and retur
  * `mode: AgentMode.AUTONOMOUS` the transaction will be executed autonomously, using the accountID set (the operator account can be set in the client with `.setOperator(process.env.ACCOUNT_ID!`)
 
 ### Hedera Transaction Tools
-The Hedera Agent Kit provides a set of tools to execute transactions on the Hedera network, which we will be expanding in the future. To requset more fundtionality, please [open an issue]().
+The Hedera Agent Kit provides a set of tools to execute transactions on the Hedera network, which we will be expanding in the future. 
+
+To request more functionality in the toolkit for:
+* [Token Service](https://docs.hedera.com/hedera/sdks-and-apis/sdks/token-service)
+* [Consensus Service](https://docs.hedera.com/hedera/sdks-and-apis/sdks/consensus-service
+* [Smart Contract Servce](https://docs.hedera.com/hedera/tutorials/smart-contracts)
+
+Please [open an issue](https://github.com/hedera-dev/hedera-agent-kit/issues/new?template=toolkit_feature_request.md&title=[FEATURE]%20-%20).
 
 **Available Tools**
 * Transfer HBAR
@@ -129,7 +136,7 @@ See the implementation details in [docs/TOOLS.md](docs/TOOLS.md)
 ### Hedera Mirror Node Query Tools
 The Hedera network is made up of two types of nodes: consensus nodes and mirror nodes. Mirror nodes are free to query, and maintain a copy of the state of the network for users to query. 
 
-This toolkit provides a set of tools to query the state of the network, including accounts, tokens, and transactions. To requset more fundtionality, please [open an issue]().
+This toolkit provides a set of tools to query the state of the network, including accounts, tokens, and transactions. To request more functionality, please [open an issue](https://github.com/hedera-dev/hedera-agent-kit/issues/new?template=toolkit_feature_request.md&title=[FEATURE]%20-%20).
 
 The Hedera Agent Kit provides a set of tools to execute query these nodes:
 
@@ -142,6 +149,8 @@ See the implementation details in [docs/TOOLS.md](docs/TOOLS.md)
 
 ## Agent Kit Tools
 👉 See [docs/TOOLS.md](docs/TOOLS.md) for the full catalogue & usage examples.
+
+Want to add more functionality from Hedera Services? [Open an issue](https://github.com/hedera-dev/hedera-agent-kit/issues/new?assignees=&labels=enhancement&template=toolkit_feature_request.md&title=%5BFEATURE%5D%20-%20)!
 
 ---
 ## Creating Tools
