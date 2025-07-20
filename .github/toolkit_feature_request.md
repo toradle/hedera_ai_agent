@@ -1,5 +1,6 @@
-markdown---
-name: Toolkit Feature Request
+
+# Toolkit Feature Request
+---
 about: Request new functionality for the Hedera Agent Toolkit
 title: '[FEATURE] - '
 labels: ['enhancement']
