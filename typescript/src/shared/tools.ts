@@ -34,7 +34,7 @@ export type Tool = {
   execute: (client: Client, context: Context, params: any) => Promise<any>;
 };
 
-const toolsArray = (context: Context): Tool[] => [
+const tools = (context: Context): Tool[] => [
   createFungibleTokenTool(context),
   createNonFungibleTokenTool(context),
   transferHbarTool(context),
@@ -47,7 +47,7 @@ const toolsArray = (context: Context): Tool[] => [
   getTopicMessagesQuery(context),
 ];
 
-export const tools = {
+export const hederaTools = {
   CREATE_FUNGIBLE_TOKEN_TOOL,
   CREATE_NON_FUNGIBLE_TOKEN_TOOL,
   TRANSFER_HBAR_TOOL,
@@ -60,4 +60,4 @@ export const tools = {
   GET_TOPIC_MESSAGES_QUERY_TOOL,
 };
 
-export default toolsArray;
+export default tools;
