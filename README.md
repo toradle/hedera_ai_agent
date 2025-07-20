@@ -29,27 +29,45 @@ npm i hedera-agent-kit           # or yarn / pnpm
 - Node.js v20 or higher
 
 **Dependencies**
-- @hashgraph/sdk 
-- @langchain/core 
-- zod 
-- dotenv
+* Hedera [Hashgraph SDK](https://github.com/hiero-ledger/hiero-sdk-js) and API
+* [Langchain Tools](https://js.langchain.com/docs/concepts/tools/) 
+* zod 
+* dotenv
 
 ### 2 – Configure: Add Environment Variables
-Create a `.env` next to your script:
+Copy `typescript/examples/langchain/.env.example` to `typescript/examples/langchain/.env`:
+yt
+```bash
+cd typescript/examples/langchain
+cp .env.example .env
+```
+
+Add in your [Hedera API](https://portal.hedera.com/dashboard) and [OPENAPI](https://platform.openai.com/api-keys) Keys
+
 ```env
-OPENAI_API_KEY=sk-...
-HEDERA_ACCOUNT_ID=0.0.xxx
-HEDERA_PRIVATE_KEY=302e020100300506032b6570...
-HEDERA_NETWORK=testnet
+ACCOUNT_ID= 0.0.xxxxx
+PRIVATE_KEY= 302e...
+OPENAI_API_KEY= sk-proj-...
 ```
 
-### 3 – Minimal "Hello-Hedera"
-This example uses a few tools to 
-```typescript
+### 3 – Run the Example Tool Calling Agent 
+With the tool-calling-agent, you can experiment with and call the [available tools](docs/TOOLS.md) in the Hedera Agent Kit for the operator account (the account you are using in the .env file)
+First, go into the directory where the example is and run `npm install`
 
+```bash
+cd typescript/examples/langchain
+npm install
 ```
+Then, run the example
 
-### 4 – Conversational Agent Demo
+```bash
+cd ../..
+npm run langchain:tool-calling-agent
+```
+!TIP]
+> You may want to install `ts-node` globally to run the examples using: `npm install -g ts-node`
+
+### 4 – Run the Structured Chat Agent 
 
 
 ---

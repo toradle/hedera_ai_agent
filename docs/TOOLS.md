@@ -2,6 +2,8 @@
 
 The Hedera Agent Kit provides a comprehensive set of tools organized by service type. These tools can be used both by the conversational agent and programmatically.
 
+Tools can be found in [typescript/src/shared/tools](../typescript/src/shared/tools)
+
 ## Hedera Transaction Tools
 These tools provided by the toolkit enable you to execute basic transacitons on the Hedera network.
 
@@ -25,5 +27,4 @@ These tools provided by the toolkit enable you to complete (free) queries agains
 | `get-hbar-balance-query`| Returns the HBAR balance for a given Hedera account in tinybars| Requires a Hedera account ID to query (uses context operator account if not specified)|
 | `get-account-token-balances-query`| Returns token balances for a Hedera acocunt | rovide the account ID to query (optional - uses context account if not provided). Optionally, provide a specific token ID to query|
 | `get-topic-messages-query`| Returns messages for a given Hedera Consensus Service (HCS) topic | Provide the topic ID to query (required). Optionally, provide start time, end time, and limit for message filtering|
-
 <!-- | `tool-name`| Description of what Tool Does | How to use| -->
