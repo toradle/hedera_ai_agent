@@ -1,6 +1,7 @@
 {
   "name": "hedera-agent-kit",
   "version": "3.0.0",
+  "description": "Use the Hedera Agent Kit to build agents that can interact with the Hedera network in any framework you like.",
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
@@ -20,9 +21,8 @@
     "node": ">=18"
   },
   "keywords": [],
-  "author": "",
+  "author": "Hashgraph",
   "license": "Apache-2.0",
-  "description": "",
   "dependencies": {
     "@hashgraph/sdk": "^2.68.0",
     "@langchain/core": "^0.3.66",
@@ -48,7 +48,10 @@
     "typescript-eslint": "^8.37.0"
   },
   "files": [
-    "dist/**/*",
-    "README.md"
-  ]
+    "dist/**/*"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/hedera-dev/hedera-agent-kit.git"
+  }
 }
