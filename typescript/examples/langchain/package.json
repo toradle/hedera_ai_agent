@@ -8,11 +8,11 @@
   },
   "dependencies": {
     "@hashgraph/sdk": "^2.68.0",
-    "@langchain/core": "^0.3.62",
+    "@langchain/core": "^0.3.66",
+    "@langchain/openai": "^0.6.2",
     "dotenv": "^17.2.0",
     "hedera-agent-kit": "file:../../dist",
-    "@langchain/openai": "^0.5.18",
-    "langchain": "0.3.29",
+    "langchain": "^0.3.30",
     "prompts": "^2.4.2"
   },
   "author": "",
