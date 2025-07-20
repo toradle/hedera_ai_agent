@@ -150,7 +150,7 @@ See the implementation details in [docs/TOOLS.md](docs/TOOLS.md)
 ## Agent Kit Tools
 👉 See [docs/TOOLS.md](docs/TOOLS.md) for the full catalogue & usage examples.
 
-Want to add more functionality from Hedera Services? [Open an issue](https://github.com/hedera-dev/hedera-agent-kit/issues/new?assignees=&labels=enhancement&template=toolkit_feature_request.md&title=%5BFEATURE%5D%20-%20)!
+Want to add more functionality from Hedera Services? [Open an issue]!
 
 ---
 ## Creating Tools
