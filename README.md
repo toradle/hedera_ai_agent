@@ -101,8 +101,8 @@ async function main() {
 
   // Hedera client setup (Testnet by default)
   const client = Client.forTestnet().setOperator(
-    process.env.ACCOUNT_ID!,
-    PrivateKey.fromStringECDSA(process.env.PRIVATE_KEY!),
+    process.env.ACCOUNT_ID,
+    PrivateKey.fromStringDer(process.env.PRIVATE_KEY),
   ); // get these from https://portal.hedera.com
 
   const hederaAgentToolkit = new HederaLangchainToolkit({
