@@ -44,32 +44,6 @@ See more info at [https://www.npmjs.com/package/hedera-agent-kit](https://www.np
 Create a directory for your project and install dependencies:
 ```bash
 npm install hedera-agent-kit @langchain/openai @langchain/core langchain @hashgraph/sdk dotenv
-npm install -D typescript @types/node ts-node
-npm install dotenv
-```
-
-Create a `tsconfig.json` file in the root directory of your project to compile JS -> typrescript.
-
-```bash
-touch tsconfig.json
-```
-```json
-{
-  "compilerOptions": {
-    "target": "es2020",
-    "module": "commonjs",
-    "lib": ["es2020"],
-    "outDir": "./dist",
-    "rootDir": "./src",
-    "strict": true,
-    "esModuleInterop": true,
-    "skipLibCheck": true,
-    "forceConsistentCasingInFileNames": true,
-    "resolveJsonModule": true
-  },
-  "include": ["src/**/*"],
-  "exclude": ["node_modules", "dist"]
-}
 ```
 
 ### 2 – Configure: Add Environment Variables 
@@ -99,11 +73,10 @@ touch index.js
 Once you have created a new file `index.js` and added the environment variables, you can run the following code:
 
 ```javascript
-// src/index.ts
+// index.js
 import dotenv from 'dotenv';
 dotenv.config();
 
-const { HederaLangchainToolkit } = require('hedera-agent-kit');
 import { ChatOpenAI } from '@langchain/openai';
 import { ChatPromptTemplate } from '@langchain/core/prompts';
 import { AgentExecutor, createToolCallingAgent } from 'langchain/agents';
@@ -315,4 +288,4 @@ See [CONTRIBUTING.md](./CONTRIBUTING.md) for details on how to contribute to the
 Apache 2.0
 
 ## Credits
-Special thanks to the developer of the [Stripe Agent Toolkit](https://github.com/stripe/agent-toolkit) who provided the inspiration for the architecture and patterns used in this project.
+Special thanks to the developers of the [Stripe Agent Toolkit](https://github.com/stripe/agent-toolkit) who provided the inspiration for the architecture and patterns used in this project.
