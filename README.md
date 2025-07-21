@@ -66,7 +66,7 @@ Once you have created a new file `index.js` and added the environment variables,
 import dotenv from 'dotenv';
 dotenv.config();
 
-import { HederaLangchainToolkit } from 'hedera-agent-kit);
+import { HederaLangchainToolkit } from 'hedera-agent-kit';
 import { ChatOpenAI } from '@langchain/openai';
 import { ChatPromptTemplate } from '@langchain/core/prompts';
 import { AgentExecutor, createToolCallingAgent } from 'langchain/agents';
