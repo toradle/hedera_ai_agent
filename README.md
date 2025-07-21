@@ -23,16 +23,35 @@
 See more info at [https://www.npmjs.com/package/hedera-agent-kit](https://www.npmjs.com/package/hedera-agent-kit)
 
 ### 1 – Project Setup
-Create a directory for your project and initialize npm
-```bash
-mkdir hello-hedera-agent-kit
-cd hello-hedera-agent-kit
-npm init -y
-```
-
-Install dependencies:
+Create a directory for your project and install dependencies:
 ```bash
 npm install hedera-agent-kit @langchain/openai @langchain/core langchain @hashgraph/sdk dotenv
+npm install -D typescript @types/node ts-node
+npm install dotenv
+```
+
+Create a `tsconfig.json` file in the root directory of your project to compile JS -> typrescript.
+
+```bash
+touch tsconfig.json
+```
+```json
+{
+  "compilerOptions": {
+    "target": "es2020",
+    "module": "commonjs",
+    "lib": ["es2020"],
+    "outDir": "./dist",
+    "rootDir": "./src",
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "resolveJsonModule": true
+  },
+  "include": ["src/**/*"],
+  "exclude": ["node_modules", "dist"]
+}
 ```
 
 ### 2 – Configure: Add Environment Variables 
