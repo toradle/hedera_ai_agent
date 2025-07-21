@@ -166,7 +166,7 @@ If you would like, try adding in other prompts to the agent to see what it can d
 > To get other Hedera Agent Kit tools working, take a look at the example agent implementations at [https://github.com/hedera-dev/hedera-agent-kit/tree/main/typescript/examples/langchain](https://github.com/hedera-dev/hedera-agent-kit/tree/main/typescript/examples/langchain)
 ---
 
-## 📦 Install & Try the SDK
+## 📦 Clone & Test the SDK Examples
 ### 1 – Install
 ```bash
 git clone https://github.com/hedera-dev/hedera-agent-kit.git 
@@ -182,7 +182,19 @@ git clone https://github.com/hedera-dev/hedera-agent-kit.git
 * dotenv
 
 ### 2 – Configure: Add Environment Variables
+
+#### For Agent Examples
 Copy `typescript/examples/langchain/.env.example` to `typescript/examples/langchain/.env`:
+
+```bash
+cd typescript/examples/langchain
+cp .env.example .env
+```
+
+## For MCP Server Example
+
+Copy `typescript/examples/langchain/.env.example` to `typescript/examples/langchain/.env`:
+
 ```bash
 cd typescript/examples/langchain
 cp .env.example .env
@@ -239,7 +251,6 @@ npm install
 ```bash
 npm run langchain:structured-chat-agent
 ```
-> You may want to install `ts-node` globally to run the examples using: `npm install -g ts-node`
 ### 5 - Option C: Try the Human in the Loop Chat Agent
 
 ### 6 - Option D: Try Out the MCP Server
