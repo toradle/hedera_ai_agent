@@ -43,6 +43,11 @@ See more info at [https://www.npmjs.com/package/hedera-agent-kit](https://www.np
 ### 1 – Project Setup
 Create a directory for your project and install dependencies:
 ```bash
+mkdir hello-hedera-agent-kit
+cd hello-hedera-agent-kit
+```
+
+```bash
 npm install hedera-agent-kit @langchain/openai @langchain/core langchain @hashgraph/sdk dotenv
 ```
 
