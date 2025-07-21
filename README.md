@@ -217,8 +217,6 @@ npm install
 npm run langchain:tool-calling-agent
 ```
 
-> You may want to install `ts-node` globally to run the examples using: `npm install -g ts-node`
-
 3. interact with the agent. First, tell the agent who you are (your name) and try out some of the interactions by asking questions: 
   *  _What can you help me do with Hedera?_ 
   * _What's my current HBAR balance?_ 
