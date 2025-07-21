@@ -84,14 +84,13 @@ touch index.js
 Once you have created a new file `index.js` and added the environment variables, you can run the following code:
 
 ```javascript
-// index.js
-import dotenv from 'dotenv';
-dotenv.config();
+require('dotenv').config();
 
-import { ChatOpenAI } from '@langchain/openai';
-import { ChatPromptTemplate } from '@langchain/core/prompts';
-import { AgentExecutor, createToolCallingAgent } from 'langchain/agents';
-import { Client, PrivateKey } from '@hashgraph/sdk';
+const { ChatOpenAI } = require('@langchain/openai');
+const { ChatPromptTemplate } = require('@langchain/core/prompts');
+const { AgentExecutor, createToolCallingAgent } = require('langchain/agents');
+const { Client, PrivateKey } = require('@hashgraph/sdk');
+const { HederaLangchainToolkit } = require('hedera-agent-kit');
 
 async function main() {
   // Initialise OpenAI LLM
@@ -101,11 +100,12 @@ async function main() {
 
   // Hedera client setup (Testnet by default)
   const client = Client.forTestnet().setOperator(
-    process.env.ACCOUNT_ID!,
-    PrivateKey.fromStringDer(process.env.PRIVATE_KEY!),
+    process.env.ACCOUNT_ID,
+    PrivateKey.fromStringDer(process.env.PRIVATE_KEY),
   ); // get these from https://portal.hedera.com
 
-  const hederaAgentToolkit = new HederaLangchainToolkit({
+  // Create the Hedera Langchain Toolkit
+  const hederaAgentKit = new HederaLangchainToolkit({
     client,
     configuration: {
       tools: [] // use an empty array if you want to load all tools
@@ -121,7 +121,7 @@ async function main() {
   ]);
 
   // Fetch tools from toolkit
-  const tools = hederaAgentToolkit.getTools();
+  const tools = hederaAgentKit.getTools();
 
   // Create the underlying agent
   const agent = createToolCallingAgent({
@@ -136,7 +136,7 @@ async function main() {
     tools,
   });
   
-  const response = await agentExecutor.invoke({ input: "what's my balance?" });
+  const response = await agentExecutor.invoke({ input: "transfer 5 HBAR to account 0.0.1234" });
   console.log(response);
 }
 
