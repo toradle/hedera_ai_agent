@@ -9,7 +9,8 @@
 ## 📋 Contents
 
 - [🚀 60-Second Quick-Start](#-60-second-quick-start)
-- [Key Features](#key-features)
+- [📦 Install & Try the SDK](#install--try-the-sdk)
+- [ Key Features](#key-features)
 - [Core Concepts](#core-concepts)
 - [Available Hedera Tools](#available-hedera-tools)
 - [Creating Tools](#creating-tools)
@@ -19,16 +20,185 @@
 ---
 
 ## 🚀 60-Second Quick-Start
+See more info at [https://www.npmjs.com/package/hedera-agent-kit](https://www.npmjs.com/package/hedera-agent-kit)
 
+### 1 – Project Setup
+Create a directory for your project and initialize npm
+```bash
+mkdir hello-hedera-agent kit
+cd hedera-agent-project
+npm init -y
+```
+
+Install dependencies:
+```bash
+npm install hedera-agent-kit @langchain/openai @langchain/core langchain @hashgraph/sdk
+npm install -D typescript @types/node ts-node
+```
+
+
+Create a `tsconfig.json` file in the root directory of your project to compile JS -> typrescript.
+```bash
+touch tsconfig.json
+```
+```json
+{
+  "compilerOptions": {
+    "target": "es2020",
+    "module": "commonjs",
+    "lib": ["es2020"],
+    "outDir": "./dist",
+    "rootDir": "./src",
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "resolveJsonModule": true
+  },
+  "include": ["src/**/*"],
+  "exclude": ["node_modules", "dist"]
+}
+```
+
+Install dotenv to load environment variables:
+```bash
+npm install dotenv
+```
+
+
+### 2 – Configure: Add Environment Variables 
+Create an .env file in the root directory of your project:
+```bash
+touch .env
+```
+
+If you already have a **testnet** account, you can use it. Otherwise, you can create a new one at [https://portal.hedera.com/dashboard](https://portal.hedera.com/dashboard) 
+
+Add the following to the .env file:
+```env
+ACCOUNT_ID= 0.0.xxxxx # your operator account ID from https://portal.hedera.com/dashboard
+PRIVATE_KEY= 302e... # DER encoded private key
+OPENAI_API_KEY= sk-proj-... # Create an OpenAPI Key at https://platform.openai.com/api-keys
+```
+
+
+
+### 3 – Simple "Hello Hedera Agent Kit" Example
+Create a new directory called `src` and a new file called `index.ts` in the `hello-hedera-agent-kit` folder.
+
+```bash
+mkdir src
+touch src/index.ts
+```
+
+Once you have created a new file `index.ts` and added the environment variables, you can run the following code:
+
+```typescript
+// src/index.ts
+import dotenv from 'dotenv';
+dotenv.config();
+
+const { HederaLangchainToolkit } = require('hedera-agent-kit');
+import { ChatOpenAI } from '@langchain/openai';
+import { ChatPromptTemplate } from '@langchain/core/prompts';
+import { AgentExecutor, createToolCallingAgent } from 'langchain/agents';
+import { Client, PrivateKey } from '@hashgraph/sdk';
+
+async function main() {
+  // Initialise OpenAI LLM
+  const llm = new ChatOpenAI({
+    model: 'gpt-4o-mini',
+  });
+
+  // Hedera client setup (Testnet by default)
+  const client = Client.forTestnet().setOperator(
+    process.env.ACCOUNT_ID!,
+    PrivateKey.fromStringECDSA(process.env.PRIVATE_KEY!),
+  ); // get these from https://portal.hedera.com
+
+  const hederaAgentToolkit = new HederaLangchainToolkit({
+    client,
+    configuration: {
+      tools: [] // use an empty array if you want to load all tools
+    },
+  });
+  
+  // Load the structured chat prompt template
+  const prompt = ChatPromptTemplate.fromMessages([
+    ['system', 'You are a helpful assistant'],
+    ['placeholder', '{chat_history}'],
+    ['human', '{input}'],
+    ['placeholder', '{agent_scratchpad}'],
+  ]);
+
+  // Fetch tools from toolkit
+  const tools = hederaAgentToolkit.getTools();
+
+  // Create the underlying agent
+  const agent = createToolCallingAgent({
+    llm,
+    tools,
+    prompt,
+  });
+  
+  // Wrap everything in an executor that will maintain memory
+  const agentExecutor = new AgentExecutor({
+    agent,
+    tools,
+  });
+  
+  const response = await agentExecutor.invoke({ input: "what's my balance?" });
+  console.log(response);
+}
+
+main().catch(console.error);
+```
+
+To make it easy to run with `npm run`, add the following to `package.json` file in the root directory of your project:
+
+```json
+"scripts": {
+  "start": "ts-node src/index.ts",
+  "build": "tsc",
+  "dev": "ts-node src/index.ts",
+  "test": "echo \"Error: no test specified\" && exit 1"
+}
+```
+### 4 – Run Your "Hello Hedera Agent Kit" Example
+From the root directory, run your example agent, and prompt it to give your hbar balance:
+
+```bash
+npm run start
+```
+
+If you would like, try adding in other prompts to the agent to see what it can do. 
+
+```typescript
+... 
+//original
+  const response = await agentExecutor.invoke({ input: "what's my balance?" });
+// or
+  const response = await agentExecutor.invoke({ input: "create a new token called 'TestToken' with symbol 'TEST'" });
+// or
+  const response = await agentExecutor.invoke({ input: "transfer 5 HBAR to account 0.0.1234" });
+// or
+  const response = await agentExecutor.invoke({ input: "create a new topic for project updates" });
+...
+   console.log(response);
+```
+
+---
+
+## 📦 Install & Try the SDK
 ### 1 – Install
 ```bash
-npm i hedera-agent-kit           # or yarn / pnpm
+git clone https://github.com/hedera-dev/hedera-agent-kit.git           # or yarn / pnpm
 ```
 
 **Requirements** 
 - Node.js v20 or higher
 
-**Dependencies**
+**Repo Dependencies**
 * Hedera [Hashgraph SDK](https://github.com/hiero-ledger/hiero-sdk-js) and API
 * [Langchain Tools](https://js.langchain.com/docs/concepts/tools/) 
 * zod 
@@ -36,7 +206,6 @@ npm i hedera-agent-kit           # or yarn / pnpm
 
 ### 2 – Configure: Add Environment Variables
 Copy `typescript/examples/langchain/.env.example` to `typescript/examples/langchain/.env`:
-yt
 ```bash
 cd typescript/examples/langchain
 cp .env.example .env
@@ -50,7 +219,7 @@ PRIVATE_KEY= 302e...
 OPENAI_API_KEY= sk-proj-...
 ```
 
-### 3 – Run the Example Tool Calling Agent 
+### 3 – Option A: Run the Example Tool Calling Agent 
 With the tool-calling-agent (found at `typescript/examples/langchain/tool-calling-agent.ts`), you can experiment with and call the [available tools](docs/TOOLS.md) in the Hedera Agent Kit for the operator account (the account you are using in the .env file). This example tool-calling-agent uses GPT 4-o-mini that is a simple template you can use with other LLMs.
 
 
@@ -78,7 +247,7 @@ npm run langchain:tool-calling-agent
   * _Create a token with 1000 initial supply and then submit a message about it to topic 0.0.67890_ 
   
 
-### 4 – Run the Structured Chat Agent 
+### 4 – Option B: Run the Structured Chat Agent 
 The structured chat agent enables you to interact with the Hedera blockchain in the same way as the tool calling agent, using GPT-4.1 as the LLM. You can use tools in autonomous mode using pre-built [prompts from the LangChain Hub](https://github.com/hwchase17/langchain-hub/blob/master/prompts/README.md).
 
 
@@ -94,6 +263,9 @@ npm install
 npm run langchain:structured-chat-agent
 ```
 > You may want to install `ts-node` globally to run the examples using: `npm install -g ts-node`
+### 5 - Option C: Try the Human in the Loop Chat Agent
+
+### 6 - Option D: Try Out the MCP Server
 
 ---
 
