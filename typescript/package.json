@@ -1,6 +1,6 @@
 {
   "name": "hedera-agent-kit",
-  "version": "3.0.2",
+  "version": "3.0.4",
   "description": "Use the Hedera Agent Kit to build agents that can interact with the Hedera network in any framework you like.",
   "exports": {
     ".": {
@@ -48,8 +48,7 @@
     "typescript-eslint": "^8.37.0"
   },
   "files": [
-    "dist/**/*",
-    "../README.md"
+    "dist/**/*"
   ],
   "repository": {
     "type": "git",
