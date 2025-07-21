@@ -102,7 +102,7 @@ async function main() {
   // Hedera client setup (Testnet by default)
   const client = Client.forTestnet().setOperator(
     process.env.ACCOUNT_ID!,
-    PrivateKey.fromStringECDSA(process.env.PRIVATE_KEY!),
+    PrivateKey.fromStringDer(process.env.PRIVATE_KEY!),
   ); // get these from https://portal.hedera.com
 
   const hederaAgentToolkit = new HederaLangchainToolkit({
@@ -245,6 +245,7 @@ npm run langchain:structured-chat-agent
 ### 5 - Option C: Try the Human in the Loop Chat Agent
 
 ### 6 - Option D: Try Out the MCP Server
+First, navigate into the 
 
 ---
 
