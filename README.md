@@ -191,15 +191,6 @@ cd typescript/examples/langchain
 cp .env.example .env
 ```
 
-## For MCP Server Example
-
-Copy `typescript/examples/langchain/.env.example` to `typescript/examples/langchain/.env`:
-
-```bash
-cd typescript/examples/langchain
-cp .env.example .env
-```
-
 Add in your [Hedera API](https://portal.hedera.com/dashboard) and [OPENAPI](https://platform.openai.com/api-keys) Keys
 
 ```env
