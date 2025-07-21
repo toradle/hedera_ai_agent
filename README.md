@@ -25,40 +25,14 @@ See more info at [https://www.npmjs.com/package/hedera-agent-kit](https://www.np
 ### 1 – Project Setup
 Create a directory for your project and initialize npm
 ```bash
-mkdir hello-hedera-agent kit
-cd hedera-agent-project
+mkdir hello-hedera-agent-kit
+cd hello-hedera-agent-kit
 npm init -y
 ```
 
 Install dependencies:
 ```bash
-npm install hedera-agent-kit @langchain/openai @langchain/core langchain @hashgraph/sdk
-npm install -D typescript @types/node ts-node
-npm install dotenv
-```
-
-
-Create a `tsconfig.json` file in the root directory of your project to compile JS -> typrescript.
-```bash
-touch tsconfig.json
-```
-```json
-{
-  "compilerOptions": {
-    "target": "es2020",
-    "module": "commonjs",
-    "lib": ["es2020"],
-    "outDir": "./dist",
-    "rootDir": "./src",
-    "strict": true,
-    "esModuleInterop": true,
-    "skipLibCheck": true,
-    "forceConsistentCasingInFileNames": true,
-    "resolveJsonModule": true
-  },
-  "include": ["src/**/*"],
-  "exclude": ["node_modules", "dist"]
-}
+npm install hedera-agent-kit @langchain/openai @langchain/core langchain @hashgraph/sdk dotenv
 ```
 
 ### 2 – Configure: Add Environment Variables 
@@ -79,21 +53,20 @@ OPENAI_API_KEY= sk-proj-... # Create an OpenAPI Key at https://platform.openai.c
 
 
 ### 3 – Simple "Hello Hedera Agent Kit" Example
-Create a new directory called `src` and a new file called `index.ts` in the `hello-hedera-agent-kit` folder.
+Create a a new file called `index.js` in the `hello-hedera-agent-kit` folder.
 
 ```bash
-mkdir src
-touch src/index.ts
+touch index.js
 ```
 
-Once you have created a new file `index.ts` and added the environment variables, you can run the following code:
+Once you have created a new file `index.js` and added the environment variables, you can run the following code:
 
-```typescript
-// src/index.ts
+```javascript
+// index.js
 import dotenv from 'dotenv';
 dotenv.config();
 
-const { HederaLangchainToolkit } = require('hedera-agent-kit');
+import { HederaLangchainToolkit } from 'hedera-agent-kit);
 import { ChatOpenAI } from '@langchain/openai';
 import { ChatPromptTemplate } from '@langchain/core/prompts';
 import { AgentExecutor, createToolCallingAgent } from 'langchain/agents';
@@ -107,8 +80,8 @@ async function main() {
 
   // Hedera client setup (Testnet by default)
   const client = Client.forTestnet().setOperator(
-    process.env.ACCOUNT_ID!,
-    PrivateKey.fromStringECDSA(process.env.PRIVATE_KEY!),
+    process.env.ACCOUNT_ID,
+    PrivateKey.fromStringDer(process.env.PRIVATE_KEY),
   ); // get these from https://portal.hedera.com
 
   const hederaAgentToolkit = new HederaLangchainToolkit({
@@ -149,25 +122,16 @@ async function main() {
 main().catch(console.error);
 ```
 
-To make it easy to run with `npm run`, add the following to `package.json` file in the root directory of your project:
-
-```json
-"scripts": {
-  "start": "ts-node src/index.ts",
-  "build": "tsc",
-  "dev": "ts-node src/index.ts"
-}
-```
 ### 4 – Run Your "Hello Hedera Agent Kit" Example
 From the root directory, run your example agent, and prompt it to give your hbar balance:
 
 ```bash
-npm run start
+node index.js
 ```
 
 If you would like, try adding in other prompts to the agent to see what it can do. 
 
-```typescript
+```javascript
 ... 
 //original
   const response = await agentExecutor.invoke({ input: "what's my balance?" });
