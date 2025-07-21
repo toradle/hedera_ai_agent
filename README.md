@@ -6,16 +6,34 @@
 
 > Build Hedera-powered AI agents **in under a minute**.
 
+
+
 ## 📋 Contents
 
+- [Key Features](#key-features)
+- [About the Agent Kit Tools](#about-the-agent-kit-tools)
 - [🚀 60-Second Quick-Start](#-60-second-quick-start)
-- [📦 Install & Try the SDK](#install--try-the-sdk)
-- [ Key Features](#key-features)
-- [Core Concepts](#core-concepts)
-- [Available Hedera Tools](#available-hedera-tools)
+- [📦 Clone & Test the SDK Examples](#-clone--test-the-sdk-examples)
+- [Agent Execution Modes](#agent-execution-modes)
+- [Hedera Transaction Tools](#hedera-transaction-tools)
+- [Hedera Mirror Node Query Tools](#hedera-mirror-node-query-tools)
 - [Creating Tools](#creating-tools)
-- [Local Development & Contributing](#local-development--contributing)
-- [License & Credits](#license)   
+- [License](#license)
+- [Credits](#credits)   
+
+---
+## Key Features
+This version of the Hedera Agent Kit, known as v3, is a complete rewrite of the original version. It is designed to be more flexible and easier to use, with a focus on developer experience. It enables direct API execution through a simple HederaAgentAPI class, with an individual LangChain tools call for each example.
+
+---
+
+## About the Agent Kit Tools
+The list of currently available tools can be found in the [Tools section](#hedera-transaction-tools) of this page
+
+👉 See [docs/TOOLS.md](docs/TOOLS.md) for the full catalogue & usage examples.
+
+Want to add more functionality from Hedera Services? [Open an issue](https://github.com/hedera-dev/hedera-agent-kit/issues/new?template=toolkit_feature_request.md&title=[FEATURE]%20-%20)!
+
 
 ---
 
@@ -81,11 +99,11 @@ touch index.js
 Once you have created a new file `index.js` and added the environment variables, you can run the following code:
 
 ```javascript
-// index.js
+// src/index.ts
 import dotenv from 'dotenv';
 dotenv.config();
 
-import { HederaLangchainToolkit } from 'hedera-agent-kit';
+const { HederaLangchainToolkit } = require('hedera-agent-kit');
 import { ChatOpenAI } from '@langchain/openai';
 import { ChatPromptTemplate } from '@langchain/core/prompts';
 import { AgentExecutor, createToolCallingAgent } from 'langchain/agents';
@@ -99,8 +117,8 @@ async function main() {
 
   // Hedera client setup (Testnet by default)
   const client = Client.forTestnet().setOperator(
-    process.env.ACCOUNT_ID,
-    PrivateKey.fromStringDer(process.env.PRIVATE_KEY),
+    process.env.ACCOUNT_ID!,
+    PrivateKey.fromStringECDSA(process.env.PRIVATE_KEY!),
   ); // get these from https://portal.hedera.com
 
   const hederaAgentToolkit = new HederaLangchainToolkit({
@@ -248,20 +266,12 @@ npm run langchain:structured-chat-agent
 
 ---
 
-## Key Features
-This version of the Hedera Agent Kit, known as v3, is a complete rewrite of the original version. It is designed to be more flexible and easier to use, with a focus on developer experience. It enables direct API execution through a simple HederaAgentAPI class, with an individual LangChain tools call for each example.
-
-
----
-
-## Core Concepts
-
-### Agent Execution Modes
+## Agent Execution Modes
 This tool has two execution modes with AI agents;  autonomous excution and return bytes. If you set:
  * `mode: AgentMode.RETURN_BYTE` the transaction will be executed, and the bytes to execute the Hedera transaction will be returned. 
  * `mode: AgentMode.AUTONOMOUS` the transaction will be executed autonomously, using the accountID set (the operator account can be set in the client with `.setOperator(process.env.ACCOUNT_ID!`)
 
-### Hedera Transaction Tools
+## Hedera Transaction Tools
 The Hedera Agent Kit provides a set of tools to execute transactions on the Hedera network, which we will be expanding in the future. 
 
 To request more functionality in the toolkit for:
@@ -282,7 +292,7 @@ Please [open an issue](https://github.com/hedera-dev/hedera-agent-kit/issues/new
 
 See the implementation details in [docs/TOOLS.md](docs/TOOLS.md)
 
-### Hedera Mirror Node Query Tools
+## Hedera Mirror Node Query Tools
 The Hedera network is made up of two types of nodes: consensus nodes and mirror nodes. Mirror nodes are free to query, and maintain a copy of the state of the network for users to query. 
 
 This toolkit provides a set of tools to query the state of the network, including accounts, tokens, and transactions. To request more functionality, please [open an issue](https://github.com/hedera-dev/hedera-agent-kit/issues/new?template=toolkit_feature_request.md&title=[FEATURE]%20-%20).
@@ -296,12 +306,8 @@ The Hedera Agent Kit provides a set of tools to execute query these nodes:
 
 See the implementation details in [docs/TOOLS.md](docs/TOOLS.md)
 
-## Agent Kit Tools
-👉 See [docs/TOOLS.md](docs/TOOLS.md) for the full catalogue & usage examples.
-
-Want to add more functionality from Hedera Services? [Open an issue](https://github.com/hedera-dev/hedera-agent-kit/issues/new?template=toolkit_feature_request.md&title=[FEATURE]%20-%20)!
-
 ---
+
 ## Creating Tools
 See [CONTRIBUTING.md](./CONTRIBUTING.md) for details on how to contribute to the Hedera Agent Kit.
 
