@@ -34,6 +34,7 @@ Install dependencies:
 ```bash
 npm install hedera-agent-kit @langchain/openai @langchain/core langchain @hashgraph/sdk
 npm install -D typescript @types/node ts-node
+npm install dotenv
 ```
 
 
@@ -59,12 +60,6 @@ touch tsconfig.json
   "exclude": ["node_modules", "dist"]
 }
 ```
-
-Install dotenv to load environment variables:
-```bash
-npm install dotenv
-```
-
 
 ### 2 – Configure: Add Environment Variables 
 Create an .env file in the root directory of your project:
@@ -160,8 +155,7 @@ To make it easy to run with `npm run`, add the following to `package.json` file 
 "scripts": {
   "start": "ts-node src/index.ts",
   "build": "tsc",
-  "dev": "ts-node src/index.ts",
-  "test": "echo \"Error: no test specified\" && exit 1"
+  "dev": "ts-node src/index.ts"
 }
 ```
 ### 4 – Run Your "Hello Hedera Agent Kit" Example
@@ -186,13 +180,13 @@ If you would like, try adding in other prompts to the agent to see what it can d
 ...
    console.log(response);
 ```
-
+> To get other Hedera Agent Kit tools working, take a look at the example agent implementations at [https://github.com/hedera-dev/hedera-agent-kit/tree/main/typescript/examples/langchain](https://github.com/hedera-dev/hedera-agent-kit/tree/main/typescript/examples/langchain)
 ---
 
 ## 📦 Install & Try the SDK
 ### 1 – Install
 ```bash
-git clone https://github.com/hedera-dev/hedera-agent-kit.git           # or yarn / pnpm
+git clone https://github.com/hedera-dev/hedera-agent-kit.git 
 ```
 
 **Requirements** 
