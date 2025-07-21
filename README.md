@@ -47,9 +47,15 @@ mkdir hello-hedera-agent-kit
 cd hello-hedera-agent-kit
 ```
 
+Init and install with npm
+```bash
+npm init -y
+```
+
 ```bash
 npm install hedera-agent-kit @langchain/openai @langchain/core langchain @hashgraph/sdk dotenv
 ```
+
 
 ### 2 – Configure: Add Environment Variables 
 Create an .env file in the root directory of your project:
