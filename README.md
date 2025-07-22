@@ -67,9 +67,9 @@ If you already have a **testnet** account, you can use it. Otherwise, you can cr
 
 Add the following to the .env file:
 ```env
-ACCOUNT_ID= 0.0.xxxxx # your operator account ID from https://portal.hedera.com/dashboard
-PRIVATE_KEY= 302e... # DER encoded private key
-OPENAI_API_KEY= sk-proj-... # Create an OpenAPI Key at https://platform.openai.com/api-keys
+ACCOUNT_ID="0.0.xxxxx" # your operator account ID from https://portal.hedera.com/dashboard
+PRIVATE_KEY="302e..." # DER encoded private key
+OPENAI_API_KEY="sk-proj-..." # Create an OpenAPI Key at https://platform.openai.com/api-keys
 ```
 
 
@@ -84,13 +84,16 @@ touch index.js
 Once you have created a new file `index.js` and added the environment variables, you can run the following code:
 
 ```javascript
-require('dotenv').config();
+// index.js
+import dotenv from 'dotenv';
+dotenv.config();
 
-const { ChatOpenAI } = require('@langchain/openai');
-const { ChatPromptTemplate } = require('@langchain/core/prompts');
-const { AgentExecutor, createToolCallingAgent } = require('langchain/agents');
-const { Client, PrivateKey } = require('@hashgraph/sdk');
-const { HederaLangchainToolkit } = require('hedera-agent-kit');
+import { ChatOpenAI } from '@langchain/openai';
+import { ChatPromptTemplate } from '@langchain/core/prompts';
+import { AgentExecutor, createToolCallingAgent } from 'langchain/agents';
+import { Client, PrivateKey } from '@hashgraph/sdk';
+import { HederaLangchainToolkit } from 'hedera-agent-kit';
+
 
 async function main() {
   // Initialise OpenAI LLM
@@ -104,8 +107,7 @@ async function main() {
     PrivateKey.fromStringDer(process.env.PRIVATE_KEY),
   ); // get these from https://portal.hedera.com
 
-  // Create the Hedera Langchain Toolkit
-  const hederaAgentKit = new HederaLangchainToolkit({
+  const hederaAgentToolkit = new HederaLangchainToolkit({
     client,
     configuration: {
       tools: [] // use an empty array if you want to load all tools
@@ -121,7 +123,7 @@ async function main() {
   ]);
 
   // Fetch tools from toolkit
-  const tools = hederaAgentKit.getTools();
+  const tools = hederaAgentToolkit.getTools();
 
   // Create the underlying agent
   const agent = createToolCallingAgent({
@@ -136,7 +138,7 @@ async function main() {
     tools,
   });
   
-  const response = await agentExecutor.invoke({ input: "transfer 5 HBAR to account 0.0.1234" });
+  const response = await agentExecutor.invoke({ input: "what's my balance?" });
   console.log(response);
 }
 
@@ -244,6 +246,7 @@ npm run langchain:structured-chat-agent
 ```
 ### 5 - Option C: Try the Human in the Loop Chat Agent
 
+
 ### 6 - Option D: Try Out the MCP Server
 1. First, navigate into the folder for the agent kit mcp server.
 
@@ -277,9 +280,9 @@ node dist/index.js --ledger-id=testnet
 ```
 
 
-**Optional: Test out Claude Desktop to operate the Hedera MCP server.**
+**Optional: Test out Claude Desktop or an IDE to operate the Hedera MCP server.**
 
-5. Create/edit Claude Desktop config (likely) located at `~/Library/Application Support/Claude/claude_desktop_config.json`:
+5. Create/edit Claude Desktop or your IDE MCP config file:
 ```json
 {
 "mcpServers": {
@@ -288,9 +291,6 @@ node dist/index.js --ledger-id=testnet
         "args": [
           "<Path>/hedera-agent-kit/modelcontextprotocol/dist/index.js"
         ],
-        "transport": {
-          "type": "stdio"
-        },
         "env": {
           "HEDERA_OPERATOR_ID": "0.0.xxxx",
           "HEDERA_OPERATOR_KEY": "302e...."
