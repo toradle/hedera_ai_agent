@@ -266,9 +266,9 @@ npm run build
 ```
 3. Run and test the MCP server.
 The server accepts these command-line options:
-  - --ledger-id=testnet|mainnet (defaults to testnet)
-  - --tools=all or specific tool names
-  - --agent-mode, --account-id, --public-key for additional configuration
+  - `--ledger-id=testnet|mainnet` (defaults to testnet)
+  - `--tools=all` or specific tool names
+  - `--agent-mode`, `--account-id`, `--public-key` for additional configuration
 
 4. Run the server to verify it works:
 
@@ -297,13 +297,14 @@ node dist/index.js --ledger-id=testnet --tools=all
 ```
 
 ---
+## About the Agent Kit
 
-## Agent Execution Modes
+### Agent Execution Modes
 This tool has two execution modes with AI agents;  autonomous excution and return bytes. If you set:
  * `mode: AgentMode.RETURN_BYTE` the transaction will be executed, and the bytes to execute the Hedera transaction will be returned. 
  * `mode: AgentMode.AUTONOMOUS` the transaction will be executed autonomously, using the accountID set (the operator account can be set in the client with `.setOperator(process.env.ACCOUNT_ID!`)
 
-## Hedera Transaction Tools
+### Hedera Transaction Tools
 The Hedera Agent Kit provides a set of tools to execute transactions on the Hedera network, which we will be expanding in the future. 
 
 To request more functionality in the toolkit for:
