@@ -58,7 +58,7 @@ npm install hedera-agent-kit @langchain/openai @langchain/core langchain @hashgr
 
 
 ### 2 – Configure: Add Environment Variables 
-Create an .env file in the root directory of your project:
+Create an `.env` file in the root directory of your project:
 ```bash
 touch .env
 ```
@@ -251,14 +251,14 @@ npm run langchain:structured-chat-agent
 cd modelcontextprotocol
 ```
 
-2. Export two environment variables, one for your Hedera testnet account, and one for your DER-encoded private key. You can also create an .env file in the modelcontextprotocol directory to store these variables.
+2. Export two environment variables, one for your Hedera testnet account, and one for your DER-encoded private key. You can also create an `.env` file in the `modelcontextprotocol` directory to store these variables.
 
 ```bash
 export HEDERA_OPERATOR_ID="0.0.xxxxx"
 export HEDERA_OPERATOR_KEY="302e..."
 ```
 
- 2. Build and Run the MCP Server. From the modelcontextprotocol directory, install dependencies and build:
+ 2. Build and Run the MCP Server. From the `modelcontextprotocol` directory, install dependencies and build:
 
 ```bash
 npm install
@@ -278,6 +278,7 @@ node dist/index.js --ledger-id=testnet --tools=all
 
 
 **Optional: Test out Claude Desktop to operate the Hedera MCP server.**
+
 5. Create/edit Claude Desktop config (likely) located at `~/Library/Application Support/Claude/claude_desktop_config.json`:
 ```json
 {
@@ -325,7 +326,7 @@ Please [open an issue](https://github.com/hedera-dev/hedera-agent-kit/issues/new
 
 See the implementation details in [docs/TOOLS.md](docs/TOOLS.md)
 
-## Hedera Mirror Node Query Tools
+### Hedera Mirror Node Query Tools
 The Hedera network is made up of two types of nodes: consensus nodes and mirror nodes. Mirror nodes are free to query, and maintain a copy of the state of the network for users to query. 
 
 This toolkit provides a set of tools to query the state of the network, including accounts, tokens, and transactions. To request more functionality, please [open an issue](https://github.com/hedera-dev/hedera-agent-kit/issues/new?template=toolkit_feature_request.md&title=[FEATURE]%20-%20).
