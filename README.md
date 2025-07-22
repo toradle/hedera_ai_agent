@@ -277,7 +277,7 @@ node dist/index.js --ledger-id=testnet --tools=all
 ```
 
 
-**Optional: Set up Claude Desktop to operate the Hedera MCP server.**
+**Optional: Test out Claude Desktop to operate the Hedera MCP server.**
 5. Create/edit Claude Desktop config (likely) located at `~/Library/Application Support/Claude/claude_desktop_config.json`:
 ```json
 {
