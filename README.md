@@ -202,7 +202,7 @@ OPENAI_API_KEY= sk-proj-...
 ```
 
 ### 3 – Option A: Run the Example Tool Calling Agent 
-With the tool-calling-agent (found at `typescript/examples/langchain/tool-calling-agent.ts`), you can experiment with and call the [available tools](docs/TOOLS.md) in the Hedera Agent Kit for the operator account (the account you are using in the .env file). This example tool-calling-agent uses GPT 4-o-mini that is a simple template you can use with other LLMs.
+With the tool-calling-agent (found at `typescript/examples/langchain/tool-calling-agent.ts`), you can experiment with and call the [available tools](docs/TOOLS.md) in the Hedera Agent Kit for the operator account (the account you are using in the .env file). This example tool-calling-agent uses GPT 4-o-mini that is a simple template you can use with other LLMs. This agent is intended for use with simple tasks, such as an invididual tool call.
 
 
 1. First, go into the directory where the example is and run `npm install`
@@ -245,7 +245,54 @@ npm run langchain:structured-chat-agent
 ### 5 - Option C: Try the Human in the Loop Chat Agent
 
 ### 6 - Option D: Try Out the MCP Server
-First, navigate into the 
+1. First, navigate into the folder for the agent kit mcp server.
+
+```bash
+cd modelcontextprotocol
+```
+
+2. Export two environment variables, one for your Hedera testnet account, and one for your DER-encoded private key. You can also create an .env file in the modelcontextprotocol directory to store these variables.
+
+```bash
+export HEDERA_OPERATOR_ID="0.0.xxxxx"
+export HEDERA_OPERATOR_KEY="302e..."
+```
+
+ 2. Build and Run the MCP Server. From the modelcontextprotocol directory, install dependencies and build:
+
+```bash
+npm install
+npm run build
+```
+3. Run and test the MCP server.
+The server accepts these command-line options:
+  - --ledger-id=testnet|mainnet (defaults to testnet)
+  - --tools=all or specific tool names
+  - --agent-mode, --account-id, --public-key for additional configuration
+
+4. Run the server to verify it works:
+
+```bash
+node dist/index.js --ledger-id=testnet --tools=all
+```
+
+
+**Optional: Set up Claude Desktop to operate the Hedera MCP server.**
+5. Create/edit Claude Desktop config (likely) located at `~/Library/Application Support/Claude/claude_desktop_config.json`:
+```json
+{
+  "mcpServers": {
+    "hedera": {
+      "command": "<Path>/.nvm/versions/node/v20.19.3/bin/node",
+      "args": ["<Path>/hedera-agent-kit-w/main/modelcontextprotocol/dist/index.js", "--ledger-id=testnet", "--tools=all"],
+      "env": {
+        "HEDERA_OPERATOR_ID": "<your-account-id>",
+        "HEDERA_OPERATOR_KEY": "<your-private-key>"
+      }
+    }
+  }
+}
+```
 
 ---
 
