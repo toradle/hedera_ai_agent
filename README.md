@@ -283,8 +283,10 @@ node dist/index.js --ledger-id=testnet --tools=all
 {
   "mcpServers": {
     "hedera": {
-      "command": "<Path>/.nvm/versions/node/v20.19.3/bin/node",
-      "args": ["<Path>/hedera-agent-kit-w/main/modelcontextprotocol/dist/index.js", "--ledger-id=testnet", "--tools=all"],
+      "command": "node",
+      "args": ["<Path>/hedera-agent-kit-w/main/modelcontextprotocol/dist/index.js",
+      "--ledger-id=testnet",
+      "--tools=all"],
       "env": {
         "HEDERA_OPERATOR_ID": "<your-account-id>",
         "HEDERA_OPERATOR_KEY": "<your-private-key>"
