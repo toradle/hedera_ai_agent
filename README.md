@@ -282,17 +282,20 @@ node dist/index.js --ledger-id=testnet --tools=all
 5. Create/edit Claude Desktop config (likely) located at `~/Library/Application Support/Claude/claude_desktop_config.json`:
 ```json
 {
-  "mcpServers": {
-    "hedera": {
-      "command": "node",
-      "args": ["<Path>/hedera-agent-kit-w/main/modelcontextprotocol/dist/index.js",
-      "--ledger-id=testnet",
-      "--tools=all"],
-      "env": {
-        "HEDERA_OPERATOR_ID": "<your-account-id>",
-        "HEDERA_OPERATOR_KEY": "<your-private-key>"
+"mcpServers": {
+  "hedera-mcp-server": {
+        "command": "node",
+        "args": [
+          "<Path>/hedera-agent-kit/modelcontextprotocol/dist/index.js"
+        ],
+        "transport": {
+          "type": "stdio"
+        },
+        "env": {
+          "HEDERA_OPERATOR_ID": "0.0.xxxx",
+          "HEDERA_OPERATOR_KEY": "302e...."
+        }
       }
-    }
   }
 }
 ```
