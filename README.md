@@ -269,14 +269,13 @@ npm run build
 ```
 3. Run and test the MCP server.
 The server accepts these command-line options:
-  - `--ledger-id=testnet|mainnet` (defaults to testnet)
-  - `--tools=all` or specific tool names
-  - `--agent-mode`, `--account-id`,  for additional configuration
+  - `--ledger-id=testnet|mainnet` (defaults to testnet)s
+  - `--agent-mode`, and `--account-id` for additional configuration
 
 4. Run the server to verify it works:
 
 ```bash
-node dist/index.js --ledger-id=testnet
+node dist/index.js
 ```
 
 
