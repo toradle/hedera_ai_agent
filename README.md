@@ -242,7 +242,30 @@ npm install
 ```bash
 npm run langchain:structured-chat-agent
 ```
+
 ### 5 - Option C: Try the Human in the Loop Chat Agent
+The Human in the Loop Chat Agent enables you to interact with the Hedera blockchain in the same way as the tool calling agent, using GPT-4.1 as the LLM, except uses the RETURN_BYTES execution mode, instead of AgentMode.AUTONOMOUS. 
+
+This agent will create the transaction requested in natural language, and return the bytes the user to execute the transaction in another tool.
+
+1. First, go into the directory where the example is and run `npm install`
+
+```bash
+cd typescript/examples/langchain
+npm install
+```
+2. Then, run the 'human in the loop' or 'return bytes' example:
+
+```bash
+npm run langchain:return-bytes-tool-calling-agent
+```
+The agent will start a CLI chatbot that you can interact with. You can make requests in natural language, and this demo will demonstrate an app with a workflow that requires a human in the loop to approve actions and execute transactions.
+
+<!-- 3. Use the bytes to execute the transaction in another tool.
+
+This feature is useful if you would like to create an application, say a chatbot, which can support a back and fourth where the user makes a request, and is prompted to approve the request before the transaction is carried out, and perhaps uses a tool like the [Hashpack Wallet](https://docs.hashpack.app/) to execute.
+
+In this example, we can just take the returned bytes and execute the transaction in the Hashpack Wallet -->
 
 ### 6 - Option D: Try Out the MCP Server
 
