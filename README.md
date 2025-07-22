@@ -268,12 +268,12 @@ npm run build
 The server accepts these command-line options:
   - `--ledger-id=testnet|mainnet` (defaults to testnet)
   - `--tools=all` or specific tool names
-  - `--agent-mode`, `--account-id`, `--public-key` for additional configuration
+  - `--agent-mode`, `--account-id`,  for additional configuration
 
 4. Run the server to verify it works:
 
 ```bash
-node dist/index.js --ledger-id=testnet --tools=all
+node dist/index.js --ledger-id=testnet
 ```
 
 
