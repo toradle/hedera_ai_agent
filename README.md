@@ -32,7 +32,7 @@ The list of currently available tools can be found in the [Tools section](#heder
 
 👉 See [docs/TOOLS.md](docs/TOOLS.md) for the full catalogue & usage examples.
 
-Want to add more functionality from Hedera Services? [Open an issue](https://github.com/hedera-dev/hedera-agent-kit/issues/new?template=toolkit_feature_request.md&title=[FEATURE]%20-%20)!
+Want to add more functionality from Hedera Services? [Open an issue](https://github.com/hedera-dev/hedera-agent-kit/issues/new?template=toolkit_feature_request.yml&labels=feature-request)!
 
 
 ---
@@ -375,7 +375,7 @@ To request more functionality in the toolkit for:
 * [Consensus Service](https://docs.hedera.com/hedera/sdks-and-apis/sdks/consensus-service)
 * [Smart Contract Servce](https://docs.hedera.com/hedera/tutorials/smart-contracts)
 
-Please [open an issue](https://github.com/hedera-dev/hedera-agent-kit/issues/new?template=toolkit_feature_request.md&title=[FEATURE]%20-%20).
+Please [open an issue](https://github.com/hedera-dev/hedera-agent-kit/issues/new?template=toolkit_feature_request.yml&labels=feature-request).
 
 **Available Tools**
 * Transfer HBAR

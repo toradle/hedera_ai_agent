@@ -281,7 +281,7 @@ To request more functionality in the toolkit for:
 - [Consensus Service](https://docs.hedera.com/hedera/sdks-and-apis/sdks/consensus-service)
 - [Smart Contract Servce](https://docs.hedera.com/hedera/tutorials/smart-contracts)
 
-Please [open an issue](https://github.com/hedera-dev/hedera-agent-kit/issues/new?template=toolkit_feature_request.md&title=[FEATURE]%20-%20).
+Please [open an issue](https://github.com/hedera-dev/hedera-agent-kit/issues/new?template=toolkit_feature_request.yml&labels=feature-request).
 
 **Available Tools**
 
