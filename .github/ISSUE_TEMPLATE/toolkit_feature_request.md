@@ -2,8 +2,8 @@
 # Toolkit Feature Request
 ---
 about: Request new functionality for the Hedera Agent Toolkit
-title: '[FEATURE] - '
-labels: ['enhancement']
+title: '[FEATURE REQUEST] - '
+labels: ['feature-request']
 assignees: ''
 ---
 
