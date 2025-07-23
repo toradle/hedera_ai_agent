@@ -32,7 +32,7 @@ body:
   - type: checkboxes
     id: hedera-service
     attributes:
-      label: Hedera Service Category
+      label: Category
       description: Which Hedera service(s) does this feature request relate to?
       options:
         - label: "HTS - Tokens & NFTs"
@@ -41,15 +41,16 @@ body:
         - label: "HSCS - Smart Contracts"
         - label: "Account/HBAR - Transfers & Management"
         - label: "Cross-Service - Multiple services"
+        - label: "Other - Other functionality"
     validations:
       required: true
   
   - type: input
     id: other-service
     attributes:
-      label: Other Service
+      label: Other
       description: If you selected "Other" above, please specify
-      placeholder: "Specify the service category"
+      placeholder: "Specify what functionality you would like to see added"
     validations:
       required: false
   
