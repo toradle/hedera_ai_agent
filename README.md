@@ -68,7 +68,7 @@ If you already have a **testnet** account, you can use it. Otherwise, you can cr
 Add the following to the .env file:
 ```env
 ACCOUNT_ID="0.0.xxxxx" # your operator account ID from https://portal.hedera.com/dashboard
-PRIVATE_KEY="302e..." # DER encoded private key
+PRIVATE_KEY="0x..." # ECDSA encoded private key
 OPENAI_API_KEY="sk-proj-..." # Create an OpenAPI Key at https://platform.openai.com/api-keys
 ```
 
