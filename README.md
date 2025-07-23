@@ -258,7 +258,7 @@ cd modelcontextprotocol
 
 ```bash
 export HEDERA_OPERATOR_ID="0.0.xxxxx"
-export HEDERA_OPERATOR_KEY="302e..."
+export HEDERA_OPERATOR_KEY="0x2g3..."
 ```
 
  2. Build and Run the MCP Server. From the `modelcontextprotocol` directory, install dependencies and build:
