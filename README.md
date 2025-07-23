@@ -58,7 +58,7 @@ npm install hedera-agent-kit @langchain/openai @langchain/core langchain @hashgr
 
 
 ### 2 – Configure: Add Environment Variables 
-Create an .env file in the root directory of your project:
+Create an `.env` file in the root directory of your project:
 ```bash
 touch .env
 ```
@@ -67,9 +67,9 @@ If you already have a **testnet** account, you can use it. Otherwise, you can cr
 
 Add the following to the .env file:
 ```env
-ACCOUNT_ID= 0.0.xxxxx # your operator account ID from https://portal.hedera.com/dashboard
-PRIVATE_KEY= 302e... # DER encoded private key
-OPENAI_API_KEY= sk-proj-... # Create an OpenAPI Key at https://platform.openai.com/api-keys
+ACCOUNT_ID="0.0.xxxxx" # your operator account ID from https://portal.hedera.com/dashboard
+PRIVATE_KEY="0x..." # ECDSA encoded private key
+OPENAI_API_KEY="sk-proj-..." # Create an OpenAPI Key at https://platform.openai.com/api-keys
 ```
 
 
@@ -92,6 +92,8 @@ import { ChatOpenAI } from '@langchain/openai';
 import { ChatPromptTemplate } from '@langchain/core/prompts';
 import { AgentExecutor, createToolCallingAgent } from 'langchain/agents';
 import { Client, PrivateKey } from '@hashgraph/sdk';
+import { HederaLangchainToolkit } from 'hedera-agent-kit';
+
 
 async function main() {
   // Initialise OpenAI LLM
@@ -202,7 +204,7 @@ OPENAI_API_KEY= sk-proj-...
 ```
 
 ### 3 – Option A: Run the Example Tool Calling Agent 
-With the tool-calling-agent (found at `typescript/examples/langchain/tool-calling-agent.ts`), you can experiment with and call the [available tools](docs/TOOLS.md) in the Hedera Agent Kit for the operator account (the account you are using in the .env file). This example tool-calling-agent uses GPT 4-o-mini that is a simple template you can use with other LLMs.
+With the tool-calling-agent (found at `typescript/examples/langchain/tool-calling-agent.ts`), you can experiment with and call the [available tools](docs/TOOLS.md) in the Hedera Agent Kit for the operator account (the account you are using in the .env file). This example tool-calling-agent uses GPT 4-o-mini that is a simple template you can use with other LLMs. This agent is intended for use with simple tasks, such as an invididual tool call.
 
 
 1. First, go into the directory where the example is and run `npm install`
@@ -244,16 +246,68 @@ npm run langchain:structured-chat-agent
 ```
 ### 5 - Option C: Try the Human in the Loop Chat Agent
 
+
 ### 6 - Option D: Try Out the MCP Server
+1. First, navigate into the folder for the agent kit mcp server.
+
+```bash
+cd modelcontextprotocol
+```
+
+2. Export two environment variables, one for your Hedera testnet account, and one for your DER-encoded private key. You can also create an `.env` file in the `modelcontextprotocol` directory to store these variables.
+
+```bash
+export HEDERA_OPERATOR_ID="0.0.xxxxx"
+export HEDERA_OPERATOR_KEY="0x2g3..."
+```
+
+ 2. Build and Run the MCP Server. From the `modelcontextprotocol` directory, install dependencies and build:
+
+```bash
+npm install
+npm run build
+```
+3. Run and test the MCP server.
+The server accepts these command-line options:
+  - `--ledger-id=testnet|mainnet` (defaults to testnet)s
+  - `--agent-mode`, and `--account-id` for additional configuration
+
+4. Run the server to verify it works:
+
+```bash
+node dist/index.js
+```
+
+
+**Optional: Test out Claude Desktop or an IDE to operate the Hedera MCP server.**
+
+5. Create/edit Claude Desktop or your IDE MCP config file:
+```json
+{
+"mcpServers": {
+  "hedera-mcp-server": {
+        "command": "node",
+        "args": [
+          "<Path>/hedera-agent-kit/modelcontextprotocol/dist/index.js"
+        ],
+        "env": {
+          "HEDERA_OPERATOR_ID": "0.0.xxxx",
+          "HEDERA_OPERATOR_KEY": "302e...."
+        }
+      }
+  }
+}
+```
 
 ---
+## About the Agent Kit
 
-## Agent Execution Modes
+### Agent Execution Modes
 This tool has two execution modes with AI agents;  autonomous excution and return bytes. If you set:
  * `mode: AgentMode.RETURN_BYTE` the transaction will be executed, and the bytes to execute the Hedera transaction will be returned. 
  * `mode: AgentMode.AUTONOMOUS` the transaction will be executed autonomously, using the accountID set (the operator account can be set in the client with `.setOperator(process.env.ACCOUNT_ID!`)
 
-## Hedera Transaction Tools
+### Hedera Transaction Tools
 The Hedera Agent Kit provides a set of tools to execute transactions on the Hedera network, which we will be expanding in the future. 
 
 To request more functionality in the toolkit for:
@@ -274,7 +328,7 @@ Please [open an issue](https://github.com/hedera-dev/hedera-agent-kit/issues/new
 
 See the implementation details in [docs/TOOLS.md](docs/TOOLS.md)
 
-## Hedera Mirror Node Query Tools
+### Hedera Mirror Node Query Tools
 The Hedera network is made up of two types of nodes: consensus nodes and mirror nodes. Mirror nodes are free to query, and maintain a copy of the state of the network for users to query. 
 
 This toolkit provides a set of tools to query the state of the network, including accounts, tokens, and transactions. To request more functionality, please [open an issue](https://github.com/hedera-dev/hedera-agent-kit/issues/new?template=toolkit_feature_request.md&title=[FEATURE]%20-%20).
