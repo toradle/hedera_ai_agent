@@ -44,6 +44,9 @@ async function bootstrap(): Promise<void> {
 
   console.log('Hedera Agent CLI Chatbot — type "exit" to quit');
 
+  // Chat memory: conversation history
+  const conversationHistory: { role: 'user' | 'assistant', content: string }[] = [];
+
   while (true) {
     const { userInput } = await prompts({
       type: 'text',
@@ -57,13 +60,19 @@ async function bootstrap(): Promise<void> {
       break;
     }
 
+    // Add user message to history
+    conversationHistory.push({ role: 'user', content: userInput });
+
     try {
       const response = await generateText({
         model,
-        prompt: userInput,
+        messages: conversationHistory,
         tools: hederaAgentToolkit.getTools(),
         maxSteps: 2, // Important to set this to 2 to allow for the LLM to use the tool result to answer the user
       });
+
+      // Add AI response to history
+      conversationHistory.push({ role: 'assistant', content: response.text });
 
       // Print the AI's answer
       console.log(`AI: ${response.text}`);
