@@ -83,3 +83,13 @@ export const airdropFungibleTokenParametersNormalised = () =>
       .custom<TokenTransferMinimalParams[]>()
       .describe('Array of TokenTransfer objects constructed from the original recipients.'),
   });
+
+export const mintFungibleTokenParameters = (_context: Context = {}) =>
+  z.object({
+    tokenId: z.string().describe('The id of the token.'),
+    amount: z.number().describe('The amount of tokens to mint.'),
+  });
+
+export const mintFungibleTokenParametersNormalised = () =>
+  z.object({
+  });
