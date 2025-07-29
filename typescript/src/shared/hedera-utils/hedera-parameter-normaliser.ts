@@ -6,6 +6,7 @@ import {
   createFungibleTokenParametersNormalised,
   createNonFungibleTokenParameters,
   createNonFungibleTokenParametersNormalised,
+  mintNonFungibleTokenParameters,
 } from '@/shared/parameter-schemas/hts.zod';
 import { transferHbarParameters } from '@/shared/parameter-schemas/has.zod';
 import {
@@ -242,6 +243,18 @@ export default class HederaParameterNormaliser {
     return {
       ...params,
       accountId,
+    };
+  }
+
+  static normaliseMintNonFungibleTokenParams(
+    params: z.infer<ReturnType<typeof mintNonFungibleTokenParameters>>,
+    context: Context,
+  ) {
+    const encoder = new TextEncoder();
+    const metadata = params.uris.map(uri => encoder.encode(uri));
+    return {
+      ...params,
+      metadata: metadata,
     };
   }
 }
