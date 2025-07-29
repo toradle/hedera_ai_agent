@@ -24,6 +24,7 @@
     "README.md"
   ],
   "scripts": {
+    "server": "tsx toradle/redis_listener.ts",
     "demo:auto": "tsx examples/langchain-demo.ts autonomous",
     "demo:human": "tsx examples/langchain-demo.ts returnBytes",
     "demo:notes": "tsx examples/test-notes-system.ts",

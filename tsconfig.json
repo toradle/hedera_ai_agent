@@ -23,6 +23,6 @@
     "isolatedModules": true,
     "noEmit": true
   },
-  "include": ["src/**/*", "examples/**/*", "tests/**/*", "*.config.ts"],
+  "include": ["src/**/*", "examples/**/*", "toradle/**/*", "tests/**/*", "*.config.ts"],
   "exclude": ["node_modules", "dist"]
 }

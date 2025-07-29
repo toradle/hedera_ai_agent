@@ -109,7 +109,7 @@ export default defineConfig(async () => {
     dts({
       insertTypesEntry: true,
       include: ['src/**/*.ts'],
-      exclude: ['**/*.d.ts', 'examples/**/*', 'tests/**/*', 'vite.config.ts'],
+      exclude: ['**/*.d.ts', 'examples/**/*', 'toradle/**/*', 'tests/**/*', 'vite.config.ts'],
       outDir: getTypesOutputDirectory(format, outputDir),
     }),
   ];
