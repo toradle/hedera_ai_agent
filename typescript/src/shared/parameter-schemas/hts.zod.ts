@@ -1,6 +1,6 @@
 import { Context } from '@/shared/configuration';
 import { z } from 'zod';
-import { PublicKey, TokenSupplyType } from '@hashgraph/sdk';
+import { PublicKey, TokenSupplyType, TokenType } from '@hashgraph/sdk';
 import { TokenTransferMinimalParams } from '@/shared/hedera-utils/types';
 
 export const createFungibleTokenParameters = (_context: Context = {}) =>
@@ -59,6 +59,10 @@ export const createNonFungibleTokenParametersNormalised = (_context: Context = {
       .custom<TokenSupplyType>()
       .default(TokenSupplyType.Finite)
       .describe('Supply type of the token - must be finite for NFT.'),
+    tokenType: z
+      .custom<TokenType>()
+      .default(TokenType.NonFungibleUnique)
+      .describe('Token type of the token - must be non-fungible unique for NFT.'),
   });
 
 const AirdropRecipientSchema = z.object({
