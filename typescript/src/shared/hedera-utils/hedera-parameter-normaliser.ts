@@ -12,7 +12,7 @@ import {
   createTopicParameters,
   createTopicParametersNormalised,
 } from '@/shared/parameter-schemas/hcs.zod';
-import { Client, Hbar, PublicKey, TokenSupplyType } from '@hashgraph/sdk';
+import { Client, Hbar, PublicKey, TokenSupplyType, TokenType } from '@hashgraph/sdk';
 import { Context } from '@/shared/configuration';
 import z from 'zod';
 import {
@@ -110,6 +110,7 @@ export default class HederaParameterNormaliser {
       supplyKey: PublicKey.fromString(publicKey), // the supply key is mandatory in the case of NFT
       supplyType: TokenSupplyType.Finite, // NFTs supply must be finite
       autoRenewAccountId: defaultAccountId,
+      tokenType: TokenType.NonFungibleUnique,
     };
 
     return normalized;
