@@ -246,12 +246,17 @@ export default class HederaParameterNormaliser {
     };
   }
 
-  static normaliseMintFungibleTokenParams(
+  static async normaliseMintFungibleTokenParams(
     params: z.infer<ReturnType<typeof mintFungibleTokenParameters>>,
     context: Context,
+    mirrorNode: IHederaMirrornodeService,
   ) {
+    const decimals = (await mirrorNode.getTokenDetails(params.tokenId).then(r => Number(r.decimals))) ?? 0;
+    const baseAmount = toBaseUnit(params.amount, decimals);
+
     return {
-      ...params,
+      tokenId: params.tokenId,
+      amount:  baseAmount,
     };
   }
 }

@@ -6,6 +6,7 @@ import { Client } from '@hashgraph/sdk';
 import { handleTransaction } from '@/shared/strategies/tx-mode-strategy';
 import { mintFungibleTokenParameters } from '@/shared/parameter-schemas/hts.zod';
 import HederaBuilder from '@/shared/hedera-utils/hedera-builder';
+import { getMirrornodeService } from '@/shared/hedera-utils/mirrornode/hedera-mirrornode-utils';
 import { PromptGenerator } from '@/shared/utils/prompt-generator';
 
 const mintFungibleTokenPrompt = (context: Context = {}) => {
@@ -32,9 +33,11 @@ const mintFungibleToken = async (
   params: z.infer<ReturnType<typeof mintFungibleTokenParameters>>,
 ) => {
   try {
+    const mirrornodeService = getMirrornodeService(context.mirrornodeService!, client.ledgerId!);
     const normalisedParams = await HederaParameterNormaliser.normaliseMintFungibleTokenParams(
       params,
       context,
+      mirrornodeService
     );
     const tx = HederaBuilder.mintFungibleToken(normalisedParams);
     const result = await handleTransaction(tx, client, context);
