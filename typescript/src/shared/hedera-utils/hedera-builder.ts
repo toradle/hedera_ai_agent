@@ -55,6 +55,6 @@ export default class HederaBuilder {
   static mintFungibleToken(
     params: z.infer<ReturnType<typeof mintFungibleTokenParametersNormalised>>,
   ) {
-    return new TokenMintTransaction(params as any);
+    return new TokenMintTransaction(params);
   }
 }
