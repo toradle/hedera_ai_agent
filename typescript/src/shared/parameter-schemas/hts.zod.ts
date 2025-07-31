@@ -94,9 +94,8 @@ export const mintFungibleTokenParameters = (_context: Context = {}) =>
     amount: z.number().describe('The amount of tokens to mint.'),
   });
 
-export const mintFungibleTokenParametersNormalised = () =>
-  z.object({
-  });
+export const mintFungibleTokenParametersNormalised = (_context: Context = {}) =>
+  mintFungibleTokenParameters(_context).extend({});
 
 export const mintNonFungibleTokenParameters = (_context: Context = {}) =>
   z.object({
@@ -104,5 +103,6 @@ export const mintNonFungibleTokenParameters = (_context: Context = {}) =>
     uris: z.array(z.string().max(100)).max(10).describe('An array of URIs hosting NFT metadata.'),
   });
 
-export const mintNonFungibleTokenParametersNormalised = () => z.object({});
+export const mintNonFungibleTokenParametersNormalised = (_context: Context = {}) => 
+  mintNonFungibleTokenParameters(_context).extend({});
 
