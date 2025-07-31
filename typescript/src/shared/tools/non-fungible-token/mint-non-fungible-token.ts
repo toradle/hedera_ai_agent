@@ -8,12 +8,10 @@ import { mintNonFungibleTokenParameters } from '@/shared/parameter-schemas/hts.z
 import HederaBuilder from '@/shared/hedera-utils/hedera-builder';
 import { PromptGenerator } from '@/shared/utils/prompt-generator';
 
-const mintNonFungibleTokenPrompt = (context: Context = {}) => {
-  const contextSnippet = PromptGenerator.getContextSnippet(context);
+const mintNonFungibleTokenPrompt = (_context: Context = {}) => {
   const usageInstructions = PromptGenerator.getParameterUsageInstructions();
 
   return `
-${contextSnippet}
 
 This tool will mint NFTs with its unique metadata for the class of NFTs (non-fungible tokens) defined by the tokenId on Hedera.
 
@@ -32,7 +30,7 @@ const mintNonFungibleToken = async (
   params: z.infer<ReturnType<typeof mintNonFungibleTokenParameters>>,
 ) => {
   try {
-    const normalisedParams = await HederaParameterNormaliser.normaliseMintNonFungibleTokenParams(
+    const normalisedParams = HederaParameterNormaliser.normaliseMintNonFungibleTokenParams(
       params,
       context,
     );

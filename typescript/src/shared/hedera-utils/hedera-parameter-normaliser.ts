@@ -248,7 +248,7 @@ export default class HederaParameterNormaliser {
 
   static normaliseMintNonFungibleTokenParams(
     params: z.infer<ReturnType<typeof mintNonFungibleTokenParameters>>,
-    context: Context,
+    _context: Context,
   ) {
     const encoder = new TextEncoder();
     const metadata = params.uris.map(uri => encoder.encode(uri));

@@ -25,7 +25,9 @@ import getTopicMessagesQuery, {
   GET_TOPIC_MESSAGES_QUERY_TOOL,
 } from './tools/queries/get-topic-messages-query';
 import createTopicTool, { CREATE_TOPIC_TOOL } from './tools/consensus/create-topic';
-import mintNonFungibleTokenTool, { MINT_NON_FUNGIBLE_TOKEN_TOOL } from './tools/non-fungible-token/mint-non-fungible-token';
+import mintNonFungibleTokenTool, {
+  MINT_NON_FUNGIBLE_TOKEN_TOOL,
+} from './tools/non-fungible-token/mint-non-fungible-token';
 
 export type Tool = {
   method: string;
