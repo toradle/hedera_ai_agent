@@ -11,12 +11,11 @@ class HederaAIToolkit {
   tools: { [key: string]: Tool };
 
   constructor({ client, configuration }: { client: Client; configuration: Configuration }) {
-    this._hedera = new HederaAgentAPI(client, configuration.context);
-    this.tools = {};
-
     const context = configuration.context || {};
     const toolDiscovery = ToolDiscovery.createFromConfiguration(configuration);
     const allTools = toolDiscovery.getAllTools(context, configuration);
+    this._hedera = new HederaAgentAPI(client, configuration.context, allTools);
+    this.tools = {};
 
     allTools.forEach(tool => {
       this.tools[tool.method] = HederaAgentKitTool(

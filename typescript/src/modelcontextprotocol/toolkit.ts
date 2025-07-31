@@ -20,11 +20,11 @@ class HederaMCPToolkit extends McpServer {
         },
       },
     });
-    this._hederaAgentKit = new HederaAgentKitAPI(client, configuration.context);
 
     const context = configuration.context || {};
     const toolDiscovery = ToolDiscovery.createFromConfiguration(configuration);
     const allTools = toolDiscovery.getAllTools(context, configuration);
+    this._hederaAgentKit = new HederaAgentKitAPI(client, configuration.context, allTools);
 
     allTools.map(tool => {
       this.tool(

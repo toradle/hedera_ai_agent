@@ -1,4 +1,4 @@
-import { HederaLangchainToolkit, AgentMode, hederaTools } from 'hedera-agent-kit';
+import { HederaLangchainToolkit, AgentMode, coreHTSPluginToolNames, coreConsensusPluginToolNames, coreQueriesPluginToolNames, coreQueriesPlugin, coreHTSPlugin, coreConsensusPlugin } from 'hedera-agent-kit';
 import { ChatOpenAI } from '@langchain/openai';
 import { ChatPromptTemplate } from '@langchain/core/prompts';
 import { AgentExecutor, createToolCallingAgent } from 'langchain/agents';
@@ -21,13 +21,20 @@ async function bootstrap(): Promise<void> {
     PrivateKey.fromStringECDSA(process.env.PRIVATE_KEY!),
   );
 
-  // Core Hedera tools
+  // all the available tools
   const {
     CREATE_FUNGIBLE_TOKEN_TOOL,
+  } = coreHTSPluginToolNames;
+
+  const {
     CREATE_TOPIC_TOOL,
     SUBMIT_TOPIC_MESSAGE_TOOL,
+  } = coreConsensusPluginToolNames;
+
+  const {
     GET_HBAR_BALANCE_QUERY_TOOL,
-  } = hederaTools;
+  } = coreQueriesPluginToolNames;
+
 
   // Prepare Hedera toolkit with core tools AND custom plugin
   const hederaAgentToolkit = new HederaLangchainToolkit({
@@ -43,7 +50,7 @@ async function bootstrap(): Promise<void> {
         'example_greeting_tool',
         'example_hbar_transfer_tool',
       ],
-      plugins: [examplePlugin], // Add the example plugin
+      plugins: [examplePlugin, coreHTSPlugin, coreConsensusPlugin, coreQueriesPlugin], // Add the example plugin
       context: {
         mode: AgentMode.AUTONOMOUS,
       },

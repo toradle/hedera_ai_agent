@@ -11,12 +11,11 @@ class HederaLangchainToolkit implements BaseToolkit {
   tools: HederaAgentKitTool[];
 
   constructor({ client, configuration }: { client: Client; configuration: Configuration }) {
-    this._hederaAgentKit = new HederaAgentKitAPI(client, configuration.context);
-
     const context = configuration.context || {};
     const toolDiscovery = ToolDiscovery.createFromConfiguration(configuration);
     const allTools = toolDiscovery.getAllTools(context, configuration);
 
+    this._hederaAgentKit = new HederaAgentKitAPI(client, configuration.context, allTools);
     this.tools = allTools.map(
       tool =>
         new HederaAgentKitTool(
