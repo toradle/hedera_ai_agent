@@ -11,6 +11,7 @@ import {
   createFungibleTokenParametersNormalised,
   createNonFungibleTokenParametersNormalised,
   mintFungibleTokenParametersNormalised,
+  mintNonFungibleTokenParametersNormalised,
 } from '@/shared/parameter-schemas/hts.zod';
 import z from 'zod';
 import { transferHbarParametersNormalised } from '@/shared/parameter-schemas/has.zod';
@@ -52,8 +53,15 @@ export default class HederaBuilder {
     return new TopicMessageSubmitTransaction(params);
   }
 
+
   static mintFungibleToken(
     params: z.infer<ReturnType<typeof mintFungibleTokenParametersNormalised>>,
+  ) {
+    return new TokenMintTransaction(params);
+  }
+
+  static mintNonFungibleToken(
+    params: z.infer<ReturnType<typeof mintNonFungibleTokenParametersNormalised>>,
   ) {
     return new TokenMintTransaction(params);
   }

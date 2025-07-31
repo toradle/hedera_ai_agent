@@ -77,7 +77,7 @@ async function bootstrap(): Promise<void> {
     tools,
     memory,
     returnIntermediateSteps: false,
-  } as any);
+  });
 
   console.log('Hedera Agent CLI Chatbot — type "exit" to quit');
 
@@ -106,4 +106,7 @@ async function bootstrap(): Promise<void> {
 
 bootstrap().catch(err => {
   console.error('Fatal error during CLI bootstrap:', err);
+  process.exit(1);
+}).then(() => {
+  process.exit(0);
 });

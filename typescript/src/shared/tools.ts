@@ -26,6 +26,9 @@ import getTopicMessagesQuery, {
 } from './tools/queries/get-topic-messages-query';
 import createTopicTool, { CREATE_TOPIC_TOOL } from './tools/consensus/create-topic';
 import mintFungibleTokenTool, { MINT_FUNGIBLE_TOKEN_TOOL } from './tools/fungible-token/mint-fungible-token';
+import mintNonFungibleTokenTool, {
+  MINT_NON_FUNGIBLE_TOKEN_TOOL,
+} from './tools/non-fungible-token/mint-non-fungible-token';
 
 export type Tool = {
   method: string;
@@ -47,6 +50,7 @@ const tools = (context: Context): Tool[] => [
   getAccountTokenBalancesQuery(context),
   getTopicMessagesQuery(context),
   mintFungibleTokenTool(context),
+  mintNonFungibleTokenTool(context),
 ];
 
 export const hederaTools = {
@@ -61,6 +65,7 @@ export const hederaTools = {
   GET_ACCOUNT_TOKEN_BALANCES_QUERY_TOOL,
   GET_TOPIC_MESSAGES_QUERY_TOOL,
   MINT_FUNGIBLE_TOKEN_TOOL,
+  MINT_NON_FUNGIBLE_TOKEN_TOOL,
 };
 
 export default tools;
