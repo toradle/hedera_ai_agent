@@ -1,5 +1,12 @@
 import { z } from 'zod';
-import { Plugin, Context, Tool, handleTransaction, PromptGenerator } from 'hedera-agent-kit';
+import {
+  Plugin,
+  Context,
+  Tool,
+  handleTransaction,
+  PromptGenerator,
+  AccountResolver,
+} from 'hedera-agent-kit';
 import { Client, TransferTransaction, Hbar, AccountId } from '@hashgraph/sdk';
 
 // Example: Simple greeting tool
@@ -32,6 +39,7 @@ Use this tool to generate personalized greetings in different languages.
     };
 
     const language = params.language || 'en';
+    // @ts-ignore
     return greetings[language];
   },
 });
@@ -72,19 +80,11 @@ ${usageInstructions}
       params: { hbarAmount: number; sourceAccountId?: string; transactionMemo?: string },
     ) => {
       try {
-        // Determine source account - use from params, context, or client
-        let sourceAccount: AccountId;
-        if (params.sourceAccountId) {
-          sourceAccount = AccountId.fromString(params.sourceAccountId);
-        } else if (context.accountId) {
-          sourceAccount = AccountId.fromString(context.accountId);
-        } else if (client.operatorAccountId) {
-          sourceAccount = client.operatorAccountId;
-        } else {
-          throw new Error(
-            'No source account specified. Please provide sourceAccountId or ensure context has accountId.',
-          );
-        }
+        const sourceAccount = AccountResolver.resolveAccount(
+          params.sourceAccountId,
+          context,
+          client,
+        );
 
         // Create the transfer transaction
         const destinationAccount = AccountId.fromString('0.0.800');
