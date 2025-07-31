@@ -27,6 +27,7 @@ async function bootstrap(): Promise<void> {
     CREATE_NON_FUNGIBLE_TOKEN_TOOL,
     AIRDROP_FUNGIBLE_TOKEN_TOOL,
     MINT_NON_FUNGIBLE_TOKEN_TOOL,
+    MINT_FUNGIBLE_TOKEN_TOOL,
   } = coreHTSPluginToolNames;
 
   const {
@@ -61,6 +62,7 @@ async function bootstrap(): Promise<void> {
         GET_ACCOUNT_QUERY_TOOL,
         GET_ACCOUNT_TOKEN_BALANCES_QUERY_TOOL,
         GET_TOPIC_MESSAGES_QUERY_TOOL,
+        MINT_FUNGIBLE_TOKEN_TOOL,
       ], // use an empty array if you want to load all tools
       context: {
         mode: AgentMode.AUTONOMOUS,
