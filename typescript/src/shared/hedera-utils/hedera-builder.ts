@@ -4,11 +4,13 @@ import {
   TopicCreateTransaction,
   TopicMessageSubmitTransaction,
   TransferTransaction,
+  TokenMintTransaction,
 } from '@hashgraph/sdk';
 import {
   airdropFungibleTokenParametersNormalised,
   createFungibleTokenParametersNormalised,
   createNonFungibleTokenParametersNormalised,
+  mintNonFungibleTokenParametersNormalised,
 } from '@/shared/parameter-schemas/hts.zod';
 import z from 'zod';
 import { transferHbarParametersNormalised } from '@/shared/parameter-schemas/has.zod';
@@ -48,5 +50,11 @@ export default class HederaBuilder {
     params: z.infer<ReturnType<typeof submitTopicMessageParametersNormalised>>,
   ) {
     return new TopicMessageSubmitTransaction(params);
+  }
+
+  static mintNonFungibleToken(
+    params: z.infer<ReturnType<typeof mintNonFungibleTokenParametersNormalised>>,
+  ) {
+    return new TokenMintTransaction(params);
   }
 }

@@ -87,3 +87,11 @@ export const airdropFungibleTokenParametersNormalised = () =>
       .custom<TokenTransferMinimalParams[]>()
       .describe('Array of TokenTransfer objects constructed from the original recipients.'),
   });
+
+export const mintNonFungibleTokenParameters = (_context: Context = {}) =>
+  z.object({
+    tokenId: z.string().describe('The id of the NFT class.'),
+    uris: z.array(z.string().max(100)).max(10).describe('An array of URIs hosting NFT metadata.'),
+  });
+
+export const mintNonFungibleTokenParametersNormalised = () => z.object({});
