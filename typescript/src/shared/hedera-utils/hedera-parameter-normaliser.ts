@@ -6,6 +6,7 @@ import {
   createFungibleTokenParametersNormalised,
   createNonFungibleTokenParameters,
   createNonFungibleTokenParametersNormalised,
+  mintFungibleTokenParameters,
   mintNonFungibleTokenParameters,
 } from '@/shared/parameter-schemas/hts.zod';
 import { transferHbarParameters } from '@/shared/parameter-schemas/has.zod';
@@ -247,6 +248,19 @@ export default class HederaParameterNormaliser {
     };
   }
 
+  static async normaliseMintFungibleTokenParams(
+    params: z.infer<ReturnType<typeof mintFungibleTokenParameters>>,
+    context: Context,
+    mirrorNode: IHederaMirrornodeService,
+  ) {
+    const decimals = (await mirrorNode.getTokenDetails(params.tokenId).then(r => Number(r.decimals))) ?? 0;
+    const baseAmount = toBaseUnit(params.amount, decimals);
+    return {
+      tokenId: params.tokenId,
+      amount:  baseAmount,
+    };
+  }
+  
   static normaliseMintNonFungibleTokenParams(
     params: z.infer<ReturnType<typeof mintNonFungibleTokenParameters>>,
     _context: Context,
