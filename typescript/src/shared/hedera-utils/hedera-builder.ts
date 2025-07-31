@@ -53,7 +53,6 @@ export default class HederaBuilder {
     return new TopicMessageSubmitTransaction(params);
   }
 
-
   static mintFungibleToken(
     params: z.infer<ReturnType<typeof mintFungibleTokenParametersNormalised>>,
   ) {
