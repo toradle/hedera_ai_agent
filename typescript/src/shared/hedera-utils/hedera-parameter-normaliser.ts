@@ -6,13 +6,15 @@ import {
   createFungibleTokenParametersNormalised,
   createNonFungibleTokenParameters,
   createNonFungibleTokenParametersNormalised,
+  mintFungibleTokenParameters,
+  mintNonFungibleTokenParameters,
 } from '@/shared/parameter-schemas/hts.zod';
 import { transferHbarParameters } from '@/shared/parameter-schemas/has.zod';
 import {
   createTopicParameters,
   createTopicParametersNormalised,
 } from '@/shared/parameter-schemas/hcs.zod';
-import { Client, Hbar, PublicKey, TokenSupplyType } from '@hashgraph/sdk';
+import { Client, Hbar, PublicKey, TokenSupplyType, TokenType } from '@hashgraph/sdk';
 import { Context } from '@/shared/configuration';
 import z from 'zod';
 import {
@@ -110,6 +112,7 @@ export default class HederaParameterNormaliser {
       supplyKey: PublicKey.fromString(publicKey), // the supply key is mandatory in the case of NFT
       supplyType: TokenSupplyType.Finite, // NFTs supply must be finite
       autoRenewAccountId: defaultAccountId,
+      tokenType: TokenType.NonFungibleUnique,
     };
 
     return normalized;
@@ -242,6 +245,32 @@ export default class HederaParameterNormaliser {
     return {
       ...params,
       accountId,
+    };
+  }
+
+  static async normaliseMintFungibleTokenParams(
+    params: z.infer<ReturnType<typeof mintFungibleTokenParameters>>,
+    context: Context,
+    mirrorNode: IHederaMirrornodeService,
+  ) {
+    const decimals =
+      (await mirrorNode.getTokenDetails(params.tokenId).then(r => Number(r.decimals))) ?? 0;
+    const baseAmount = toBaseUnit(params.amount, decimals);
+    return {
+      tokenId: params.tokenId,
+      amount: baseAmount,
+    };
+  }
+
+  static normaliseMintNonFungibleTokenParams(
+    params: z.infer<ReturnType<typeof mintNonFungibleTokenParameters>>,
+    _context: Context,
+  ) {
+    const encoder = new TextEncoder();
+    const metadata = params.uris.map(uri => encoder.encode(uri));
+    return {
+      ...params,
+      metadata: metadata,
     };
   }
 }

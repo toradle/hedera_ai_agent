@@ -4,6 +4,7 @@ import prompts from 'prompts';
 import * as dotenv from 'dotenv';
 import { openai } from '@ai-sdk/openai';
 import { generateText, wrapLanguageModel } from 'ai';
+import { examplePlugin } from '../plugin/example-plugin';
 dotenv.config();
 
 async function bootstrap(): Promise<void> {
@@ -13,7 +14,7 @@ async function bootstrap(): Promise<void> {
     PrivateKey.fromStringECDSA(process.env.PRIVATE_KEY!),
   );
 
-  // Only the four tools
+  // Core Hedera tools
   const {
     CREATE_FUNGIBLE_TOKEN_TOOL,
     CREATE_TOPIC_TOOL,
@@ -21,16 +22,21 @@ async function bootstrap(): Promise<void> {
     GET_HBAR_BALANCE_QUERY_TOOL,
   } = hederaTools;
 
-  // Prepare Hedera toolkit (load only selected tools)
+  // Prepare Hedera toolkit with core tools AND custom plugin
   const hederaAgentToolkit = new HederaAIToolkit({
     client,
     configuration: {
       tools: [
+        // Core tools
         CREATE_TOPIC_TOOL,
         SUBMIT_TOPIC_MESSAGE_TOOL,
         CREATE_FUNGIBLE_TOKEN_TOOL,
         GET_HBAR_BALANCE_QUERY_TOOL,
+        // Plugin tools
+        'example_greeting_tool',
+        'example_hbar_transfer_tool',
       ],
+      plugins: [examplePlugin], // Add the example plugin
       context: {
         mode: AgentMode.AUTONOMOUS,
       },
@@ -42,7 +48,11 @@ async function bootstrap(): Promise<void> {
     middleware: hederaAgentToolkit.middleware(),
   });
 
-  console.log('Hedera Agent CLI Chatbot — type "exit" to quit');
+  console.log('Hedera Agent CLI Chatbot with Plugin Support — type "exit" to quit');
+  console.log('Available plugin tools:');
+  console.log('- example_greeting_tool: Generate personalized greetings');
+  console.log('- example_hbar_transfer_tool: Transfer HBAR to account 0.0.800 (demonstrates transaction strategy)');
+  console.log('');
 
   // Chat memory: conversation history
   const conversationHistory: { role: 'user' | 'assistant', content: string }[] = [];
