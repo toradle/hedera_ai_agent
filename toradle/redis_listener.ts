@@ -12,20 +12,20 @@ dotenv.config();
 
 import './hedera-logger-override';
 
-import { ServerSigner } from '../src/signer/server-signer';
+import { ServerSigner } from 'hedera-agent-kit';
 import { Transaction } from '@hashgraph/sdk';
 import { Buffer } from 'buffer';
 import {
   HederaConversationalAgent,
   AgentResponse,
-} from '../src/agent/conversational-agent';
+} from 'hedera-agent-kit';
 import { HelloWorldPlugin } from './hello-world-plugin';
-import type { IPlugin } from '../src/plugins';
-import type { HederaNetworkType } from '../src/types';
+import type { IPlugin } from 'hedera-agent-kit';
+import type { HederaNetworkType } from 'hedera-agent-kit';
 import chalk from 'chalk';
 import gradient from 'gradient-string';
 import { enableHederaLogging } from './hedera-logger-override';
-import { HederaAccountPlugin, HederaHCSPlugin } from '../src/plugins/core';
+import { HederaAccountPlugin, HederaHCSPlugin } from 'hedera-agent-kit';
 import { 
   connectRedis, 
   subscribeToChannel, 

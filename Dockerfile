@@ -8,8 +8,7 @@ WORKDIR /app
 COPY . .
 
 # Install dependencies
-RUN npm install
-
+RUN npm install --ignore-scripts
 
 # Remove devDependencies after build scripts have run
 RUN npm prune --omit=dev

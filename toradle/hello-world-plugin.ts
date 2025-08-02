@@ -1,11 +1,11 @@
-import { BasePlugin } from '../src/plugins';
-import type { GenericPluginContext, HederaTool } from '../src/plugins';
+import { BasePlugin } from 'hedera-agent-kit';
+import type { GenericPluginContext, HederaTool } from 'hedera-agent-kit';
 import { z } from 'zod';
 import {
   BaseHederaQueryTool,
   BaseHederaQueryToolParams,
-} from '../src/langchain/tools/common/base-hedera-query-tool';
-import { HederaAgentKit } from '../src/agent/agent';
+} from 'hedera-agent-kit';
+import { HederaAgentKit } from 'hedera-agent-kit';
 
 /**
  * Zod schema for the say_hello tool input
