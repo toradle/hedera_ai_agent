@@ -1,6 +1,6 @@
 import { Context } from '@/shared/configuration';
 import { z } from 'zod';
-import { PublicKey, TokenSupplyType } from '@hashgraph/sdk';
+import { PublicKey, TokenSupplyType, TokenType } from '@hashgraph/sdk';
 import { TokenTransferMinimalParams } from '@/shared/hedera-utils/types';
 
 export const createFungibleTokenParameters = (_context: Context = {}) =>
@@ -59,6 +59,10 @@ export const createNonFungibleTokenParametersNormalised = (_context: Context = {
       .custom<TokenSupplyType>()
       .default(TokenSupplyType.Finite)
       .describe('Supply type of the token - must be finite for NFT.'),
+    tokenType: z
+      .custom<TokenType>()
+      .default(TokenType.NonFungibleUnique)
+      .describe('Token type of the token - must be non-fungible unique for NFT.'),
   });
 
 const AirdropRecipientSchema = z.object({
@@ -83,3 +87,21 @@ export const airdropFungibleTokenParametersNormalised = () =>
       .custom<TokenTransferMinimalParams[]>()
       .describe('Array of TokenTransfer objects constructed from the original recipients.'),
   });
+
+export const mintFungibleTokenParameters = (_context: Context = {}) =>
+  z.object({
+    tokenId: z.string().describe('The id of the token.'),
+    amount: z.number().describe('The amount of tokens to mint.'),
+  });
+
+export const mintFungibleTokenParametersNormalised = (_context: Context = {}) =>
+  mintFungibleTokenParameters(_context).extend({});
+
+export const mintNonFungibleTokenParameters = (_context: Context = {}) =>
+  z.object({
+    tokenId: z.string().describe('The id of the NFT class.'),
+    uris: z.array(z.string().max(100)).max(10).describe('An array of URIs hosting NFT metadata.'),
+  });
+
+export const mintNonFungibleTokenParametersNormalised = (_context: Context = {}) =>
+  mintNonFungibleTokenParameters(_context).extend({});
