@@ -1,17 +1,18 @@
 # Use Node.js LTS version
-FROM node:20-alpine
+FROM node:20.19.4-bookworm
 
 # Set working directory
 WORKDIR /app
 
-# Copy package files
-COPY package.json package-lock.json* ./
-
-# Install dependencies
-RUN npm ci --only=production
-
 # Copy source code
 COPY . .
+
+# Install dependencies
+RUN npm install
+
+
+# Remove devDependencies after build scripts have run
+RUN npm prune --omit=dev
 
 # Start the server
 CMD ["npm", "run", "server"]
