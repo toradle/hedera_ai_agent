@@ -37,8 +37,8 @@ import {
 
 // Interface for Redis message structure
 interface RedisMessage {
-  id: string;
-  input: string;
+  fetch_id: string;
+  query: string;
   userId?: string;
   metadata?: unknown;
 }
@@ -426,12 +426,12 @@ async function main(): Promise<void> {
         console.log(`${primaryBlue('📥 Received message:')} ${charcoal.dim(message)}`);
         
         const redisMessage: RedisMessage = JSON.parse(message);
-        const { id, input, userId = 'default' } = redisMessage;
+        const { fetch_id, query, userId = 'default' } = redisMessage;
 
-        if (!id || !input) {
+        if (!fetch_id || !query) {
           console.error(errorColor('Invalid message format - missing id or input'));
           const errorResponse: RedisResponse = {
-            id: id || 'unknown',
+            id: fetch_id || 'unknown',
             success: false,
             error: 'Invalid message format - missing id or input',
           };
@@ -440,21 +440,21 @@ async function main(): Promise<void> {
         }
 
         // Handle special commands
-        if (input.toLowerCase().startsWith('execute_transaction:')) {
-          const transactionBytes = input.replace('execute_transaction:', '').trim();
-          await handleUserSignedExecution(transactionBytes, id, userId);
+        if (query.toLowerCase().startsWith('execute_transaction:')) {
+          const transactionBytes = query.replace('execute_transaction:', '').trim();
+          await handleUserSignedExecution(transactionBytes, fetch_id, userId);
           return;
         }
 
-        if (input.toLowerCase().startsWith('sign_schedule:')) {
-          const scheduleId = input.replace('sign_schedule:', '').trim();
+        if (query.toLowerCase().startsWith('sign_schedule:')) {
+          const scheduleId = query.replace('sign_schedule:', '').trim();
           const followUpInput = `Sign and submit scheduled transaction ${scheduleId}`;
-          await processAndRespond(followUpInput, id, userId, true);
+          await processAndRespond(followUpInput, fetch_id, userId, true);
           return;
         }
 
         // Regular message processing
-        await processAndRespond(input, id, userId);
+        await processAndRespond(query, fetch_id, userId);
 
       } catch (error) {
         console.error(errorColor('Error parsing Redis message:'), error);

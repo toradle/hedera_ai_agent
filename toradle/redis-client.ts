@@ -1,9 +1,15 @@
 import { createClient } from 'redis';
+import * as dotenv from 'dotenv';
+dotenv.config();
 
 const REDIS_URL = process.env.REDIS_URL || 'redis://localhost:6379';
 
-export const REDIS_REQ_CHANNEL = process.env.REDIS_REQ_CHANNEL || "ai_req_channel"
-export const REDIS_RESP_CHANNEL = process.env.REDIS_RESP_CHANNEL || "ai_resp_channel"
+export const REDIS_REQ_CHANNEL = process.env.REDIS_REQ_CHANNEL || ""
+export const REDIS_RESP_CHANNEL = process.env.REDIS_RESP_CHANNEL || ""
+
+if (!REDIS_URL || !REDIS_REQ_CHANNEL || !REDIS_RESP_CHANNEL) {
+  throw new Error('Missing REDIS_URL environment variable');
+}
 
 // Create and configure Redis client
 const redisClient = createClient({ url: REDIS_URL });
