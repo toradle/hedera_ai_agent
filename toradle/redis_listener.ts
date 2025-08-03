@@ -45,7 +45,7 @@ interface RedisMessage {
 
 // Interface for Redis response structure
 interface RedisResponse {
-  id: string | undefined;
+  fetch_id: string | undefined;
   success: boolean;
   message?: string | undefined;
   output?: string;
@@ -223,7 +223,7 @@ async function main(): Promise<void> {
   ): Promise<void> {
     if (!userAccountId || !userPrivateKey) {
       const response: RedisResponse = {
-        id: messageId,
+        fetch_id: messageId,
         success: false,
         error: 'User keys not configured - USER_ACCOUNT_ID and USER_PRIVATE_KEY are not set.',
       };
@@ -271,7 +271,7 @@ async function main(): Promise<void> {
       chatHistoryMap.set(userId, chatHistory);
 
       const redisResponse: RedisResponse = {
-        id: messageId,
+        fetch_id: messageId,
         success: true,
         message: successMsg,
         output: JSON.stringify(receipt.toJSON()),
@@ -293,7 +293,7 @@ async function main(): Promise<void> {
       chatHistoryMap.set(userId, chatHistory);
 
       const redisResponse: RedisResponse = {
-        id: messageId,
+        fetch_id: messageId,
         success: false,
         error: errorMsg,
       };
@@ -353,7 +353,7 @@ async function main(): Promise<void> {
       // Handle scheduled transactions
       if (agentResponse.scheduleId) {
         const response: RedisResponse = {
-          id: messageId,
+          fetch_id: messageId,
           success: true,
           message: agentResponse.message,
           output: agentResponse.output,
@@ -369,7 +369,7 @@ async function main(): Promise<void> {
       // Handle transaction bytes
       if (agentResponse.transactionBytes) {
         const response: RedisResponse = {
-          id: messageId,
+          fetch_id: messageId,
           success: true,
           message: agentResponse.message,
           output: agentResponse.output,
@@ -384,7 +384,7 @@ async function main(): Promise<void> {
 
       // Regular response
       const response: RedisResponse = {
-        id: messageId,
+        fetch_id: messageId,
         success: true,
         message: agentResponse.message,
         output: agentResponse.output,
@@ -409,7 +409,7 @@ async function main(): Promise<void> {
       chatHistoryMap.set(userId, chatHistory);
 
       const response: RedisResponse = {
-        id: messageId,
+        fetch_id: messageId,
         success: false,
         error: `Critical error occurred: ${errorMsg}`,
       };
@@ -431,7 +431,7 @@ async function main(): Promise<void> {
         if (!fetch_id || !query) {
           console.error(errorColor('Invalid message format - missing id or input'));
           const errorResponse: RedisResponse = {
-            id: fetch_id || 'unknown',
+            fetch_id: fetch_id || '',
             success: false,
             error: 'Invalid message format - missing id or input',
           };
@@ -459,7 +459,7 @@ async function main(): Promise<void> {
       } catch (error) {
         console.error(errorColor('Error parsing Redis message:'), error);
         const errorResponse: RedisResponse = {
-          id: 'unknown',
+          fetch_id: '',
           success: false,
           error: 'Failed to parse message JSON',
         };
