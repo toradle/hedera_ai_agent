@@ -34,29 +34,7 @@ import {
   REDIS_REQ_CHANNEL,
   REDIS_RESP_CHANNEL
 } from './redis-client';
-
-// Interface for Redis message structure
-interface RedisMessage {
-  fetch_id: string;
-  query: string;
-  userId?: string;
-  metadata?: unknown;
-}
-
-// Interface for Redis response structure
-interface RedisResponse {
-  fetch_id: string | undefined;
-  success: boolean;
-  message?: string | undefined;
-  output?: string;
-  notes?: string[] | undefined;
-  error?: string | undefined;
-  transactionBytes?: string;
-  scheduleId?: string;
-  requiresUserAction?: boolean;
-  actionType?: 'sign_transaction' | 'sign_schedule';
-  metadata?: unknown;
-}
+import { RedisMessage, RedisResponse } from './types';
 
 async function main(): Promise<void> {
   const hederaGradient = gradient(['#8259ef', '#2d84eb']);
@@ -191,7 +169,6 @@ async function main(): Promise<void> {
     } else {
       console.log(`${charcoal.dim('👤 User Account: Not configured')}`);
     }
-    console.log();
     console.log(
       primaryBlue.dim('🎧 Redis listener active - waiting for messages...')
     );
@@ -200,30 +177,31 @@ async function main(): Promise<void> {
         '💡 Send messages to Redis channel to interact with the agent'
       )
     );
-    console.log();
 
     console.log(
       charcoal.dim(
         '📊 Initialization logs suppressed for clean startup experience'
       )
     );
-    console.log();
     enableHederaLogging();
     
     // Start Redis listener
     startRedisListener();
   }, 1000);
 
-  const chatHistoryMap = new Map<string, Array<{ type: 'human' | 'ai'; content: string }>>();
+  const chatHistoryMap = new Map<number, Array<{ type: 'human' | 'ai'; content: string }>>();
 
   async function handleUserSignedExecution(
     transactionBytesBase64: string,
     messageId: string,
-    userId: string = 'default'
+    source: string,
+    userId: number
   ): Promise<void> {
     if (!userAccountId || !userPrivateKey) {
       const response: RedisResponse = {
         fetch_id: messageId,
+        source,
+        userId,
         success: false,
         error: 'User keys not configured - USER_ACCOUNT_ID and USER_PRIVATE_KEY are not set.',
       };
@@ -272,6 +250,8 @@ async function main(): Promise<void> {
 
       const redisResponse: RedisResponse = {
         fetch_id: messageId,
+        source,
+        userId,
         success: true,
         message: successMsg,
         output: JSON.stringify(receipt.toJSON()),
@@ -294,6 +274,8 @@ async function main(): Promise<void> {
 
       const redisResponse: RedisResponse = {
         fetch_id: messageId,
+        source,
+        userId,
         success: false,
         error: errorMsg,
       };
@@ -304,7 +286,8 @@ async function main(): Promise<void> {
   async function processAndRespond(
     userInput: string,
     messageId: string,
-    userId: string = 'default',
+    source: string,
+    userId: number,
     isFollowUp: boolean = false
   ): Promise<void> {
     const chatHistory = chatHistoryMap.get(userId) || [];
@@ -354,6 +337,8 @@ async function main(): Promise<void> {
       if (agentResponse.scheduleId) {
         const response: RedisResponse = {
           fetch_id: messageId,
+          source,
+          userId,
           success: true,
           message: agentResponse.message,
           output: agentResponse.output,
@@ -370,6 +355,8 @@ async function main(): Promise<void> {
       if (agentResponse.transactionBytes) {
         const response: RedisResponse = {
           fetch_id: messageId,
+          source,
+          userId,
           success: true,
           message: agentResponse.message,
           output: agentResponse.output,
@@ -385,6 +372,8 @@ async function main(): Promise<void> {
       // Regular response
       const response: RedisResponse = {
         fetch_id: messageId,
+        source,
+        userId,
         success: true,
         message: agentResponse.message,
         output: agentResponse.output,
@@ -410,6 +399,8 @@ async function main(): Promise<void> {
 
       const response: RedisResponse = {
         fetch_id: messageId,
+        source,
+        userId,
         success: false,
         error: `Critical error occurred: ${errorMsg}`,
       };
@@ -426,12 +417,15 @@ async function main(): Promise<void> {
         console.log(`${primaryBlue('📥 Received message:')} ${charcoal.dim(message)}`);
         
         const redisMessage: RedisMessage = JSON.parse(message);
-        const { fetch_id, query, userId = 'default' } = redisMessage;
+        const { fetch_id, query, source } = redisMessage;
+        const userId = +redisMessage.userId;
 
         if (!fetch_id || !query) {
           console.error(errorColor('Invalid message format - missing id or input'));
           const errorResponse: RedisResponse = {
             fetch_id: fetch_id || '',
+            source,
+            userId,
             success: false,
             error: 'Invalid message format - missing id or input',
           };
@@ -442,24 +436,26 @@ async function main(): Promise<void> {
         // Handle special commands
         if (query.toLowerCase().startsWith('execute_transaction:')) {
           const transactionBytes = query.replace('execute_transaction:', '').trim();
-          await handleUserSignedExecution(transactionBytes, fetch_id, userId);
+          await handleUserSignedExecution(transactionBytes, fetch_id, source, userId);
           return;
         }
 
         if (query.toLowerCase().startsWith('sign_schedule:')) {
           const scheduleId = query.replace('sign_schedule:', '').trim();
           const followUpInput = `Sign and submit scheduled transaction ${scheduleId}`;
-          await processAndRespond(followUpInput, fetch_id, userId, true);
+          await processAndRespond(followUpInput, fetch_id, source, userId, true);
           return;
         }
 
         // Regular message processing
-        await processAndRespond(query, fetch_id, userId);
+        await processAndRespond(query, fetch_id, source, userId);
 
       } catch (error) {
         console.error(errorColor('Error parsing Redis message:'), error);
         const errorResponse: RedisResponse = {
           fetch_id: '',
+          source: '',
+          userId: 0,
           success: false,
           error: 'Failed to parse message JSON',
         };
