@@ -1,390 +1,253 @@
-# Hedera Agent Kit Plugin Development Guide
+# Available Hedera Plugins
 
-The Hedera Agent Kit supports a powerful plugin system that allows developers to extend the agent's capabilities with custom tools and integrations. This guide covers everything you need to know about creating and using plugins.
+The Hedera Agent Kit provides a comprehensive set of tools organized into **plugins**, which can be installed alongside the Hedera Agent Kit and used to extend the core funcitonality of the Hederak Agent Kit SDK. 
+These tools can be used both by the conversational agent and when you are building with the SDK.
 
-## Overview
+The Hedera services built into this agent toolkit are also implemented as plugins, you can see a description of each plugin in the [HEDERAPLUGINS.md](HEDERAPLUGINS.md) file, as well as list of the individual tools for each Hedera service that are included in each plugin.
 
-Plugins in the Hedera Agent Kit are modular extensions that provide additional tools to the agent. They are built on top of the Standards Agent Kit plugin architecture and integrate seamlessly with LangChain tools.
+## Available Third Party Plugins
+_Coming Soon_
 
 ## Plugin Architecture
 
-### Core Interfaces
+The tools are now organized into plugins, each containing a set functionality related to the Hedera service or project they are created for.
 
-All plugins must implement the `IPlugin` interface:
+ 
+
+## Creating a Plugin
+ Creating a Custom Plugin
+
+### Plugin Interface
+
+  Every plugin must implement the Plugin interface:
 
 ```typescript
-interface IPlugin<T extends BasePluginContext = BasePluginContext> {
-  id: string;                    // Unique identifier for the plugin
-  name: string;                  // Human-readable name
-  description: string;           // What the plugin does
-  version: string;              // Plugin version
-  author: string;               // Plugin author
+  export interface Plugin {
+    name: string;
+    version?: string;
+    description?: string;
+    tools: (context: Context) => Tool[];
+  }
+  ```
+
+### Tool Interface
+
+  Each tool must implement the Tool interface:
+
+```typescript
+  export type Tool = {
+    method: string;
+    name: string;
+    description: string;
+    parameters: z.ZodObject<any, any>;
+    execute: (client: Client, context: Context, params: any) => Promise<any>;
+  };
+```
+### Step-by-Step Guide
+
+**Step 1: Create Plugin Directory Structure**
+
+```typescript
+  my-custom-plugin/
+  ├── index.ts                    # Plugin definition and exports
+  ├── tools/
+  │   └── my-service/
+  │       └── my-tool.ts         # Individual tool implementation
+```
+**Step 2: Implement Your Tool**
+
+  Create your tool file (e.g., tools/my-service/my-tool.ts):
+
+```typescript
+  import { z } from 'zod';
+  import { Context, Tool, handleTransaction } from 'hedera-agent-kit';
+  import { Client, PrivateKey, AccountId } from '@hashgraph/sdk';
+  import dotenv from 'dotenv';
   
-  initialize(context: T): Promise<void>;  // Initialize with context
-  getTools(): StructuredTool[];          // Return available tools
-  cleanup?(): Promise<void>;             // Optional cleanup method
-}
-```
+  // Load environment variables
+  dotenv.config();
 
-### Plugin Context
+  // Define parameter schema
+  const myToolParameters = (context: Context = {}) =>
+    z.object({
+      requiredParam: z.string().describe('Description of required parameter'),
+      optionalParam: z.string().optional().describe('Description of optional parameter'),
+    });
 
-When initialized, plugins receive a context object that provides access to shared resources:
+  // Create prompt function
+  const myToolPrompt = (context: Context = {}) => {
+    return `
+  This tool performs a specific operation.
 
-```typescript
-interface GenericPluginContext {
-  logger: Logger;                        // Logger instance
-  config: Record<string, unknown>;       // Configuration options
-  client: IPluginClient;                 // Network client interface
-  stateManager?: IPluginStateManager;    // Optional state manager
-}
-```
+  Parameters:
+  - requiredParam (string, required): Description
+  - optionalParam (string, optional): Description
+  `;
+  };
 
-## Creating a Basic Plugin
+  // Implement tool logic
+  const myToolExecute = async (
+    client: Client,
+    context: Context,
+    params: z.infer<ReturnType<typeof myToolParameters>>,
+  ) => {
+    try {
+      // Your implementation here
+      const result = await someHederaOperation(params);
+      return result;
+    } catch (error) {
+      if (error instanceof Error) {
+        return error.message;
+      }
+      return 'Operation failed';
+    }
+  };
 
-### Step 1: Set Up the Plugin Class
+  export const MY_TOOL = 'my_tool';
 
-The simplest way to create a plugin is to extend the `GenericPlugin` base class:
-
-```typescript
-import {
-  GenericPlugin,
-  GenericPluginContext,
-} from 'hedera-agent-kit';
-import { StructuredTool, DynamicStructuredTool } from '@langchain/core/tools';
-import { z } from 'zod';
-
-export class HelloWorldPlugin extends GenericPlugin {
-  id = 'hello-world-plugin';
-  name = 'Hello World Plugin';
-  description = 'A simple plugin that says hello.';
-  version = '1.0.0';
-  author = 'Hedera Agent Kit Demo';
-  namespace = 'hello';  // Optional namespace for organizing tools
-
-  override async initialize(context: GenericPluginContext): Promise<void> {
-    await super.initialize(context);
-    this.context.logger.info('HelloWorldPlugin initialized');
-  }
-
-  getTools(): StructuredTool[] {
-    return [
-      new DynamicStructuredTool({
-        name: 'say_hello',
-        description: 'Says hello to the given name.',
-        schema: z.object({
-          name: z.string().describe('The name to say hello to.'),
-        }),
-        func: async ({ name }: { name: string }): Promise<string> => {
-          return `Hello, ${name}! This message is from the HelloWorldPlugin.`;
-        },
-      }),
-    ];
-  }
-}
-```
-
-### Step 2: Add Custom Tools
-
-Tools are created using LangChain's `StructuredTool` or `DynamicStructuredTool` classes. Each tool must have:
-
-- **name**: A unique identifier for the tool
-- **description**: What the tool does (used by the AI to understand when to use it)
-- **schema**: A Zod schema defining the tool's parameters
-- **func**: The implementation function
-
-Here's an example of a more complex tool:
-
-```typescript
-class GetWeatherTool extends StructuredTool {
-  name = 'get_current_weather';
-  description = 'Get the current weather for a location';
-
-  schema = z.object({
-    location: z.string().describe('The city and state, e.g. San Francisco, CA'),
-    unit: z
-      .enum(['celsius', 'fahrenheit'])
-      .optional()
-      .describe('The unit of temperature'),
+  const tool = (context: Context): Tool => ({
+    method: MY_TOOL,
+    name: 'My Custom Tool',
+    description: myToolPrompt(context),
+    parameters: myToolParameters(context),
+    execute: myToolExecute,
   });
 
-  constructor(private apiKey?: string) {
-    super();
-  }
-
-  async _call(input: z.infer<typeof this.schema>): Promise<string> {
-    if (!this.apiKey) {
-      return 'Error: Weather API key not configured.';
-    }
-
-    try {
-      // Make API call to weather service
-      const response = await axios.get('https://api.weatherapi.com/v1/current.json', {
-        params: {
-          key: this.apiKey,
-          q: input.location,
-        },
-      });
-
-      const temp = input.unit === 'fahrenheit' 
-        ? response.data.current.temp_f 
-        : response.data.current.temp_c;
-      const unit = input.unit === 'fahrenheit' ? '°F' : '°C';
-
-      return `Current weather in ${response.data.location.name}: ${temp}${unit}`;
-    } catch (error) {
-      return `Error fetching weather: ${error.message}`;
-    }
-  }
-}
+  export default tool;
 ```
+**Step 3: Create Plugin Definition**
 
-### Step 3: Integrate with Hedera Agent Kit
-
-To use your plugin with the Hedera Agent Kit, pass it during initialization:
-
+  Create your plugin index file (index.ts):
 ```typescript
-import { HederaAgentKit } from '../src';
-import { ServerSigner } from '../src/signer/server-signer';
-import { HelloWorldPlugin } from './hello-world-plugin';
-import { IPlugin } from 'hedera-agent-kit';
+  import { Context } from '@/shared';
+  import { Plugin } from '@/shared/plugin';
+  import myTool, { MY_TOOL } from './tools/my-service/my-tool';
 
-// Create signer
-const signer = new ServerSigner(
-  process.env.HEDERA_ACCOUNT_ID!,
-  process.env.HEDERA_PRIVATE_KEY!,
-  'testnet'
-);
+  export const myCustomPlugin: Plugin = {
+    name: 'my-custom-plugin',
+    version: '1.0.0',
+    description: 'A plugin for custom functionality',
+    tools: (context: Context) => {
+      return [myTool(context)];
+    },
+  };
 
-// Initialize agent kit with plugin
-const agentKit = new HederaAgentKit(signer, {
-  plugins: [new HelloWorldPlugin() as IPlugin],
-  appConfig: {
-    // Any configuration your plugins need
-    weatherApiKey: process.env.WEATHER_API_KEY,
-  }
-});
+  export const myCustomPluginToolNames = {
+    MY_TOOL,
+  } as const;
 
-// Initialize the kit (this initializes all plugins)
-await agentKit.initialize();
+  export default { myCustomPlugin, myCustomPluginToolNames };
 
-// Get all available tools (includes plugin tools)
-const tools = agentKit.getAggregatedLangChainTools();
-```
+  Step 4: Register Your Plugin
 
-## Advanced Plugin Features
+  Add your plugin to the main plugins index (src/plugins/index.ts):
 
-### Using Configuration
+  import { myCustomPlugin, myCustomPluginToolNames } from './my-custom-plugin';
 
-Plugins can access configuration through the context:
+  export {
+    // ... existing exports
+    myCustomPlugin,
+    myCustomPluginToolNames,
+  };
+  ```
 
-```typescript
-export class ConfigurablePlugin extends GenericPlugin {
-  private apiEndpoint?: string;
-  
-  async initialize(context: GenericPluginContext): Promise<void> {
-    await super.initialize(context);
-    
-    // Access configuration
-    this.apiEndpoint = context.config.apiEndpoint as string;
-    
-    if (!this.apiEndpoint) {
-      this.context.logger.warn('API endpoint not configured');
-    }
-  }
-}
-```
+ ### Best Practices
 
-### Accessing Hedera Network
+  **Parameter Validation**
 
-Plugins can interact with the Hedera network through the client interface:
+  * Use Zod schemas for robust input validation
+  * Provide clear descriptions for all parameters
+  * Mark required vs optional parameters appropriately
 
-```typescript
-getTools(): StructuredTool[] {
-  return [
-    new DynamicStructuredTool({
-      name: 'check_network',
-      description: 'Check which Hedera network we are connected to',
-      schema: z.object({}),
-      func: async (): Promise<string> => {
-        const network = this.context.client.getNetwork();
-        return `Connected to Hedera ${network} network`;
+
+  **Tool Organization**
+
+  * Group related tools by service type
+  * Use consistent naming conventions
+  * Follow the established directory structure
+
+**Transaction Handling**
+
+  * Use handleTransaction() to facilitate human-in-the-loop and autonomous execution flows
+  * Respect the AgentMode (AUTONOMOUS vs RETURN_BYTES)
+  * Implement proper transaction building patterns
+
+### Using Your Custom Plugin
+
+  ```typescript
+  import { HederaLangchainToolkit } from 'hedera-agent-kit';
+  import { myCustomPlugin, myCustomPluginToolNames } from './plugins/my-custom-plugin';
+
+  const toolkit = new HederaLangchainToolkit({
+    client,
+    configuration: {
+      tools: [myCustomPluginToolNames.MY_TOOL],
+      plugins: [myCustomPlugin],
+      context: {
+        mode: AgentMode.AUTONOMOUS,
       },
-    }),
-  ];
-}
+    },
+  });
+  ```
+
+  ### Examples and References
+  * See existing core plugins in typescript/src/plugins/core-*-plugin/
+  * Follow the patterns established in tools like [transfer-hbar.ts](typescript/src/plugins/core-account-plugin/tools/account/transfer-hbar.ts)
+  * See [typescript/examples/langchain/tool-calling-agent.ts](typescript/examples/langchain/tool-calling-agent.ts) for usage examples
+
+## Publish and Register Your Plugin
+To create a plugin to be use with the Hedera Agent Kit, you will need to create a plugin in your own repository, publish an npm package, and provide a description of the functionality included in that plugin, as well as the required and optional parameters. 
+
+Once you have a repository, published npm package, and a README with a description of the functionality included in that plugin in your plugin's repo, as well as the required and optional parameters, you can add it to the Hedera Agent Kit by forking and opening a Pull Request to:
+
+1. Include the plugin as a bullet point under the **Available Third Party Plugin** section _on this page_. Include the name, a brief description, and a link to the repository with the README, as well the URL linked to the published npm package.
+
+2. Include the same information **in the README.md of this repository** under the **Third Party Plugins** section.
+
+Feel free to also [reach out to the Hedera Agent Kit maintainers on Discord](https://hedera.com/discord) or another channel so we can test out your plugin, include it in our docs, and let our community know thorough marketing and community channels.
+
+Please also reach out in the Hedera Discord in the Support > developer-help-desk channelor create an Issue in this repository for help building, publishing, and promoting your plugin 
+
+## Plugin README Template 
+
+```markdown
+## Plugin Name
+This plugin was built by <?> for the <project, platform, etc>. It was built to enable <who?> to <do what?>
+
+_Feel free to include a description of your project and how it can be used with the Hedera Agent Kit. 
+
+### Installation
+
+```bash
+npm install <plugin-name>
 ```
 
-### Plugin Cleanup
+### Usage
 
-Implement the optional `cleanup` method to properly dispose of resources:
-
-```typescript
-export class ResourcePlugin extends GenericPlugin {
-  private intervalId?: NodeJS.Timer;
-  
-  async initialize(context: GenericPluginContext): Promise<void> {
-    await super.initialize(context);
-    // Start some background task
-    this.intervalId = setInterval(() => {
-      this.context.logger.debug('Background task running');
-    }, 60000);
-  }
-  
-  async cleanup(): Promise<void> {
-    if (this.intervalId) {
-      clearInterval(this.intervalId);
-    }
-    this.context.logger.info('ResourcePlugin cleaned up');
-  }
-}
+```javascript
+import { myPlugin } from '<plugin-name>';
 ```
 
-## Real-World Example: HBAR Price Plugin
-
-Here's a complete example of a plugin that fetches HBAR prices:
-
-```typescript
-import { IPlugin } from '../PluginInterface';
-import { StructuredTool } from '@langchain/core/tools';
-import { z } from 'zod';
-import axios from 'axios';
-
-const HEDERA_MIRROR_NODE_API = 'https://mainnet.mirrornode.hedera.com/api/v1';
-
-class GetHbarPriceTool extends StructuredTool {
-  name = 'getHbarPrice';
-  description = 'Retrieves the current price of HBAR in USD from the Hedera Mirror Node.';
-  schema = z.object({}); // No input required
-
-  protected async _call(): Promise<string> {
-    try {
-      const response = await axios.get(`${HEDERA_MIRROR_NODE_API}/network/exchangerate`);
-      
-      const { current_rate } = response.data;
-      const priceUsd = current_rate.cent_equivalent / current_rate.hbar_equivalent / 100;
-      
-      return `The current price of HBAR is $${priceUsd.toFixed(6)} USD.`;
-    } catch (error) {
-      return `Failed to retrieve HBAR price: ${error.message}`;
-    }
-  }
-}
-
-export class HbarPricePlugin implements IPlugin {
-  id = 'hedera-hbar-price';
-  name = 'Hedera HBAR Price Plugin';
-  description = 'Provides tools to interact with Hedera network data, specifically HBAR price.';
-  version = '1.0.0';
-  author = 'Hedera Agent';
-
-  private tools: StructuredTool[];
-
-  constructor() {
-    this.tools = [new GetHbarPriceTool()];
-  }
-
-  async initialize(): Promise<void> {
-    // No specific initialization needed
-    return Promise.resolve();
-  }
-
-  getTools(): StructuredTool[] {
-    return this.tools;
-  }
-
-  async cleanup(): Promise<void> {
-    // No cleanup necessary
-    return Promise.resolve();
-  }
-}
+```javascript
+ const hederaAgentToolkit = new HederaLangchainToolkit({
+    client,
+    configuration: {
+      context: {
+        mode: AgentMode.AUTONOMOUS,
+      },
+      plugins: [coreHTSPlugin, coreAccountPlugin, coreConsensusPlugin, coreQueriesPlugin, myPlugin],
+    },
+  });
 ```
 
-## Using Plugins with Conversational Agents
+### Functionality
+Describe the different tools or individual pieces of functionality included in this plugin, and how to use them.
 
-When using plugins with the `HederaConversationalAgent`, they are automatically integrated:
 
-```typescript
-import { HederaConversationalAgent } from '../src/agent/conversational-agent';
-import { HelloWorldPlugin } from './hello-world-plugin';
+**Plugin Name**
+_High level description of the plugin_
 
-const conversationalAgent = new HederaConversationalAgent(signer, {
-  operationalMode: 'provideBytes',
-  userAccountId: process.env.USER_ACCOUNT_ID,
-  openAIApiKey: process.env.OPENAI_API_KEY,
-  pluginConfig: {
-    plugins: [new HelloWorldPlugin() as IPlugin],
-    appConfig: {
-      // Plugin configuration
-    }
-  },
-});
-
-await conversationalAgent.initialize();
-
-// The agent can now use plugin tools
-const response = await conversationalAgent.processMessage(
-  "Say hello to Hedera",
-  chatHistory
-);
+| Tool Name                                       | Description                                        |Usage                                             |
+| ----------------------------------------------- | -------------------------------------------------- |--------------------------------------------------------- |
+| `YOUR_PLUGIN_TOOL_NAME`| What it does | How to use. Include a list of parameters and their descriptions|
 ```
-
-## Best Practices
-
-1. **Unique IDs**: Always use unique, descriptive IDs for your plugins to avoid conflicts
-2. **Error Handling**: Always handle errors gracefully in your tools and return helpful error messages
-3. **Logging**: Use the provided logger for debugging and tracking plugin behavior
-4. **Type Safety**: Use TypeScript and Zod schemas to ensure type safety
-5. **Documentation**: Provide clear descriptions for your tools to help the AI understand when to use them
-6. **Configuration**: Make your plugins configurable through the appConfig
-7. **Cleanup**: Always implement cleanup if your plugin uses resources that need disposal
-
-## Plugin Registry (Optional)
-
-For managing multiple plugins, you can use the `PluginRegistry` from Standards Agent Kit:
-
-```typescript
-import { PluginRegistry, PluginContext } from 'hedera-agent-kit';
-
-const context: PluginContext = {
-  client: hcs10Client,
-  logger: logger,
-  config: {
-    weatherApiKey: process.env.WEATHER_API_KEY,
-  },
-};
-
-const pluginRegistry = new PluginRegistry(context);
-
-// Register plugins
-await pluginRegistry.registerPlugin(new WeatherPlugin());
-await pluginRegistry.registerPlugin(new HbarPricePlugin());
-
-// Get all tools from all plugins
-const allTools = pluginRegistry.getAllTools();
-```
-
-## Troubleshooting
-
-### Plugin Not Loading
-- Ensure the plugin is properly instantiated and passed to the agent kit
-- Check that `await agentKit.initialize()` is called before using tools
-- Verify the plugin implements all required interface methods
-
-### Tools Not Working
-- Check tool descriptions are clear and specific
-- Verify Zod schemas match expected parameters
-- Ensure error handling returns helpful messages
-- Check logs for initialization errors
-
-### Configuration Issues
-- Verify configuration is passed in the `appConfig` object
-- Check that configuration keys match what the plugin expects
-- Use the logger to debug configuration values
-
-## Next Steps
-
-- Explore the [Standards Agent Kit plugin examples](https://github.com/hashgraph-online/standards-agent-kit/tree/main/src/plugins)
-- Check out community plugins for inspiration
-- Share your plugins with the Hedera community
-
-Remember that plugins are a powerful way to extend the Hedera Agent Kit's capabilities. Whether you're integrating with external APIs, adding custom business logic, or creating specialized Hedera operations, the plugin system provides a clean and maintainable way to enhance your agent's functionality.
