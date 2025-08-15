@@ -20,6 +20,8 @@ import {
   AgentResponse,
 } from 'hedera-agent-kit';
 import { HelloWorldPlugin } from './hello-world-plugin';
+import { ToradleInfoPlugin } from './toradle-info-plugin';
+import { XrplInfoPlugin } from './xrpl-info-plugin';
 import type { IPlugin } from 'hedera-agent-kit';
 import type { HederaNetworkType } from 'hedera-agent-kit';
 import chalk from 'chalk';
@@ -127,7 +129,10 @@ async function main(): Promise<void> {
       plugins: [
         new HederaHCSPlugin(),
         new HederaAccountPlugin(),
-        new HelloWorldPlugin() as IPlugin],
+        new HelloWorldPlugin() as IPlugin,
+        new ToradleInfoPlugin() as IPlugin,
+        new XrplInfoPlugin() as IPlugin
+      ],
     },
   });
 

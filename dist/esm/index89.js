@@ -62,7 +62,7 @@ import "./index66.js";
 import "./index67.js";
 import "./index68.js";
 import "./index69.js";
-import { ModelCapability } from "./index91.js";
+import { ModelCapability } from "./index93.js";
 class HederaHTSPlugin extends BasePlugin {
   constructor() {
     super(...arguments);
