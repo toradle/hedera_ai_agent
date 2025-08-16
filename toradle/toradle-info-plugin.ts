@@ -29,10 +29,8 @@ function loadCorpusFromMarkdown(filePath: string): CorpusSection[] {
   let raw = fs.readFileSync(filePath, 'utf-8');
 
   // Skip the top H1 (# ...) and only parse sections starting from the first ##
-  const firstLevel2Index = raw.indexOf('\n## ');
-  if (firstLevel2Index !== -1) {
-    raw = raw.slice(firstLevel2Index + 1);
-  }
+  const start = raw.search(/^##\s/m);
+  if (start >= 0) raw = raw.slice(start);
 
   const sections: CorpusSection[] = [];
 
@@ -83,7 +81,7 @@ function loadCorpusFromMarkdown(filePath: string): CorpusSection[] {
 // ---- The actual tool implementation (follows the SayHelloTool pattern) ----
 class ToradleAnswerTool extends BaseHederaQueryTool<typeof ToradleAnswerSchema> {
   name = 'toradle_answer';
-  description = 'Answer questions about Toradle from a curated internal knowledge base.';
+  description = 'Answer questions about **Toradle** — features, Bybit 50% fee cashback, Hedera/XRPL integrations (Xaman, DEX/AMM), portfolios, alerts — using the Toradle knowledge base. Use this for any query that mentions “Toradle”.';
   specificInputSchema = ToradleAnswerSchema;
   namespace = 'toradle';
 
@@ -173,10 +171,12 @@ export class ToradleInfoPlugin extends BasePlugin {
 
     // Load Toradle knowledge base from Markdown
     const mdPath = path.join(__dirname, '../knowledge/toradle.md');
+    this.context.logger.info(`Toradle MD path: ${mdPath} (exists=${fs.existsSync(mdPath)})`);
     if (!fs.existsSync(mdPath)) {
       throw new Error(`Toradle knowledge file not found at ${mdPath}`);
     }
     const loaded = loadCorpusFromMarkdown(mdPath);
+    this.context.logger.info(`Toradle MD sections parsed: ${loaded.length}`);
     if (!loaded || loaded.length === 0) {
       throw new Error('Toradle knowledge file is empty or failed to parse.');
     }
