@@ -21,6 +21,8 @@ import {
   AgentResponse,
 } from '../src/agent/conversational-agent';
 import { HelloWorldPlugin } from './hello-world-plugin';
+import { ToradleInfoPlugin } from './toradle-info-plugin';
+import { XrplInfoPlugin } from './xrpl-info-plugin';
 import type { IPlugin } from '../src/plugins';
 import type { HederaNetworkType } from '../src/types';
 import chalk from 'chalk';
@@ -109,6 +111,8 @@ ${hederaGradient(
       plugins: [
         new HederaHCSPlugin(),
         new HederaAccountPlugin(),
+        new ToradleInfoPlugin() as IPlugin,
+        new XrplInfoPlugin() as IPlugin,
         new HelloWorldPlugin() as IPlugin],
     },
   });

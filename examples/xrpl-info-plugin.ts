@@ -1,12 +1,12 @@
 // examples/xrpl-info-plugin.ts
-import type { GenericPluginContext, HederaTool } from 'hedera-agent-kit';
+import { BasePlugin } from '../src/plugins';
+import type { GenericPluginContext, HederaTool } from '../src/plugins';
 import { z } from 'zod';
 import {
   BaseHederaQueryTool,
   BaseHederaQueryToolParams,
-  BasePlugin
-} from 'hedera-agent-kit';
-import { HederaAgentKit } from 'hedera-agent-kit';
+} from '../src/langchain/tools/common/base-hedera-query-tool';
+import { HederaAgentKit } from '../src/agent/agent';
 import fs from 'fs';
 import path from 'path';
 

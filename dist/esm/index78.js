@@ -1,4 +1,4 @@
-import { ModelCapability } from "./index93.js";
+import { ModelCapability } from "./index92.js";
 const FALLBACK_MODEL_REGISTRY = {
   "gpt-3.5-turbo": {
     capability: ModelCapability.SMALL,
