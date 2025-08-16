@@ -92,6 +92,36 @@ class ToradleAnswerTool extends BaseHederaQueryTool<typeof ToradleAnswerSchema> 
     this.corpus = params.corpus;
   }
 
+  // --- Query normalization & synonyms to improve recall ---
+  private normalizeToken(t: string): string {
+    let s = t.toLowerCase().trim();
+    s = s.replace(/[^\p{L}\p{N}\s-]+/gu, ''); // strip punctuation
+    if (s.endsWith('ies')) s = s.slice(0, -3) + 'y';
+    else if (s.endsWith('es')) s = s.slice(0, -2);
+    else if (s.endsWith('s')) s = s.slice(0, -1);
+    return s;
+  }
+
+  private expandTokens(tokens: string[]): Set<string> {
+    const out = new Set<string>();
+    const synonyms: Record<string, string[]> = {
+      grade: ['grade', 'grades', 'grading', 'rating', 'ratings', 'score', 'scoring'],
+      trend: ['trend', 'trends', 'upswing', 'downswing', 'uptrend', 'downtrend', 'range', 'transition'],
+      tranche: ['tranche', 'tranches', 'sizing', 'allocation', 'position', 'positions', 'scaling'],
+      portfolio: ['portfolio', 'pnl', 'p&l', 'holdings', 'positions'],
+    };
+    for (const t of tokens) {
+      const n = this.normalizeToken(t);
+      out.add(n);
+      for (const list of Object.values(synonyms)) {
+        if (list.includes(n)) {
+          for (const v of list) out.add(this.normalizeToken(v));
+        }
+      }
+    }
+    return out;
+  }
+
   protected async executeQuery(
     args: z.infer<typeof ToradleAnswerSchema>
   ): Promise<unknown> {
@@ -138,7 +168,6 @@ class ToradleAnswerTool extends BaseHederaQueryTool<typeof ToradleAnswerSchema> 
     return { success: true, answer, sections };
   }
 
-  // ---- Retrieval helpers (same logic as before, localized to the tool) ----
   private composeOverview(): string {
     // Helper with explicit return type (ESLint-friendly)
     const pick = (id: string): string | undefined =>
@@ -184,13 +213,65 @@ class ToradleAnswerTool extends BaseHederaQueryTool<typeof ToradleAnswerSchema> 
     return parts.join('\n\n');
   }
 
+  private tokenize(text: string): string[] {
+    return text
+      .toLowerCase()
+      .replace(/[^\p{L}\p{N}\s-]+/gu, ' ')
+      .split(/\s+/)
+      .filter(Boolean)
+      .map((t) => this.normalizeToken(t));
+  }
+
+  private score(queryTokens: string[], section: CorpusSection): number {
+    const expanded = this.expandTokens(queryTokens);
+    let score = 0;
+
+    // 1) Boost for keywords declared in the Markdown meta
+    for (const k of section.keywords) {
+      const nk = this.normalizeToken(k);
+      if (expanded.has(nk)) score += 4;
+    }
+
+    // 2) Title & ID fuzzy contains
+    const title = section.title.toLowerCase();
+    const id = section.id.toLowerCase();
+    for (const qt of expanded) {
+      if (title.includes(qt)) score += 2;
+      if (id.includes(qt)) score += 1;
+    }
+
+    // 3) Light body skim (first 600 chars)
+    const body = section.text.slice(0, 600).toLowerCase();
+    for (const qt of expanded) {
+      if (body.includes(qt)) score += 0.5;
+    }
+
+    return score;
+  }
+
   private searchAndAnswer(question: string): { answer: string; sections: string[] } {
     const tokens = this.tokenize(question);
+    const expanded = this.expandTokens(tokens);
+
+    const gradeWords = ['grade', 'grades', 'grading', 'rating', 'ratings', 'score', 'scoring'];
+    const wantsGrades = gradeWords
+      .map((w) => this.normalizeToken(w))
+      .some((w) => expanded.has(w));
+
     const scored = this.corpus
       .map((s) => ({ s, score: this.score(tokens, s) }))
       .sort((a, b) => b.score - a.score);
 
-    const top = scored.slice(0, 3).filter((x) => x.score > 0);
+    let top = scored.slice(0, 3).filter((x) => x.score > 0);
+
+    // If the user clearly asks about grades, ensure the Grade section is included
+    if (wantsGrades) {
+      const grade = this.corpus.find((c) => c.title.toLowerCase().includes('grade'));
+      if (grade && !top.some((x) => x.s.id === grade.id)) {
+        top = [{ s: grade, score: Number.POSITIVE_INFINITY }, ...top].slice(0, 3);
+      }
+    }
+
     if (top.length === 0) {
       return { answer: this.composeOverview(), sections: ['Overview'] };
     }
@@ -200,22 +281,6 @@ class ToradleAnswerTool extends BaseHederaQueryTool<typeof ToradleAnswerSchema> 
     const disclaimer = this.corpus.find((c) => c.id === 'toradle-disclaimer');
     const answer = disclaimer ? `${body}\n\n—\n${disclaimer.text}` : body;
     return { answer, sections };
-  }
-
-  private tokenize(text: string): string[] {
-    return text
-      .toLowerCase()
-      .replace(/[^\p{L}\p{N}\s-]+/gu, ' ')
-      .split(/\s+/)
-      .filter(Boolean);
-  }
-
-  private score(queryTokens: string[], section: CorpusSection): number {
-    const set = new Set(queryTokens);
-    let score = 0;
-    for (const k of section.keywords) if (set.has(k)) score += 3;
-    for (const t of queryTokens) if (section.title.toLowerCase().includes(t)) score += 1;
-    return score;
   }
 }
 
