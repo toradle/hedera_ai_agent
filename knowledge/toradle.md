@@ -314,3 +314,38 @@ Our core philosophy is that our Subscribers should not lose money.
 Registered address: Dubai
 
 > For legal, compliance, and promotional terms (e.g., Bybit brokerage benefits), refer to the latest official documents published by Toradle.
+
+## Glossary & Definitions
+
+id: toradle-definitions
+keywords: glossary, definitions, metrics, ROI, CGR, backtest, SQN, Sharpe, Sortino, Calmar
+
+- **CGR (Cumulative Growth Rate)**: Growth rate over a given period, compounding all trades.
+- **CGR Toradle**: Cumulative growth if following Toradle’s trade advisories.
+- **CGR Actual**: Cumulative growth if holding the asset from the start of the period without trading.
+- **ROI (Return on Investment)**: The net profit or loss from trades, expressed as a percentage of the invested amount.
+- **Current Position**: The current value of an open trade compared to the entry price.
+
+### Backtest Metrics
+
+- **SQN (System Quality Number)**: A measure of trading system performance that considers average trade returns and variability.
+- **Calmar Ratio**: Annualized return divided by maximum drawdown, used to assess risk-adjusted performance.
+- **Profit Factor**: Ratio of gross profits to gross losses; a measure of profitability.
+- **Sharpe Ratio**: Risk-adjusted return metric; average excess return per unit of volatility.
+- **Sortino Ratio**: Variation of Sharpe that penalizes only downside volatility.
+- **Expectancy %**: Average expected return per trade over many trades.
+- **Win Rate %**: Percentage of trades that end in profit.
+- **Accuracy %**: How often Toradle’s signals correctly predict trade direction.
+
+### Trade & Equity Stats
+
+- **Return Ann %**: Annualized return percentage.
+- **Volatility Ann %**: Annualized volatility percentage.
+- **Equity Start**: Starting portfolio value in backtest.
+- **Equity Peak**: Highest portfolio value reached.
+- **Equity Final**: Ending portfolio value.
+- **Best Trade [%]**: Largest profit percentage achieved in a single trade.
+- **Worst Trade [%]**: Largest loss percentage in a single trade.
+- **Avg. Duration**: Average holding period of trades.
+- **Max. Duration**: Longest holding period of a trade.
+- **Number of Buys** — Represents how many buy calls were issued during a trade or over a selected period. Useful when combined with the tranche system to understand risk allocation.
