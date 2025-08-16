@@ -4,8 +4,8 @@ import { HtsBuilder } from "./index72.js";
 import { AccountBuilder } from "./index71.js";
 import { ScsBuilder } from "./index74.js";
 import { QueryBuilder } from "./index75.js";
-import { ModelCapability } from "./index92.js";
-import { HederaMirrorNode } from "./index91.js";
+import { ModelCapability } from "./index91.js";
+import { HederaMirrorNode } from "./index92.js";
 import { Logger } from "./index77.js";
 const NOT_INITIALIZED_ERROR = "HederaAgentKit not initialized. Call await kit.initialize() first.";
 class HederaAgentKit {

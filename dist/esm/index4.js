@@ -1,4 +1,4 @@
-import { HederaMirrorNode } from "./index91.js";
+import { HederaMirrorNode } from "./index92.js";
 import { Logger } from "./index77.js";
 class AbstractSigner {
   /**
