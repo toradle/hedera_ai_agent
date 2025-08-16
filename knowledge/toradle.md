@@ -5,7 +5,31 @@
 id: toradle-overview
 keywords: toradle,overview,ai,crypto,trading,signals,assistant
 
-Toradle is an AI-powered crypto trading assistant and execution hub. It delivers real-time **buy / sell / hold** insights, risk‑tiered tranche guidance, concise narrative explanations, and portfolio tracking. Toradle integrates directly with **XRPL** (on‑ledger DEX/AMM via Xaman) and offers centralized‑exchange execution through **Bybit**. It emphasizes discipline, clarity, and guard‑railed risk management to help users act consistently in volatile markets.
+Toradle is an AI-powered crypto trading assistant and execution hub. It delivers real-time **buy / sell / hold** insights, risk‑tiered tranche guidance, concise narrative explanations, and portfolio tracking. Toradle integrates directly with **Hedera Hashgraph** (on‑ledger DEX/AMM via Hashpack and Saucerswap), **XRPL** (on‑ledger DEX/AMM via Xaman) and offers centralized‑exchange execution through **Bybit**. It emphasizes discipline, clarity, and guard‑railed risk management to help users act consistently in volatile markets.
+
+### What We Do
+
+Toradle answers the three important questions that any retail trader needs to conduct a successful trade - What to trade, When to trade it and How to trade.
+
+### How We Do It
+
+Toradle’s approach is grounded in mathematical and statistical analysis rather than large language model (LLM) trends. This foundation allows for precise, data-driven signal generation that adapts dynamically to market conditions. The system is designed for flexibility, cost efficiency, and scalability, enabling users to access sophisticated trading insights without prohibitive costs or complexity.
+
+### Why It Matters
+
+In a rapidly evolving market, adaptability is crucial. Toradle’s cost-effective and scalable platform ensures that traders can respond quickly to changing conditions while maintaining disciplined risk management. This empowers retail traders to compete effectively and avoid common pitfalls of emotional or uninformed decision-making.
+
+### Who Uses Toradle
+
+Toradle primarily serves retail investors seeking an affordable, reliable trading assistant. With a subscription priced around $50/year, users gain access to actionable signals, portfolio tracking, and execution capabilities. Additionally, Bybit users benefit from a 50% fee cashback on trades executed through Toradle’s broker integration, enhancing value.
+
+### What Makes Us Tick
+
+Our core philosophy is that our Subscribers should not lose money.
+
+### Future Possibilities
+
+Looking ahead, Toradle envisions expanding into automated bot trading, offering mutual fund products, and launching Toradle Assured trades which will include insurance options to further protect subscribers’ investments.
 
 ## Core Value Proposition
 
@@ -22,7 +46,7 @@ Position sizing guidance (High / Optimal / Low) to scale in and out—reduces th
 
 ### Execution where you trade
 
-XRPL on‑ledger trades via **Xaman** and CEX trades via **Bybit** connection.
+XRPL on‑ledger trades via **Xaman** , Hedera Hashgraph trades via **Saucerswap** and **Hashpack** and CEX trades via **Bybit** connection.
 
 ### Always‑on alerts
 
@@ -42,6 +66,61 @@ Toradle synthesizes multi‑source market data into a compact view per asset:
 ### Signal state
 
 Latest buy/sell/hold, trend direction (upswing/downswing/range), and a **grade** indicating signal quality.
+
+### Trend Model
+
+Toradle classifies market behavior across multiple timeframes and uses trend alignment to refine entries, exits, and tranche sizing. The model is quantitative and avoids subjective chart patterns.
+
+### Timeframes
+
+- **Short**: very near-term (e.g., 5m close) — used for timing entries/exits.
+- **Medium**: swing horizon (e.g., 1h–4h) — checks follow-through and durability.
+- **Long**: regime context (e.g., 1d) — defines backdrop and bias.
+
+### Trend States
+
+- **Uptrend**: Sustained higher highs and higher lows; positive gradient across medium/long windows with confirmation (e.g., N consecutive closes), and broad participation.
+- **Upswing**: Short-term positive impulse within a neutral or positive regime. Often used for adds or first entries when grade and liquidity cooperate.
+- **Downtrend**: Sustained lower highs and lower lows; negative gradient with confirmation and deteriorating participation.
+- **Downswing**: Short-term negative impulse; often a pullback against an uptrend or continuation inside a downtrend.
+
+### Detection Inputs (illustrative)
+
+- Price structure (swing highs/lows) and rolling **slope/gradient** over fixed windows.
+- **Volatility/dispersion**: expansion vs. compression.
+- **Breadth/cohorts** across related assets or pairs.
+- **Liquidity & volume** (XRPL pools/order books, Bybit depth/fills).
+- **Confirmation rules**: require **N closes** beyond a threshold or **M minutes** of persistence to validate a regime.
+
+### How Trend Affects Grades & Sizing
+
+- **Grade boost** when a signal aligns with the dominant trend (e.g., Buy + Uptrend/Upswing).
+- **Grade dampening** when a signal fights the regime (e.g., Buy during Downtrend/Downswing).
+- Tranche guidance scales with trend alignment: more tranches in aligned states; fewer/none in adverse states.
+
+### Execution Guidance by State (examples)
+
+- **Uptrend + Upswing**: Favor adds/increments; use pullbacks for entries; widen take-profit ladders.
+- **Uptrend + Downswing**: Prefer waiting for stabilization; scale smaller; avoid chasing.
+- **Range**: Consider reduced sizing or mean-reversion tactics only if liquidity is sufficient; avoid breakout chasing until confirmation.
+- **Downtrend / Downswing**: Avoid long entries; if shorting is available, treat as a separate, high-risk strategy with strict limits.
+
+### Invalidation (discipline)
+
+- Break of recent swing low (for longs) / swing high (for shorts), or a **gradient flip** against the position, triggers de-risking or exit according to tranche rules.
+
+### Grade System
+
+Each signal is assigned a grade (A, B, C, D) reflecting its quality and conviction level. Grades help users prioritize trades and manage risk:
+
+- **Grade A**: Highest conviction. Strong probability alignment, robust supporting metrics, and consistent backtest performance. These signals represent the best trade opportunities.
+- **Grade B**: High conviction, but with slightly less consistency than Grade A. Still considered reliable and often profitable under disciplined execution.
+- **Grade C**: Medium conviction. These signals may work but lack strong supporting metrics or consistency. They require more cautious risk management.
+- **Grade D**: Lowest conviction. Weak supporting data and higher variance. Generally not recommended except for highly risk‑tolerant users or testing strategies.
+- **Grade F**: Extremely low conviction. No supporting metrics, high volatility, or strongly negative backtest outcomes. These are effectively "do not trade" signals unless used for experimentation.
+- **Grade F-**: The absolute worst signal category. Represents the weakest probability alignment and the most adverse supporting data. Strongly advised to avoid trading on these signals.
+
+Grades do not guarantee outcomes; they provide a structured framework for evaluating signal strength, helping users scale risk exposure appropriately.
 
 ### Context
 
@@ -120,6 +199,10 @@ Holdings across XRPL and Bybit are summarized with balances, average price, unre
 
 Open positions are annotated with current signal state and tranche progress.
 
+## Trade Times
+
+Toradle identifies optimal trading windows to maximize trade effectiveness. The timing of entries and exits significantly impacts trade outcomes, and Toradle’s analytics highlight these windows to help users act when conditions are most favorable. This timing insight complements signal quality and risk tranching to optimize overall trade performance.
+
 ## Alerts & Delivery
 
 id: toradle-alerts
@@ -142,6 +225,10 @@ Per‑asset or per‑portfolio subscriptions; quiet hours.
 id: toradle-data
 keywords: data,aggregation,geckoterminal,xrppl.to,exchanges,liquidity
 
+### Hedera Hashgraph focus
+
+GeckoTerminal (pools/volumes/price) and Saucerswap (market/explorer metadata) power Hedera Hashgraph coverage, combined with on‑ledger order‑books and AMM pools.
+
 ### XRPL focus
 
 GeckoTerminal (pools/volumes/price) and xrppl.to/xrpl.to (market/explorer metadata) power XRPL coverage, combined with on‑ledger order‑books and AMM pools.
@@ -163,9 +250,17 @@ keywords: security,api keys,encryption,privacy,compliance
 
 Encrypted at rest and in transit; principle of least privilege (trading only; no withdrawals).
 
-### Wallet safety
+### XRPL Wallet safety
 
 Toradle never sees XRPL private keys; Xaman handles user signing client‑side.
+
+### Hedera Hashgraph Wallet safety
+
+Toradle never sees Hedera Hashgraph private keys; Hashpack handles user signing client‑side.
+
+### Bybit safety
+
+Toradle never has access to users’ Bybit account credentials or private keys. When you connect your Bybit account, Bybit issues a secure authorization code (OAuth-style token) which is stored in our database. This code only grants Toradle permission to execute trades and fetch account information on your behalf; it does not expose your login credentials or withdrawal rights.
 
 ### Operational controls
 
@@ -182,22 +277,40 @@ keywords: disclaimer,not financial advice,risks
 
 Toradle provides analytics and tooling; it is **not financial advice**. Crypto markets are volatile. Backtests and historical metrics are **not guarantees** of future results. Users should do their own research and select risk tranches and allocations appropriate to their circumstances. Promotions (including fee cashbacks) may change; always check the latest terms on Toradle.
 
+## How to Use Toradle
+
+Toradle guides users through a disciplined trading process:
+
+1. Interpret signals carefully, paying attention to signal state and grades.
+2. Choose appropriate risk tranches (High, Optimal, Low) to scale entries and exits.
+3. Connect Bybit and/or Hedera Hashgraph wallets via Hashpack and/or XRPL wallets via Xaman to enable seamless trade execution.
+4. Act with discipline, leveraging alerts and portfolio tracking to maintain consistent risk management.
+
+This structured approach helps users avoid impulsive decisions and trade more effectively.
+
+## Token Analysis
+
+Toradle provides token-level analysis including average ROI, Compound Growth Rate (CGR), and breakdowns of positive and negative trades. This granular insight allows users to evaluate token performance over time and make informed decisions based on historical trends and cohort analytics.
+
 ## Contact & Support
 
 id: toradle-support
 keywords: support,contact,help,documentation
 
-- **Website/App**: toradle.com / toradle.xyz
-- **Community & updates**: Telegram, X/Twitter, Discord (as announced in‑app)
-- **Docs**: In‑app help center and developer snippets for Xaman flows
+- **Website/App**: [toradle.com](https://toradle.com)
+- **Community (Telegram)**: [@toradle_community](https://t.me/toradle_community)
+- **Updates (X/Twitter)**: [@toradle](https://x.com/toradle)
+- **Discord**: (as announced in-app)
 
 ## Company
 
 id: toradle-company
 keywords: company,toradle technologies,registration,uae
 
-## Toradle Technologies FZ‑LLC**
+## Company Philosophy
 
-Registered address: ADDRESS FDRK1642, Compass Building, Al Shohada Road, AL Hamra Industrial Zone‑FZ, Ras Al Khaimah, United Arab Emirates.
+Our core philosophy is that our Subscribers should not lose money.
+
+Registered address: Dubai
 
 > For legal, compliance, and promotional terms (e.g., Bybit brokerage benefits), refer to the latest official documents published by Toradle.
