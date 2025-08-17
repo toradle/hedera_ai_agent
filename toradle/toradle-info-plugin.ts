@@ -1,12 +1,12 @@
 // examples/toradle-info-plugin.ts
+import { BasePlugin } from 'hedera-agent-kit';
 import type { GenericPluginContext, HederaTool } from 'hedera-agent-kit';
 import { z } from 'zod';
 import {
   BaseHederaQueryTool,
   BaseHederaQueryToolParams,
-  BasePlugin,
-  HederaAgentKit,
 } from 'hedera-agent-kit';
+import { HederaAgentKit } from 'hedera-agent-kit';
 import fs from 'fs';
 import path from 'path';
 
@@ -29,8 +29,10 @@ function loadCorpusFromMarkdown(filePath: string): CorpusSection[] {
   let raw = fs.readFileSync(filePath, 'utf-8');
 
   // Skip the top H1 (# ...) and only parse sections starting from the first ##
-  const start = raw.search(/^##\s/m);
-  if (start >= 0) raw = raw.slice(start);
+  const firstLevel2Index = raw.indexOf('\n## ');
+  if (firstLevel2Index !== -1) {
+    raw = raw.slice(firstLevel2Index + 1);
+  }
 
   const sections: CorpusSection[] = [];
 
@@ -81,7 +83,7 @@ function loadCorpusFromMarkdown(filePath: string): CorpusSection[] {
 // ---- The actual tool implementation (follows the SayHelloTool pattern) ----
 class ToradleAnswerTool extends BaseHederaQueryTool<typeof ToradleAnswerSchema> {
   name = 'toradle_answer';
-  description = 'Answer questions about **Toradle** — features, Bybit 50% fee cashback, Hedera/XRPL integrations (Xaman, DEX/AMM), portfolios, alerts — using the Toradle knowledge base. Use this for any query that mentions “Toradle”.';
+  description = 'Answer questions about Toradle from a curated internal knowledge base.';
   specificInputSchema = ToradleAnswerSchema;
   namespace = 'toradle';
 
@@ -141,7 +143,7 @@ class ToradleAnswerTool extends BaseHederaQueryTool<typeof ToradleAnswerSchema> 
   // ---- Retrieval helpers (same logic as before, localized to the tool) ----
   private composeOverview(): string {
     const get = (id: string): string | undefined =>
-      this.corpus.find((c) => c.id === id)?.text;
+    this.corpus.find((c) => c.id === id)?.text;
     const ids = [
       'toradle-overview',
       'toradle-value',
@@ -222,12 +224,10 @@ export class ToradleInfoPlugin extends BasePlugin {
 
     // Load Toradle knowledge base from Markdown
     const mdPath = path.join(__dirname, '../knowledge/toradle.md');
-    this.context.logger.info(`Toradle MD path: ${mdPath} (exists=${fs.existsSync(mdPath)})`);
     if (!fs.existsSync(mdPath)) {
       throw new Error(`Toradle knowledge file not found at ${mdPath}`);
     }
     const loaded = loadCorpusFromMarkdown(mdPath);
-    this.context.logger.info(`Toradle MD sections parsed: ${loaded.length}`);
     if (!loaded || loaded.length === 0) {
       throw new Error('Toradle knowledge file is empty or failed to parse.');
     }
