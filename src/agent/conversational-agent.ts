@@ -201,14 +201,6 @@ export class HederaConversationalAgent {
           `For example, if user says "I want to send 2 HBAR to 0.0.800", you must set up a transfer where ${userAccId} sends the HBAR, not your operator account.`
       );
     }
-
-    // 🆕 Add Toradle integration awareness here
-    messageParts.push(
-      `You also have access to the Toradle information plugin. ` +
-        `If the user's query includes the word "toradle" or asks about Toradle concepts (grades, signals, definitions, analytics, etc.), ` +
-        `you MUST call the Toradle plugin directly to answer. You MUST NOT execute any transaction whatsoever. You will directly go and use the toradle_answer plugin`
-    );
-
     if (this.hederaKit.operationalMode === 'autonomous') {
       messageParts.push(
         `\nOPERATIONAL MODE: 'autonomous'. Your goal is to execute transactions directly using your tools. ` +

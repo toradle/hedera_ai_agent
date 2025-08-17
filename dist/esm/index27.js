@@ -1,6 +1,6 @@
 import { StructuredTool } from "@langchain/core/tools";
 import { ModelCapabilityDetector } from "./index78.js";
-import { ModelCapability } from "./index92.js";
+import { ModelCapability } from "./index91.js";
 const MODEL_STRATEGIES = {
   [ModelCapability.SMALL]: {
     maxTokens: 4e3,

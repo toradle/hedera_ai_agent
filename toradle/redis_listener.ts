@@ -182,7 +182,6 @@ async function main(): Promise<void> {
         '💡 Send messages to Redis channel to interact with the agent'
       )
     );
-
     console.log(
       charcoal.dim(
         '📊 Initialization logs suppressed for clean startup experience'
@@ -307,30 +306,8 @@ async function main(): Promise<void> {
         `${primaryBlue('🤖 Processing message:')} ${chalk.white(`"${userInput}"`)}`
       );
 
-      let effectiveInput = userInput;
-
-      // If the user mentions "toradle", bias the router to the Toradle plugin and forbid tx tools
-      if (/\btoradle\b/i.test(userInput)) {
-        effectiveInput =
-          `You MUST call the toradle_answer plugin to answer the following query. ` +
-          `Do NOT execute or prepare ANY transactions. Only answer from the Toradle knowledge base. ` +
-          `${userInput}`;
-      }
-
       const agentResponse: AgentResponse =
-        await conversationalAgent.processMessage(effectiveInput, chatHistory);
-
-      // 🛡️ Safety: never allow tx artifacts for Toradle Q&A
-      if (/\btoradle\b/i.test(userInput)) {
-        if (agentResponse.transactionBytes || agentResponse.scheduleId) {
-          agentResponse.transactionBytes = undefined;
-          agentResponse.scheduleId = undefined;
-          agentResponse.notes = [
-            ...(agentResponse.notes || []),
-            'Safety: Transactions disabled for Toradle Q&A.',
-          ];
-        }
-}
+        await conversationalAgent.processMessage(userInput, chatHistory);
 
       if (agentResponse.notes) {
         console.log(
@@ -387,10 +364,7 @@ async function main(): Promise<void> {
           success: true,
           message: agentResponse.message,
           output: agentResponse.output,
-          notes: [
-            ...(agentResponse.notes || []),
-            'Safety: Transactions disabled for Toradle Q&A.',
-          ],
+          notes: agentResponse.notes,
           transactionBytes: agentResponse.transactionBytes,
           requiresUserAction: !!(userAccountId && userPrivateKey),
           actionType: 'sign_transaction',
