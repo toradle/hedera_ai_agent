@@ -102,38 +102,7 @@ class ToradleAnswerTool extends BaseHederaQueryTool<typeof ToradleAnswerSchema> 
       return {
         success: true,
         answer: this.composeOverview(),
-        sections: [
-          'Overview',
-          'Core Value Proposition',
-          'Signals & Analytics',
-          'Trend Model',
-          'Timeframes',
-          'Trend States',
-          'Detection Inputs (illustrative)',
-          'How Trend Affects Grades & Sizing',
-          'Execution Guidance by State (examples)',
-          'Invalidation (discipline)',
-          'Grade System',
-          'Context',
-          'Backtesting & cohorts',
-          'Latent momentum',
-          'Risk Tranches & Position Sizing',
-          'Hedera Integration',
-          'XRPL Integration (Trading via Xaman)',
-          'Bybit Brokerage & CEX Execution (50% Fee Cashback)',
-          'Portfolio & P&L',
-          'Trade Times',
-          'Alerts & Delivery',
-          'Market Data & Coverage',
-          'Security & Privacy',
-          'Disclaimers',
-          'How to Use Toradle',
-          'Token Analysis',
-          'Contact & Support',
-          'Company',
-          'Company Philosophy',
-          'Glossary & Definitions',
-        ],
+        sections: ['Overview', 'Signals & Analytics', 'Risk Tranches & Position Sizing', 'Disclaimers'],
       };
     }
     const { answer, sections } = this.searchAndAnswer(q);
@@ -142,31 +111,11 @@ class ToradleAnswerTool extends BaseHederaQueryTool<typeof ToradleAnswerSchema> 
 
   // ---- Retrieval helpers (same logic as before, localized to the tool) ----
   private composeOverview(): string {
-    const get = (id: string): string | undefined =>
-    this.corpus.find((c) => c.id === id)?.text;
-    const ids = [
-      'toradle-overview',
-      'toradle-value',
-      'toradle-signals',
-      'toradle-tranches',
-      'toradle-hedera',
-      'toradle-xrpl',
-      'toradle-bybit',
-      'toradle-portfolio',
-      'trade-times',
-      'toradle-alerts',
-      'toradle-data',
-      'toradle-security',
-      'toradle-disclaimer',
-      'how-to-use-toradle',
-      'token-analysis',
-      'toradle-support',
-      'toradle-company',
-      'company-philosophy',
-      'toradle-definitions',
-    ];
-    const parts = ids.map(get).filter(Boolean) as string[];
-    return parts.join('\n\n');
+    const over = this.corpus.find((c) => c.id === 'toradle-overview');
+    const sig = this.corpus.find((c) => c.id === 'toradle-signals');
+    const risk = this.corpus.find((c) => c.id === 'toradle-tranches');
+    const disc = this.corpus.find((c) => c.id === 'toradle-disclaimer');
+    return [over?.text, sig?.text, risk?.text, disc?.text].filter(Boolean).join('\n\n');
   }
 
   private searchAndAnswer(question: string): { answer: string; sections: string[] } {
