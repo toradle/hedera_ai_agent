@@ -28,9 +28,9 @@ import chalk from 'chalk';
 import gradient from 'gradient-string';
 import { enableHederaLogging } from './hedera-logger-override';
 import { HederaAccountPlugin, HederaHCSPlugin } from 'hedera-agent-kit';
-import { 
-  connectRedis, 
-  subscribeToChannel, 
+import {
+  connectRedis,
+  subscribeToChannel,
   publishToRespChannel,
   checkRedisHealth,
   REDIS_REQ_CHANNEL,
@@ -67,16 +67,16 @@ async function main(): Promise<void> {
 
   const banner = `
   ${hederaGradient(
-      '╔═══════════════════════════════════════════════════════════════╗'
-    )}
+    '╔═══════════════════════════════════════════════════════════════╗'
+  )}
   ${hederaGradient(
-      '║                      HEDERA AGENT KIT                        ║'
-    )}
+    '║                      HEDERA AGENT KIT                        ║'
+  )}
   ${hederaGradient(`║                   ${modeDescription.padEnd(30)} ║`)}
   ${hederaGradient(`║                     Redis Listener Mode                       ║`)}
   ${hederaGradient(
-      '╚═══════════════════════════════════════════════════════════════╝'
-    )}
+    '╚═══════════════════════════════════════════════════════════════╝'
+  )}
 `;
 
   console.log(banner);
@@ -189,7 +189,7 @@ async function main(): Promise<void> {
       )
     );
     enableHederaLogging();
-    
+
     // Start Redis listener
     startRedisListener();
   }, 1000);
@@ -219,7 +219,7 @@ async function main(): Promise<void> {
         `Preparing and executing transaction with user account ${userAccountId}...`
       )}`
     );
-    
+
     try {
       const userSigner = new ServerSigner(
         userAccountId,
@@ -246,9 +246,9 @@ async function main(): Promise<void> {
       const successMsg = `Transaction executed with your key. Receipt: ${JSON.stringify(
         receipt.toJSON()
       )}`;
-      
+
       console.log(`${primaryGreen('Agent >')} ${primaryGreen(successMsg)}`);
-      
+
       const chatHistory = chatHistoryMap.get(userId) || [];
       chatHistory.push({ type: 'ai', content: successMsg });
       chatHistoryMap.set(userId, chatHistory);
@@ -265,14 +265,14 @@ async function main(): Promise<void> {
     } catch (e: unknown) {
       const error = e as Error;
       const errorMsg = `Sorry, I encountered an error executing that with your key: ${error.message || String(e)}`;
-      
+
       console.error(
         `${errorColor('Agent >')} ${charcoal.dim(
           'Error executing transaction with user key:'
         )}`,
         e
       );
-      
+
       const chatHistory = chatHistoryMap.get(userId) || [];
       chatHistory.push({ type: 'ai', content: errorMsg });
       chatHistoryMap.set(userId, chatHistory);
@@ -296,7 +296,7 @@ async function main(): Promise<void> {
     isFollowUp: boolean = false
   ): Promise<void> {
     const chatHistory = chatHistoryMap.get(userId) || [];
-    
+
     if (!isFollowUp) {
       chatHistory.push({ type: 'human', content: userInput });
       chatHistoryMap.set(userId, chatHistory);
@@ -307,8 +307,30 @@ async function main(): Promise<void> {
         `${primaryBlue('🤖 Processing message:')} ${chalk.white(`"${userInput}"`)}`
       );
 
+      let effectiveInput = userInput;
+
+      // If the user mentions "toradle", bias the router to the Toradle plugin and forbid tx tools
+      if (/\btoradle\b/i.test(userInput)) {
+        effectiveInput =
+          `You MUST call the toradle_answer plugin to answer the following query. ` +
+          `Do NOT execute or prepare ANY transactions. Only answer from the Toradle knowledge base. ` +
+          `${userInput}`;
+      }
+
       const agentResponse: AgentResponse =
-        await conversationalAgent.processMessage(userInput, chatHistory);
+        await conversationalAgent.processMessage(effectiveInput, chatHistory);
+
+      // 🛡️ Safety: never allow tx artifacts for Toradle Q&A
+      if (/\btoradle\b/i.test(userInput)) {
+        if (agentResponse.transactionBytes || agentResponse.scheduleId) {
+          agentResponse.transactionBytes = undefined;
+          agentResponse.scheduleId = undefined;
+          agentResponse.notes = [
+            ...(agentResponse.notes || []),
+            'Safety: Transactions disabled for Toradle Q&A.',
+          ];
+        }
+}
 
       if (agentResponse.notes) {
         console.log(
@@ -323,7 +345,7 @@ async function main(): Promise<void> {
           agentResponse.message
         )}`
       );
-      
+
       if (agentResponse.output !== agentResponse.message) {
         console.log(
           `${primaryBlue('Agent Tool Output (JSON) >')} ${charcoal.dim(
@@ -365,7 +387,10 @@ async function main(): Promise<void> {
           success: true,
           message: agentResponse.message,
           output: agentResponse.output,
-          notes: agentResponse.notes,
+          notes: [
+            ...(agentResponse.notes || []),
+            'Safety: Transactions disabled for Toradle Q&A.',
+          ],
           transactionBytes: agentResponse.transactionBytes,
           requiresUserAction: !!(userAccountId && userPrivateKey),
           actionType: 'sign_transaction',
@@ -390,12 +415,12 @@ async function main(): Promise<void> {
     } catch (e: unknown) {
       const error = e as Error;
       const errorMsg = error.message || String(e);
-      
+
       console.error(
         `${errorColor('Error during agent processing:')}`,
         errorMsg
       );
-      
+
       chatHistory.push({
         type: 'ai',
         content: `Sorry, a critical error occurred: ${errorMsg}`,
@@ -415,12 +440,12 @@ async function main(): Promise<void> {
 
   async function startRedisListener(): Promise<void> {
     console.log(primaryGreen('🎧 Starting Redis listener...'));
-    
+
     // Use the imported subscribeToChannel function
     await subscribeToChannel(async (message: string) => {
       try {
         console.log(`${primaryBlue('📥 Received message:')} ${charcoal.dim(message)}`);
-        
+
         const redisMessage: RedisMessage = JSON.parse(message);
         const { fetch_id, query, source } = redisMessage;
         const userId = +redisMessage.userId;

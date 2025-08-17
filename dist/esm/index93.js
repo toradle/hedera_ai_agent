@@ -62,7 +62,7 @@ import { HederaGetNetworkInfoTool } from "./index66.js";
 import { HederaGetNetworkFeesTool } from "./index67.js";
 import { HederaGetBlocksTool } from "./index68.js";
 import "./index69.js";
-import { ModelCapability } from "./index91.js";
+import { ModelCapability } from "./index92.js";
 class HederaNetworkPlugin extends BasePlugin {
   constructor() {
     super(...arguments);
